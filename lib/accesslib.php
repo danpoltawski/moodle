@@ -4467,7 +4467,7 @@ function allow_override($sroleid, $troleid) {
     $record = new stdClass();
     $record->roleid        = $sroleid;
     $record->allowoverride = $troleid;
-    $DB->insert_record('role_allow_override', $record);
+    return $DB->insert_record('role_allow_override', $record);
 }
 
 /**
@@ -4483,7 +4483,7 @@ function allow_assign($fromroleid, $targetroleid) {
     $record = new stdClass();
     $record->roleid      = $fromroleid;
     $record->allowassign = $targetroleid;
-    $DB->insert_record('role_allow_assign', $record);
+    return $DB->insert_record('role_allow_assign', $record);
 }
 
 /**
@@ -4499,7 +4499,7 @@ function allow_switch($fromroleid, $targetroleid) {
     $record = new stdClass();
     $record->roleid      = $fromroleid;
     $record->allowswitch = $targetroleid;
-    $DB->insert_record('role_allow_switch', $record);
+    return $DB->insert_record('role_allow_switch', $record);
 }
 
 /**
