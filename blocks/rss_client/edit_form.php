@@ -78,5 +78,14 @@ class block_rss_client_edit_form extends block_edit_form {
 
         $mform->addElement('selectyesno', 'config_block_rss_client_show_channel_image', get_string('clientshowimagelabel', 'block_rss_client'));
         $mform->setDefault('config_block_rss_client_show_channel_image', 0);
+
+        $orderoptions = array( block_rss_client::ITEM_ORDER_BY_NEWEST => get_string('orderbynewest', 'block_rss_client'),
+                               block_rss_client::ITEM_ORDER_BY_OLDEST => get_string('orderbyoldest', 'block_rss_client'),
+                               block_rss_client::ITEM_ORDER_BY_FEED   => get_string('orderbyfeed', 'block_rss_client'),
+                           );
+
+        $mform->addElement('select', 'config_block_rss_client_item_ordering', get_string('itemordering', 'block_rss_client'), $orderoptions);
+        $mform->setType('config_block_rss_client_item_ordering', PARAM_INT);
+        $mform->setDefault('config_block_rss_client_item_ordering', block_rss_client::ITEM_ORDER_BY_NEWEST);
     }
 }

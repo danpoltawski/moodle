@@ -25,6 +25,13 @@
 
  class block_rss_client extends block_base {
 
+     /** @var int Order feed items by newest first */
+     const ITEM_ORDER_BY_NEWEST = 0;
+     /** @var int Order feed items by oldest first */
+     const ITEM_ORDER_BY_OLDEST = 1;
+     /** @var int Order feed items by feed order */
+     const ITEM_ORDER_BY_FEED   = 2;
+
     function init() {
         $this->title = get_string('pluginname', 'block_rss_client');
     }
@@ -179,7 +186,20 @@
 
         $r.='<ul class="list no-overflow">'."\n";
 
+
+        if (self::ITEM_ORDER_BY_FEED == $this->config->block_rss_client_item_ordering) {
+            // don't pay attention to dates in RSS feed
+            $feed->enable_order_by_date(false);
+        }else{
+            $feed->enable_order_by_date(true);
+        }
+
         $feeditems = $feed->get_items(0, $maxentries);
+
+        if (self::ITEM_ORDER_BY_OLDEST == $this->config->block_rss_client_item_ordering) {
+            $feeditems = array_reverse($feeditems);
+        }
+
         foreach($feeditems as $item){
             $r.= $this->get_item_html($item);
         }

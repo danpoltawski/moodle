@@ -76,3 +76,7 @@ $string['timeoutdesc'] = 'Time in minutes for an RSS feed to live in cache.';
 $string['timeout2'] = 'Timeout';
 $string['updatefeed'] = 'Update a news feed URL:';
 $string['viewfeed'] = 'View feed';
+$string['itemordering'] = 'How should feed items be ordered?';
+$string['orderbynewest'] = 'Newest items first';
+$string['orderbyoldest'] = 'Oldest items first';
+$string['orderbyfeed'] = 'In feed order';
