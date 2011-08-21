@@ -37,6 +37,28 @@ $string['editenrolment'] = 'Edit enrolment';
 $string['editselectedusers'] = 'Edit selected user enrolments';
 $string['enrolledincourserole'] = 'Enrolled in "{$a->course}" as "{$a->role}"';
 $string['enrolusers'] = 'Enrol users';
+$string['expirynotification'] = 'Enrolment expiry notification';
+$string['expirynotify'] = 'Notify';
+$string['expirynotify_help'] = 'If an enrolment duration has been specified, then this setting determines whether teachers receive a message before user enrolments expire.';
+$string['expirynotifyenrolled'] = 'Notify enrolled users';
+$string['expirynotifyenrolled_help'] = 'If an enrolment duration has been specified, then this setting determines whether enrolled users receive a message when their enrolment is about to expire.';
+$string['expirynotifymessage'] = 'The following students in this course are expiring after exactly {$a->threshold} days:
+
+{$a->current}
+
+The following students in this course are expiring in less than {$a->threshold} days:
+
+{$a->past}
+
+You may go to the following page to extend their enrolment period:
+{$a->extendurl}';
+$string['expirynotifymessageenrolled'] = 'Dear {$a->studentstr}:
+
+This is a notification that your enrolment in the course {$a->course} will expire in {$a->threshold} days.
+
+Please contact {$a->teacherstr} for any further enquiries.';
+$string['expirythreshold'] = 'Threshold';
+$string['expirythreshold_help'] = 'Number of days notice given before user enrolment expires.';
 $string['manual:config'] = 'Configure manual enrol instances';
 $string['manual:enrol'] = 'Enrol users';
 $string['manual:manage'] = 'Manage user enrolments';

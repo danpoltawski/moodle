@@ -36,7 +36,8 @@ class enrol_manual_edit_form extends moodleform {
 
         list($instance, $plugin, $context) = $this->_customdata;
 
-        $mform->addElement('header', 'header', get_string('pluginname', 'enrol_manual'));
+//--------------------------------------------------------------------------------
+        $mform->addElement('header', 'generalhdr', get_string('pluginname', 'enrol_manual'));
 
         $options = array(ENROL_INSTANCE_ENABLED  => get_string('yes'),
                          ENROL_INSTANCE_DISABLED => get_string('no'));
@@ -55,6 +56,31 @@ class enrol_manual_edit_form extends moodleform {
         }
         $mform->addElement('select', 'roleid', get_string('defaultrole', 'role'), $roles);
         $mform->setDefault('roleid', $plugin->get_config('roleid'));
+
+//--------------------------------------------------------------------------------
+        $mform->addElement('header','expirynotifyhdr', get_string('expirynotification', 'enrol_manual'));
+
+        $choices = array();
+        $choices['0'] = get_string('no');
+        $choices['1'] = get_string('yes');
+        $mform->addElement('select', 'expirynotify', get_string('expirynotify', 'enrol_manual'), $choices);
+        $mform->addHelpButton('expirynotify', 'expirynotify', 'enrol_manual');
+        $mform->setDefault('expirynotify', 0);
+
+        $mform->addElement('select', 'notifystudents', get_string('expirynotifyenrolled', 'enrol_manual'), $choices);
+        $mform->addHelpButton('notifystudents', 'expirynotifyenrolled', 'enrol_manual');
+        $mform->setDefault('notifystudents', 0);
+
+        $thresholdmenu=array();
+        for ($i=1; $i<=30; $i++) {
+            $seconds = $i * 86400;
+            $thresholdmenu[$seconds] = get_string('numdays', '', $i);
+        }
+        $mform->addElement('select', 'expirythreshold', get_string('expirythreshold', 'enrol_manual'), $thresholdmenu);
+        $mform->addHelpButton('expirythreshold', 'expirythreshold', 'enrol_manual');
+        $mform->setDefault('expirythreshold', 10 * 86400);
+
+//--------------------------------------------------------------------------------
 
         $mform->addElement('hidden', 'courseid');
 
