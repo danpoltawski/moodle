@@ -860,14 +860,20 @@ class mssql_native_moodle_database extends moodle_database {
      * Some conversions and safety checks are carried out. Lobs are supported.
      * If the return ID isn't required, then this just reports success as true/false.
      * $data is an object containing needed data
+     *
      * @param string $table The database table to be inserted into
-     * @param object $data A data object with values for one or more fields in the record
+     * @param array|stdClass $dataobject A data object with values for one or more fields in the record
      * @param bool $returnid Should the id of the newly created record entry be returned? If this option is not requested then true/false is returned.
+     * @param bool $bulk are multiple inserts into the same table expected?
      * @return bool|int true or new id
      * @throws dml_exception if error
      */
     public function insert_record($table, $dataobject, $returnid=true, $bulk=false) {
-        $dataobject = (array)$dataobject;
+        if (is_object($dataobject)) {
+            $dataobject = get_object_vars($dataobject);
+        } else {
+            $dataobject = (array)$dataobject;
+        }
 
         $columns = $this->get_columns($table);
         $cleaned = array();
@@ -891,12 +897,16 @@ class mssql_native_moodle_database extends moodle_database {
      * Safety checks are NOT carried out. Lobs are supported.
      *
      * @param string $table name of database table to be inserted into
-     * @param object $dataobject A data object with values for one or more fields in the record
+     * @param array|stdClass $dataobject A data object with values for one or more fields in the record
      * @return bool true
      * @throws dml_exception if error
      */
     public function import_record($table, $dataobject) {
-        $dataobject = (array)$dataobject;
+        if (is_object($dataobject)) {
+            $dataobject = get_object_vars($dataobject);
+        } else {
+            $dataobject = (array)$dataobject;
+        }
 
         $columns = $this->get_columns($table);
         $cleaned = array();
@@ -964,13 +974,17 @@ class mssql_native_moodle_database extends moodle_database {
      * specify the record to update
      *
      * @param string $table The database table to be checked against.
-     * @param object $dataobject An object with contents equal to fieldname=>fieldvalue. Must have an entry for 'id' to map to the table specified.
-     * @param bool true means repeated updates expected
+     * @param array|stdClass $dataobject An object with contents equal to fieldname=>fieldvalue. Must have an entry for 'id' to map to the table specified.
+     * @param bool $bulk true means repeated updates expected
      * @return bool true
      * @throws dml_exception if error
      */
     public function update_record($table, $dataobject, $bulk=false) {
-        $dataobject = (array)$dataobject;
+        if (is_object($dataobject)) {
+            $dataobject = get_object_vars($dataobject);
+        } else {
+            $dataobject = (array)$dataobject;
+        }
 
         $columns = $this->get_columns($table);
         $cleaned = array();
