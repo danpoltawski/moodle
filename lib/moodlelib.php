@@ -2569,7 +2569,7 @@ function get_login_url() {
  * @return mixed Void, exit, and die depending on path
  */
 function require_login($courseorid = NULL, $autologinguest = true, $cm = NULL, $setwantsurltome = true, $preventredirect = false) {
-    global $CFG, $SESSION, $USER, $FULLME, $PAGE, $SITE, $DB, $OUTPUT;
+    global $CFG, $SESSION, $USER, $PAGE, $SITE, $DB, $OUTPUT;
 
     // setup global $COURSE, themes, language and locale
     if (!empty($courseorid)) {
@@ -2626,8 +2626,7 @@ function require_login($courseorid = NULL, $autologinguest = true, $cm = NULL, $
             }
 
             if ($setwantsurltome) {
-                // TODO: switch to PAGE->url
-                $SESSION->wantsurl = $FULLME;
+                $SESSION->wantsurl = qualified_me();
             }
             if (!empty($_SERVER['HTTP_REFERER'])) {
                 $SESSION->fromurl  = $_SERVER['HTTP_REFERER'];
@@ -2650,7 +2649,7 @@ function require_login($courseorid = NULL, $autologinguest = true, $cm = NULL, $
     if (get_user_preferences('auth_forcepasswordchange') && !session_is_loggedinas()) {
         $userauth = get_auth_plugin($USER->auth);
         if ($userauth->can_change_password() and !$preventredirect) {
-            $SESSION->wantsurl = $FULLME;
+            $SESSION->wantsurl = qualified_me();
             if ($changeurl = $userauth->change_password_url()) {
                 //use plugin custom url
                 redirect($changeurl);
@@ -2673,7 +2672,7 @@ function require_login($courseorid = NULL, $autologinguest = true, $cm = NULL, $
         if ($preventredirect) {
             throw new require_login_exception('User not fully set-up');
         }
-        $SESSION->wantsurl = $FULLME;
+        $SESSION->wantsurl = qualified_me();
         redirect($CFG->wwwroot .'/user/edit.php?id='. $USER->id .'&amp;course='. SITEID);
     }
 
@@ -2693,13 +2692,13 @@ function require_login($courseorid = NULL, $autologinguest = true, $cm = NULL, $
             if ($preventredirect) {
                 throw new require_login_exception('Policy not agreed');
             }
-            $SESSION->wantsurl = $FULLME;
+            $SESSION->wantsurl = qualified_me();
             redirect($CFG->wwwroot .'/user/policy.php');
         } else if (!empty($CFG->sitepolicyguest) and isguestuser()) {
             if ($preventredirect) {
                 throw new require_login_exception('Policy not agreed');
             }
-            $SESSION->wantsurl = $FULLME;
+            $SESSION->wantsurl = qualified_me();
             redirect($CFG->wwwroot .'/user/policy.php');
         }
     }
@@ -2843,7 +2842,7 @@ function require_login($courseorid = NULL, $autologinguest = true, $cm = NULL, $
             if ($preventredirect) {
                 throw new require_login_exception('Not enrolled');
             }
-            $SESSION->wantsurl = $FULLME;
+            $SESSION->wantsurl = qualified_me();
             redirect($CFG->wwwroot .'/enrol/index.php?id='. $course->id);
         }
     }
