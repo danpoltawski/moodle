@@ -177,6 +177,7 @@ abstract class base_moodleform extends moodleform {
      */
     function add_heading($name , $text) {
         $this->_form->addElement('header', $name, $text);
+        $this->_form->setExpanded($name);
     }
     /**
      * Adds HTML formatting for the given backup setting, needed to group/segment
