@@ -1,0 +1,13 @@
+<phpunit bootstrap="lib/phpunit/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="true"
+         >
+        <testsuites>
+          <testsuite name="Moodle tests">
+            <directory>.</directory>
+          </testsuite>
+        </testsuites>
+</phpunit>
