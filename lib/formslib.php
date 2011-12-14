@@ -1449,6 +1449,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
         }
         if (method_exists($renderer, 'setCollapsableElements')){
             // add all headers to collapsable elements array (if they have not been added yet)
+            unset($lastHeader);
             $lastHeader = null;
             $anyRequiredOrError = false;
             foreach (array_keys($this->_elements) as $elementIndex){
