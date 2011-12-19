@@ -3471,14 +3471,14 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
 
         if ('publishstate' === 'public') {
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
         } else if ('publishstate' === 'site') {
-            require_login();
+            require_login(null, true, null, false);
             //ok
         } else if ('publishstate' === 'draft') {
-            require_login();
+            require_login(null, true, null, false);
             if ($USER->id != $entry->userid) {
                 send_file_not_found();
             }
@@ -3498,7 +3498,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
         if (($filearea === 'outcome' or $filearea === 'scale') and $context->contextlevel == CONTEXT_SYSTEM) {
             // Global gradebook files
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
             $fullpath = "/$context->id/$component/$filearea/".implode('/', $args);
@@ -3515,7 +3515,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_file_not_found();
 
             if ($CFG->forcelogin || $course->id != SITEID) {
-                require_login($course);
+                require_login($course, true, null, false);
             }
 
             $fullpath = "/$context->id/$component/$filearea/".implode('/', $args);
@@ -3536,7 +3536,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
 
             // All tag descriptions are going to be public but we still need to respect forcelogin
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
             $fullpath = "/$context->id/tag/description/".implode('/', $args);
@@ -3558,7 +3558,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
 
             // All events here are public the one requirement is that we respect forcelogin
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
             // Get the event if from the args array
@@ -3583,7 +3583,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
         } else if ($filearea === 'event_description' and $context->contextlevel == CONTEXT_USER) {
 
             // Must be logged in, if they are not then they obviously can't be this user
-            require_login();
+            require_login(null, true, null, false);
 
             // Don't want guests here, potentially saves a DB call
             if (isguestuser()) {
@@ -3613,7 +3613,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             // Respect forcelogin and require login unless this is the site.... it probably
             // should NEVER be the site
             if ($CFG->forcelogin || $course->id != SITEID) {
-                require_login($course);
+                require_login($course, true, null, false);
             }
 
             // Must be able to at least view the course
@@ -3710,7 +3710,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_stored_file($file, 60*60*24*365, 0, false, array('preview' => $preview)); // enable long caching, there are many images on each page
 
         } else if ($filearea === 'private' and $context->contextlevel == CONTEXT_USER) {
-            require_login();
+            require_login(null, true, null, false);
 
             if (isguestuser()) {
                 send_file_not_found();
@@ -3732,7 +3732,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
         } else if ($filearea === 'profile' and $context->contextlevel == CONTEXT_USER) {
 
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
             $userid = $context->instanceid;
@@ -3741,7 +3741,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
                 // always can access own
 
             } else if (!empty($CFG->forceloginforprofiles)) {
-                require_login();
+                require_login(null, true, null, false);
 
                 if (isguestuser()) {
                     send_file_not_found();
@@ -3781,11 +3781,11 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             $usercontext = get_context_instance(CONTEXT_USER, $userid);
 
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
             if (!empty($CFG->forceloginforprofiles)) {
-                require_login();
+                require_login(null, true, null, false);
                 if (isguestuser()) {
                     print_error('noguest');
                 }
@@ -3815,7 +3815,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_stored_file($file, 0, 0, true, array('preview' => $preview)); // must force download - security!
 
         } else if ($filearea === 'backup' and $context->contextlevel == CONTEXT_USER) {
-            require_login();
+            require_login(null, true, null, false);
 
             if (isguestuser()) {
                 send_file_not_found();
@@ -3848,7 +3848,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
         if ($filearea === 'description') {
             if ($CFG->forcelogin) {
                 // no login necessary - unless login forced everywhere
-                require_login();
+                require_login(null, true, null, false);
             }
 
             $filename = array_pop($args);
@@ -3871,7 +3871,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
 
         if ($filearea === 'summary') {
             if ($CFG->forcelogin) {
-                require_login();
+                require_login(null, true, null, false);
             }
 
             $filename = array_pop($args);
@@ -3884,10 +3884,8 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'section') {
-            if ($CFG->forcelogin) {
-                require_login($course);
-            } else if ($course->id != SITEID) {
-                require_login($course);
+            if ($CFG->forcelogin || ($course->id != SITEID)) {
+                require_login($course, true, null, false);
             }
 
             $sectionid = (int)array_shift($args);
@@ -3933,7 +3931,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
 
         if ($filearea === 'description') {
 
-            require_login($course);
+            require_login($course, true, null, false);
 
             $filename = array_pop($args);
             $filepath = $args ? '/'.implode('/', $args).'/' : '/';
@@ -3968,7 +3966,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_file_not_found();
         }
 
-        require_login($course);
+        require_login($course, true, null, false);
 
         $groupingid = (int)array_shift($args);
 
@@ -3991,7 +3989,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
     // ========================================================================================================================
     } else if ($component === 'backup') {
         if ($filearea === 'course' and $context->contextlevel == CONTEXT_COURSE) {
-            require_login($course);
+            require_login($course, true, null, false);
             require_capability('moodle/backup:downloadfile', $context);
 
             $filename = array_pop($args);
@@ -4004,7 +4002,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_stored_file($file, 0, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'section' and $context->contextlevel == CONTEXT_COURSE) {
-            require_login($course);
+            require_login($course, true, null, false);
             require_capability('moodle/backup:downloadfile', $context);
 
             $sectionid = (int)array_shift($args);
@@ -4019,7 +4017,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             send_stored_file($file, 60*60, 0, $forcedownload, array('preview' => $preview));
 
         } else if ($filearea === 'activity' and $context->contextlevel == CONTEXT_MODULE) {
-            require_login($course, false, $cm);
+            require_login($course, false, $cm, false);
             require_capability('moodle/backup:downloadfile', $context);
 
             $filename = array_pop($args);
@@ -4034,7 +4032,7 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
         } else if ($filearea === 'automated' and $context->contextlevel == CONTEXT_COURSE) {
             // Backup files that were generated by the automated backup systems.
 
-            require_login($course);
+            require_login($course, true, null, false);
             require_capability('moodle/site:config', $context);
 
             $filename = array_pop($args);
@@ -4062,10 +4060,10 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null) {
             // files embedded into the form definition description
 
             if ($context->contextlevel == CONTEXT_SYSTEM) {
-                require_login();
+                require_login(null, true, null, false);
 
             } else if ($context->contextlevel >= CONTEXT_COURSE) {
-                require_login($course, false, $cm);
+                require_login($course, false, $cm, false);
 
             } else {
                 send_file_not_found();
