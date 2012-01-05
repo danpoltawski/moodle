@@ -4386,3 +4386,59 @@ function course_page_type_list($pagetype, $parentcontext, $currentcontext) {
         );
     }
 }
+
+/**
+ * Include the relevant javascript and language strings for the resource
+ * toolbox YUI module
+ *
+ * @param integer $id The ID of the course being applied to
+ * @param array $modules An array containing the names of the modules in
+ *                       use on the page
+ * @return void
+ */
+function include_course_ajax($course, $modules = array()) {
+    global $PAGE;
+
+    if (!$PAGE->user_is_editing()) {
+        return;
+    }
+    // Include toolboxes
+    $PAGE->requires->yui_module('moodle-course-toolboxes',
+            'M.course.init_toolboxes',
+            array(array(
+                'courseid' => $course->id,
+                'format' => $course->format
+            ))
+    );
+
+    // Require various strings for the command toolbox
+    $PAGE->requires->string_for_js('moveleft', 'moodle');
+    $PAGE->requires->string_for_js('deletechecktype', 'moodle');
+    $PAGE->requires->string_for_js('deletechecktypename', 'moodle');
+    $PAGE->requires->string_for_js('show', 'moodle');
+    $PAGE->requires->string_for_js('hide', 'moodle');
+
+    // For changing the groups visibility mode
+    $PAGE->requires->string_for_js('groupsnone', 'moodle');
+    $PAGE->requires->string_for_js('groupsvisible', 'moodle');
+    $PAGE->requires->string_for_js('groupsseparate', 'moodle');
+    $PAGE->requires->string_for_js('clicktochangeinbrackets', 'moodle');
+
+    // Include format-specific strings
+    $showstring = "show{$course->format}fromothers";
+    $hidestring = "hide{$course->format}fromothers";
+    if (get_string_manager()->string_exists($showstring, 'moodle')) {
+        $PAGE->requires->string_for_js($showstring, 'moodle');
+    }
+    if (get_string_manager()->string_exists($hidestring, 'moodle')) {
+        $PAGE->requires->string_for_js($hidestring, 'moodle');
+    }
+
+    $PAGE->requires->string_for_js('markthistopic', 'moodle');
+    $PAGE->requires->string_for_js('markedthistopic', 'moodle');
+
+    // For confirming resource deletion we need the name of the module in question
+    foreach ($modules as $module => $modname) {
+        $PAGE->requires->string_for_js('pluginname', $module);
+    }
+}

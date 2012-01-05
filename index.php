@@ -246,4 +246,6 @@
         echo '<br />';
     }
 
+    include_course_ajax($SITE, $modnamesused);
+
     echo $OUTPUT->footer();
