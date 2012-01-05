@@ -4386,3 +4386,62 @@ function course_page_type_list($pagetype, $parentcontext, $currentcontext) {
         );
     }
 }
+
+/**
+ * Include the relevant javascript and language strings for the resource
+ * toolbox YUI module
+ *
+ * @param integer $id The ID of the course being applied to
+ * @param array $modules An array containing the names of the modules in
+ *                       use on the page
+ * @return void
+ */
+function include_course_ajax($course, $modules = array()) {
+    global $PAGE, $CFG, $USER;
+
+    // Ensure that ajax should be included
+    $courseformatajaxsupport = course_format_ajax_support($course->format);
+    if (!$CFG->enablecourseajax
+        || !$PAGE->theme->enablecourseajax
+        || !$CFG->enableajax
+        || empty($USER->editing)
+        || !$PAGE->user_is_editing()
+        || !$courseformatajaxsupport->capable) {
+        return;
+    }
+
+    // Include toolboxes
+    $PAGE->requires->yui_module('moodle-course-toolboxes',
+            'M.course.init_toolboxes',
+            array(array(
+                'courseid' => $course->id,
+                'format' => $course->format
+            ))
+    );
+
+    // Require various strings for the command toolbox
+    $PAGE->requires->strings_for_js(array(
+            'moveleft',
+            'deletechecktype',
+            'deletechecktypename',
+            'show',
+            'hide',
+            'groupsnone',
+            'groupsvisible',
+            'groupsseparate',
+            'clicktochangeinbrackets',
+            'markthistopic',
+            'markedthistopic',
+        ), 'moodle');
+
+    // Include format-specific strings
+    $PAGE->requires->strings_for_js(array(
+            'showfromothers',
+            'hidefromothers',
+        ), 'format_' . $course->format);
+
+    // For confirming resource deletion we need the name of the module in question
+    foreach ($modules as $module => $modname) {
+        $PAGE->requires->string_for_js('pluginname', $module);
+    }
+}

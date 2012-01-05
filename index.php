@@ -140,6 +140,7 @@
 
             get_all_mods($SITE->id, $mods, $modnames, $modnamesplural, $modnamesused);
             print_section($SITE, $section, $mods, $modnamesused, true);
+            include_course_ajax($SITE, $modnamesused);
 
             if ($editing) {
                 print_section_add_menus($SITE, $section->section, $modnames);

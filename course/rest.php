@@ -115,18 +115,12 @@ switch($requestmethod) {
                         set_coursemodule_groupmode($cm->id, $value);
                         break;
 
-                    case 'indentleft':
+                    case 'indent':
                         require_capability('moodle/course:manageactivities', $modcontext);
-                        if ($cm->indent > 0) {
-                            $cm->indent--;
+                        $cm->indent = $value;
+                        if ($cm->indent >= 0) {
                             $DB->update_record('course_modules', $cm);
                         }
-                        break;
-
-                    case 'indentright':
-                        require_capability('moodle/course:manageactivities', $modcontext);
-                        $cm->indent++;
-                        $DB->update_record('course_modules', $cm);
                         break;
 
                     case 'move':
