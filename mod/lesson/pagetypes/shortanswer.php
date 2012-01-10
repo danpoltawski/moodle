@@ -330,6 +330,7 @@ class lesson_display_answer_form_shortanswer extends moodleform {
     public function definition() {
         global $OUTPUT, $USER;
         $mform = $this->_form;
+        $mform->setDisableShortforms();
         $contents = $this->_customdata['contents'];
 
         $hasattempt = false;

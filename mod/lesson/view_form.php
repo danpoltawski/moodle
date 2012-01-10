@@ -44,6 +44,7 @@ class lesson_page_without_answers extends moodleform {
         global $OUTPUT;
 
         $mform = $this->_form;
+        $mform->setDisableShortforms();
 
         $title = $this->_customdata['title'];
         $contents = $this->_customdata['contents'];

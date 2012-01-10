@@ -462,6 +462,7 @@ class lesson_display_answer_form_multichoice_singleanswer extends moodleform {
     public function definition() {
         global $USER, $OUTPUT;
         $mform = $this->_form;
+        $mform->setDisableShortforms();
         $answers = $this->_customdata['answers'];
         $lessonid = $this->_customdata['lessonid'];
         $contents = $this->_customdata['contents'];
@@ -519,6 +520,7 @@ class lesson_display_answer_form_multichoice_multianswer extends moodleform {
     public function definition() {
         global $USER, $OUTPUT;
         $mform = $this->_form;
+        $mform->setDisableShortforms();
         $answers = $this->_customdata['answers'];
 
         $lessonid = $this->_customdata['lessonid'];

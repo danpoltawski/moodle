@@ -41,6 +41,7 @@ class essay_grading_form extends moodleform {
 
     public function definition() {
         $mform = $this->_form;
+        $mform->setDisableShortforms();
 
         $mform->addElement('header', 'formheader', get_string('question', 'lesson'));
 

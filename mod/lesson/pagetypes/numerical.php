@@ -262,6 +262,7 @@ class lesson_display_answer_form_numerical extends moodleform {
     public function definition() {
         global $USER, $OUTPUT;
         $mform = $this->_form;
+        $mform->setDisableShortforms();
         $contents = $this->_customdata['contents'];
 
         $mform->addElement('header', 'pageheader');

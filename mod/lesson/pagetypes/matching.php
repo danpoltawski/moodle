@@ -481,6 +481,7 @@ class lesson_display_answer_form_matching extends moodleform {
     public function definition() {
         global $USER, $OUTPUT;
         $mform = $this->_form;
+        $mform->setDisableShortforms();
         $answers = $this->_customdata['answers'];
         $useranswers = $this->_customdata['useranswers'];
         $responseoptions = $this->_customdata['responseoptions'];
