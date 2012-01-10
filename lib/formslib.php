@@ -1368,7 +1368,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
      * @param boolean $disable default true, controls if the shortforms are disabled.
      */
     function setDisableShortforms ($disable = true) {
-        $this->_disableShortfoms = $disable;
+        $this->_disableShortforms = $disable;
     }
 
     /**
@@ -1462,7 +1462,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
             }
             $renderer->setAdvancedElements($this->_advancedElements);
         }
-        if (method_exists($renderer, 'setCollapsableElements') && !$this->_disableShortfoms){
+        if (method_exists($renderer, 'setCollapsableElements') && !$this->_disableShortforms){
             // add all headers to collapsable elements array (if they have not been added yet)
             unset($lastHeader);
             $lastHeader = null;
