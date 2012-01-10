@@ -1245,6 +1245,12 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
      */
     var $_collapsableElements = array();
 
+    /**
+     * Whether to enable shortforms for this form
+     *
+     * @var boolean
+     */
+    var $_disableShortforms = false;
 
     /**
      * Whether to display advanced elements (on page load)
@@ -1357,6 +1363,15 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
     }
 
     /**
+     * Use this method to indicate that the form will not be using shortforms.
+     *
+     * @param boolean $disable default true, controls if the shortforms are disabled.
+     */
+    function setDisableShortforms ($disable = true) {
+        $this->_disableShortfoms = $disable;
+    }
+
+    /**
      * Set whether to show advanced elements in the form on first displaying form. Default is not to
      * display advanced elements in the form until 'Show Advanced' is pressed.
      *
@@ -1447,7 +1462,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
             }
             $renderer->setAdvancedElements($this->_advancedElements);
         }
-        if (method_exists($renderer, 'setCollapsableElements')){
+        if (method_exists($renderer, 'setCollapsableElements') && !$this->_disableShortfoms){
             // add all headers to collapsable elements array (if they have not been added yet)
             unset($lastHeader);
             $lastHeader = null;
