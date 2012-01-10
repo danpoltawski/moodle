@@ -24,8 +24,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// this is a comment made by the github inline editor
-
 define('CLI_SCRIPT', true);
 
 require(dirname(dirname(dirname(__FILE__))).'/config.php');
