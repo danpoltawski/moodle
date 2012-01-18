@@ -3060,6 +3060,23 @@ function move_section_to($course, $section, $destination) {
         $DB->set_field('course_sections', 'section', $position, array('id' => $id));
     }
 
+    // Adjust destination to reflect the actual section
+    $moveup = false;
+    if ($section > $destination) {
+        $destination++;
+        $moveup = true;
+    }
+
+    // If we move the highlighted section itself, then just highlight the destination.
+    // Adjust the higlighted section location if we move something over it either direction.
+    if ($section == $course->marker) {
+        course_set_marker($course, $destination);
+    } elseif ($moveup && $section > $course->marker && $course->marker >= $destination) {
+        course_set_marker($course, $course->marker+1);
+    } elseif (!$moveup && $section < $course->marker && $course->marker <= $destination) {
+        course_set_marker($course, $course->marker-1);
+    }
+
     // if the focus is on the section that is being moved, then move the focus along
     if (course_get_display($course->id) == $section) {
         course_set_display($course->id, $destination);
@@ -4423,6 +4440,12 @@ function include_course_ajax($course, $modules = array()) {
                 'format' => $course->format
             ))
     );
+
+    // Include dragdrop
+    $PAGE->requires->string_for_js('move', 'moodle');
+    $PAGE->requires->string_for_js('movesection', 'moodle');
+    $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_dragdrop',
+            array(array('courseid' => $course->id)), null, true);
 
     // Require various strings for the command toolbox
     $PAGE->requires->string_for_js('moveleft', 'moodle');
