@@ -1496,7 +1496,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
                 }
             }
             // ensure that general fieldset is non-collapsable
-            $generalfieldsets = array('general', 'generalheader');
+            $generalfieldsets = array('general', 'generalheader', 'configheader');
             foreach ($generalfieldsets as $fieldset) {
                 if (isset($this->_collapsableElements[$fieldset])) {
                     unset($this->_collapsableElements[$fieldset]);
