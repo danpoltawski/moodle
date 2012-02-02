@@ -1504,7 +1504,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
                 }
             }
             // pass the array to renderer object
-            $renderer->setCollapsableElements($this->_collapsableElements);
+            $renderer->setCollapsableElements($this->_collapsableElements, $this->getAttribute('id'));
         }
         parent::accept($renderer);
     }
@@ -2363,12 +2363,13 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
      * Setting collapsable elements
      *
      * @param array $elements
+     * @param string $formid
      */
-    function setCollapsableElements($elements) {
+    function setCollapsableElements($elements, $formid) {
         global $PAGE, $CFG;
         $this->_collapsableElements = $elements;
         if (count($elements) && $CFG->enableshortmenus) {
-            $PAGE->requires->yui_module('moodle-form-shortforms', 'M.form.init_shortforms');
+            $PAGE->requires->yui_module('moodle-form-shortforms', 'M.form.init_shortforms', array(array('formid' => $formid)));
         }
     }
     /**
