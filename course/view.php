@@ -6,6 +6,7 @@
     require_once('lib.php');
     require_once($CFG->dirroot.'/mod/forum/lib.php');
     require_once($CFG->libdir.'/completionlib.php');
+    require_once($CFG->libdir.'/dnduploadlib.php');
 
     $id          = optional_param('id', 0, PARAM_INT);
     $name        = optional_param('name', '', PARAM_RAW);
@@ -184,6 +185,8 @@
         // stuff in the javascriptportal object.
         $COURSE->javascriptportal = new jsportal();
         $useajax = true;
+
+        dndupload_add_to_course($COURSE);
     }
 
     $CFG->blocksdrag = $useajax;   // this will add a new class to the header so we can style differently
