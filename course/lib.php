@@ -4458,6 +4458,14 @@ function include_course_ajax($course, $modules = array()) {
     $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_dragdrop',
             array(array('courseid' => $course->id)), null, true);
 
+    // Include blocks dragdrop
+    $params = array(
+        'courseid' => $course->id,
+        'pagetype' => $PAGE->pagetype,
+        'pagelayout' => $PAGE->pagelayout
+        );
+    $PAGE->requires->yui_module('moodle-core-blocks', 'M.core_blocks.init_dragdrop', array($params), null, true);
+
     // Require various strings for the command toolbox
     $PAGE->requires->strings_for_js(array(
             'moveleft',
