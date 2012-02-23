@@ -33,3 +33,5 @@ body.has_dock {margin-left:30px;}
 
 /** Overide for RTL layout **/
 .dir-rtl #dockeditempanel {left:670%;}
+
+.dock .hidepanelicon img {width:11px;height:11px;cursor:pointer;}
