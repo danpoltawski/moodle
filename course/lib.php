@@ -1355,10 +1355,16 @@ function course_set_marker($courseid, $marker) {
 /**
  * For a given course section, marks it visible or hidden,
  * and does the same for every activity in that section
+ *
+ * @param int $ocurseid course id
+ * @param int $sectionnumber The section number to adjust
+ * @param int $visibility The new visibility
+ * @return array A list of resources which were hidden in the section
  */
 function set_section_visible($courseid, $sectionnumber, $visibility) {
     global $DB;
 
+    $resourcestotoggle = array();
     if ($section = $DB->get_record("course_sections", array("course"=>$courseid, "section"=>$sectionnumber))) {
         $DB->set_field("course_sections", "visible", "$visibility", array("id"=>$section->id));
         if (!empty($section->sequence)) {
@@ -1368,7 +1374,19 @@ function set_section_visible($courseid, $sectionnumber, $visibility) {
             }
         }
         rebuild_course_cache($courseid);
+
+        // Determine which modules are visible for AJAX update
+        if (!empty($modules)) {
+            list($insql, $params) = $DB->get_in_or_equal($modules);
+            $select = 'id ' . $insql . ' AND visible = ?';
+            array_push($params, $visibility);
+            if (!$visibility) {
+                $select .= ' AND visibleold = 1';
+            }
+            $resourcestotoggle = $DB->get_fieldset_select('course_modules', 'id', $select, $params);
+        }
     }
+    return $resourcestotoggle;
 }
 
 /**
