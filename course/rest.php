@@ -87,7 +87,8 @@ switch($requestmethod) {
 
                 switch ($field) {
                     case 'visible':
-                        set_section_visible($course->id, $id, $value);
+                        $resourcestotoggle = set_section_visible($course->id, $id, $value);
+                        echo json_encode(array('resourcestotoggle' => $resourcestotoggle));
                         break;
 
                     case 'move':

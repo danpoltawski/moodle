@@ -1368,6 +1368,19 @@ function set_section_visible($courseid, $sectionnumber, $visibility) {
             }
         }
         rebuild_course_cache($courseid);
+
+        // Determine which modules are visible for AJAX update
+        $resourcestotoggle = array();
+        if (!empty($modules)) {
+            list($insql, $params) = $DB->get_in_or_equal($modules);
+            $select = 'id ' . $insql . ' AND visible = ?';
+            array_push($params, $visibility);
+            if (!$visibility) {
+                $select .= ' AND visibleold = 1';
+            }
+            $resourcestotoggle = $DB->get_fieldset_select('course_modules', 'id', $select, $params);
+        }
+        return $resourcestotoggle;
     }
 }
 

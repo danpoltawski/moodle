@@ -96,8 +96,16 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             this.replace_button(toolboxtarget, CSS.COMMANDSPAN + ' ' + CSS.DELETE, this.delete_resource);
 
             // Show/Hide
-            this.replace_button(toolboxtarget, CSS.COMMANDSPAN + ' ' + CSS.HIDE, this.toggle_hide_resource);
-            this.replace_button(toolboxtarget, CSS.COMMANDSPAN + ' ' + CSS.SHOW, this.toggle_hide_resource);
+            var showhide = this.replace_button(toolboxtarget, CSS.COMMANDSPAN + ' ' + CSS.HIDE, this.toggle_hide_resource);
+            var shown = this.replace_button(toolboxtarget, CSS.COMMANDSPAN + ' ' + CSS.SHOW, this.toggle_hide_resource);
+
+            showhide = showhide.concat(shown);
+            showhide.each(function(node) {
+                var section = node.ancestor(CSS.SECTIONLI);
+                if (section.hasClass(CSS.SECTIONHIDDENCLASS)) {
+                    node.setStyle('cursor', 'auto');
+                }
+            });
 
             // Change Group Mode
             var groups;
@@ -215,28 +223,45 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             this.send_request(data);
         },
         toggle_hide_resource : function(e) {
+            // Return early if the current section is hidden
+            var section = e.target.ancestor(CSS.SECTIONLI);
+            if (section.hasClass(CSS.SECTIONHIDDENCLASS)) {
+                return;
+            }
+
             // Get the element we're working on
             var element = e.target.ancestor(CSS.ACTIVITYLI);
 
             var button = e.target.ancestor('a', true);
+
+            var value = this.toggle_hide_resource_ui(button);
+
+            // Send the request
+            var data = {
+                'class' : 'resource',
+                'field' : 'visible',
+                'value' : value,
+                'id'    : this.get_element_id(element)
+            };
+            this.send_request(data);
+        },
+        toggle_hide_resource_ui : function(button) {
+            var element = button.ancestor(CSS.ACTIVITYLI);
             var hideicon = button.one('img');
 
-            var change_to;
             var dimarea;
             var toggle_class;
             if (this.is_label(element)) {
                 toggle_class = CSS.DIMMEDLABELCLASS;
                 dimarea = element.one(CSS.MODINDENTDIV + ' div');
-                change_to = dimarea.hasClass(toggle_class);
             } else {
                 toggle_class = CSS.DIMCLASS;
                 dimarea = element.one('a');
-                change_to = dimarea.hasClass(toggle_class);
             }
 
             var status = '';
             var value;
-            if (change_to) {
+            if (dimarea.hasClass(toggle_class)) {
                 status = 'hide';
                 value = 1;
             } else {
@@ -252,16 +277,10 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                 'title' : newstring,
                 'src'   : M.util.image_url('t/' + status)
             });
-            hideicon.ancestor('a').set('title', newstring);
+            button.set('title', newstring);
+            button.set('className', 'editing_'+status);
 
-            // Send the request
-            var data = {
-                'class' : 'resource',
-                'field' : 'visible',
-                'value' : value,
-                'id'    : this.get_element_id(element)
-            };
-            this.send_request(data);
+            return value;
         },
         toggle_groupmode : function(e) {
             // Get the element we're working on
@@ -351,7 +370,28 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                 'id'    : this.get_section_id(section),
                 'value' : value
             };
-            this.send_request(data);
+
+            var response = this.send_request(data);
+
+            var activities = section.all(CSS.ACTIVITYLI);
+            activities.each(function(node) {
+                if (node.one(CSS.SHOW)) {
+                    var button = node.one(CSS.SHOW);
+                } else {
+                    var button = node.one(CSS.HIDE);
+                }
+                var activityid = this.get_element_id(node);
+
+                if (Y.Array.indexOf(response.resourcestotoggle, activityid) != -1) {
+                    this.toggle_hide_resource_ui(button);
+                }
+
+                if (value == 0) {
+                    button.setStyle('cursor', 'auto');
+                } else {
+                    button.setStyle('cursor', 'pointer');
+                }
+            }, this);
         },
         toggle_highlight : function(e) {
             // Get the section we're working on
@@ -404,6 +444,7 @@ YUI.add('moodle-course-toolboxes', function(Y) {
          *
          * @param data The data to submit
          * @param config (optional) Any additional configuration to submit
+         * @return response responseText field from responce
          */
         send_request : function(data, config) {
             // Default data structure
@@ -421,13 +462,26 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             var uri = M.cfg.wwwroot + AJAXURL;
 
             // Define the configuration to send with the request
+            var responsetext = [];
             var config = {
-                'method'  : 'POST',
-                'data'    : data
+                method: 'POST',
+                data: data,
+                on: {
+                    success: function(tid, response) {
+                        try {
+                            responsetext = Y.JSON.parse(response.responseText);
+                            if (responsetext.error) {
+                                new M.core.ajaxException(responsetext);
+                            }
+                        } catch (e) {}
+                    }
+                },
+                context: this,
+                sync: true
             }
-
             // Send the request
             Y.io(uri, config);
+            return responsetext;
         },
         /**
          * Add the moveleft button
