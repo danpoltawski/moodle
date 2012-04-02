@@ -51,6 +51,7 @@ function dndupload_add_to_course($course) {
             array('nofilereader', 'core_dndupload'),
             array('noajax', 'core_dndupload'),
             array('actionchoice', 'core_dndupload'),
+            array('servererror', 'core_dndupload'),
             array('upload', 'core'),
             array('cancel', 'core')
         ),
@@ -100,32 +101,28 @@ class dndupload_handler {
             if (!course_allowed_module($course, $modname)) {
                 continue;
             }
-            $libfile = "{$CFG->dirroot}/mod/{$modname}/lib.php";
-            if (file_exists($libfile)) {
-                include_once($libfile);
-                $handlerfunction = $modname.'_dndupload_register';
-                if (function_exists($handlerfunction)) {
-                    $resp = $handlerfunction();
-                    if (isset($resp['files'])) {
-                        foreach ($resp['files'] as $file) {
-                            $this->add_file_handler($file['extension'], $modname, $file['message']);
-                        }
+            $resp = plugin_callback('mod', $modname, 'dndupload', 'register', array());
+            if (!$resp) {
+                continue;
+            }
+            if (isset($resp['files'])) {
+                foreach ($resp['files'] as $file) {
+                    $this->add_file_handler($file['extension'], $modname, $file['message']);
+                }
+            }
+            if (isset($resp['addtypes'])) {
+                foreach ($resp['addtypes'] as $type) {
+                    if (isset($type['priority'])) {
+                        $priority = $type['priority'];
+                    } else {
+                        $priority = 100;
                     }
-                    if (isset($resp['addtypes'])) {
-                        foreach ($resp['addtypes'] as $type) {
-                            if (isset($type['priority'])) {
-                                $priority = $type['priority'];
-                            } else {
-                                $priority = 100;
-                            }
-                            $this->add_type($type['identifier'], $type['datatransfertypes'], $type['addmessage'], $type['namemessage'], $priority);
-                        }
-                    }
-                    if (isset($resp['types'])) {
-                        foreach ($resp['types'] as $type) {
-                            $this->add_type_handler($type['identifier'], $modname, $type['message']);
-                        }
-                    }
+                    $this->add_type($type['identifier'], $type['datatransfertypes'], $type['addmessage'], $type['namemessage'], $priority);
+                }
+            }
+            if (isset($resp['types'])) {
+                foreach ($resp['types'] as $type) {
+                    $this->add_type_handler($type['identifier'], $modname, $type['message']);
                 }
             }
         }
@@ -147,7 +144,7 @@ class dndupload_handler {
      */
     public function add_type($identifier, $datatransfertypes, $addmessage, $namemessage, $priority=100) {
         if ($this->is_known_type($identifier)) {
-            print_error('Type already registered');
+            throw new coding_exception("Type $identifier is already registered");
         }
 
         $add = new stdClass;
@@ -183,7 +180,7 @@ class dndupload_handler {
             }
         }
 
-        print_error('Trying to add handler for unknown type');
+        throw new coding_exception("Trying to add handler for unknown type $type");
     }
 
     /**
@@ -380,21 +377,19 @@ class dndupload_processor {
     function __construct($courseid, $section, $type, $modulename) {
         global $DB;
 
-        if (!$this->course = $DB->get_record('course', array('id' => $courseid))) {
-            $this->send_error(self::ERROR_BAD_COURSE);
-        }
+        $this->course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
         require_login($this->course, false);
         $this->context = context_course::instance($this->course->id);
 
-        if ($section < 0 || $section > $this->course->numsections) {
-            $this->send_error(self::ERROR_INVALID_SECTION, $section);
+        if (!is_number($section) || $section < 0 || $section > $this->course->numsections) {
+            throw new coding_exception("Invalid section number $section");
         }
         $this->section = $section;
         $this->type = $type;
 
         if (!$this->module = $DB->get_record('modules', array('name' => $modulename))) {
-            $this->send_error(self::ERROR_INVALID_MODULE, $modulename);
+            throw new coding_exception("Module $modulename does not exist");
         }
 
         $this->dnduploadhandler = new dndupload_handler($this->course);
@@ -416,17 +411,13 @@ class dndupload_processor {
      * @param string $content optional the content of the upload (for non-file uploads)
      */
     public function process($displayname = null, $content = null) {
-        if (!has_capability('moodle/course:manageactivities', $this->context)) {
-            $this->send_error(self::ERROR_NO_PERMISSION);
+        require_capability('moodle/course:manageactivities', $this->context);
+
+        if ($this->is_file_upload()) {
+            require_capability('moodle/course:managefiles', $this->context);
         }
 
-        if ($this->is_file_upload() && !has_capability('moodle/course:managefiles', $this->context)) {
-            $this->send_error(self::ERROR_NO_PERMISSION);
-        }
-
-        if (!confirm_sesskey()) {
-            $this->send_error(self::ERROR_INVALID_SESSKEY);
-        }
+        require_sesskey();
 
         $this->displayname = $displayname;
 
@@ -444,16 +435,13 @@ class dndupload_processor {
     protected function handle_file_upload() {
         global $CFG;
 
-        // Get the mod function to process this upload
-        $processdndfunc = $this->get_handler_function();
-
         // Add the file to a draft file area
         $draftitemid = file_get_unused_draft_itemid();
         $maxbytes = get_max_upload_file_size($CFG->maxbytes, $this->course->maxbytes);
         $types = $this->dnduploadhandler->get_handled_file_types($this->module->name);
         $repo = repository::get_instances(array('type' => 'upload'));
         if (empty($repo)) {
-            $this->send_error(self::ERROR_NO_UPLOAD_REPO);
+            throw new moodle_exception('errornouploadrepo', 'core_dndupload');
         }
         $repo = reset($repo); // Get the first (and only) upload repo
         $details = $repo->process_upload(null, $maxbytes, $types, '/', $draftitemid);
@@ -465,7 +453,11 @@ class dndupload_processor {
         $this->create_course_module();
 
         // Ask the module to set itself up
-        $instanceid = $processdndfunc($this->prepare_module_data($draftitemid));
+        $moduledata = $this->prepare_module_data($draftitemid);
+        $instanceid = plugin_callback('mod', $this->module->name, 'dndupload', 'handle', array($moduledata), 'invalidfunction');
+        if ($instanceid === 'invalidfunction') {
+            throw new coding_exception("{$this->module->name} does not support drag and drop upload (missing {$this->module->name}_dndupload_handle function");
+        }
 
         // Finish setting up the course module
         $this->finish_setup_course_module($instanceid);
@@ -478,42 +470,15 @@ class dndupload_processor {
      * @param string $content the content uploaded to the browser
      */
     protected function handle_other_upload($content) {
-        // Get the mod function to process this upload
-        $processdndfunc = $this->get_handler_function();
-
         // Create a course module to hold the new instance
         $this->create_course_module();
 
         // Ask the module to set itself up
-        $instanceid = $processdndfunc($this->prepare_module_data(null, $content));
+        $moduledata = $this->prepare_module_data(null, $content);
+        $instanceid = plugin_callback('mod', $this->module->name, 'dndupload', 'handle', array($moduledata), 'invalidfunction');
 
         // Finish setting up the course module
         $this->finish_setup_course_module($instanceid);
-    }
-
-    /**
-     * Find and load the 'lib.php' file for the chosen module and check for the
-     * '[modname]_dndupload_handle' function
-     *
-     * @return string name of the function to call in the mod
-     */
-    protected function get_handler_function() {
-        global $CFG;
-
-        // Find the module that should handle this
-        $libfile = $CFG->dirroot.'/mod/'.$this->module->name.'/lib.php';
-        if (!file_exists($libfile)) {
-            $this->send_error(self::ERROR_INVALID_MODULE, $this->module->name);
-        }
-        require_once($libfile);
-
-        // Find the handler function (error if it does not exist)
-        $processdndfunc = $this->module->name.'_dndupload_handle';
-        if (!function_exists($processdndfunc)) {
-            $this->send_error(self::ERROR_INVALID_MODULE, $this->module->name);
-        }
-
-        return $processdndfunc;
     }
 
     /**
@@ -524,9 +489,9 @@ class dndupload_processor {
      * @return string the display name to use
      */
     protected function display_name_from_file($filename) {
-        $pos = strrpos($filename, '.');
+        $pos = textlib::strrpos($filename, '.');
         if ($pos) { // Want to skip if $pos === 0 OR $pos === false
-            $filename = substr($filename, 0, $pos);
+            $filename = textlib::substr($filename, 0, $pos);
         }
         return str_replace('_', ' ', $filename);
     }
@@ -536,7 +501,7 @@ class dndupload_processor {
      */
     protected function create_course_module() {
         if (!course_allowed_module($this->course, $this->module->name)) {
-            send_error(self::ERROR_MODULE_DISABLED, $this->module->name);
+            throw new coding_exeception("The module {$this->module->name} is not allowed to be added to this course");
         }
 
         $this->cm = new stdClass();
@@ -550,7 +515,7 @@ class dndupload_processor {
         $this->cm->groupingid = $this->course->defaultgroupingid;
 
         if (!$this->cm->id = add_course_module($this->cm)) {
-            send_error(self::ERROR_ADDING_COURSEMODULE);
+            throw new coding_exception("Unable to create the course module");
         }
         // The following are used inside some few core functions, so may as well set them here
         $this->cm->coursemodule = $this->cm->id;
@@ -597,7 +562,7 @@ class dndupload_processor {
             $modcontext = context_module::instance($this->cm->id);
             delete_context(CONTEXT_MODULE, $this->cm->id);
             $DB->delete_records('course_modules', array('id' => $this->cm->id));
-            $this->send_error(self::ERROR_CREATING_ACTIVITY, $this->module->name);
+            throw new moodle_exception('errorcreatingactivity', 'core_dndupload');
         }
 
         $DB->set_field('course_modules', 'instance', $instanceid, array('id' => $this->cm->id));
@@ -651,37 +616,9 @@ class dndupload_processor {
         $resp->link = $mod->get_url().'';
         $resp->elementid = 'module-'.$mod->id;
         $resp->commands = make_editing_buttons($mod, true, true, 0, $mod->sectionnum);
+        $resp->onclick = $mod->get_on_click();
 
         echo json_encode($resp);
         die();
-    }
-
-    /**
-     * Sends an error code & message back to the client's browser
-     *
-     * @param int $errorcode one of the dndupload_processor::ERROR_XX values
-     * @param mixed $param optional extra paramater to pass on to the 'get_string' call
-     */
-    protected function send_error($errorcode, $param = null) {
-        static $errmessages = array(self::ERROR_BAD_COURSE => 'errorbadcourse',
-                                    self::ERROR_NO_PERMISSION => 'errornopermisson',
-                                    self::ERROR_NO_FILES => 'errornofiles',
-                                    self::ERROR_INVALID_FILE => 'errorinvalidfile',
-                                    self::ERROR_INVALID_SESSKEY => 'errorinvalidsesskey',
-                                    self::ERROR_INVALID_SECTION => 'errorinvalidsection',
-                                    self::ERROR_MODULE_DISABLED => 'errormoduledisabled',
-                                    self::ERROR_ADDING_COURSEMODULE => 'erroraddingcoursemodule',
-                                    self::ERROR_CREATING_ACTIVITY => 'errorcreatingactivity',
-                                    self::ERROR_INVALID_MODULE => 'errorinvalidmodule',
-                                    self::ERROR_NO_UPLOAD_REPO => 'errornouploadrepo');
-
-        $resp = new stdClass();
-        $resp->errorcode = $errorcode;
-        $resp->error = '';
-
-        if (array_key_exists($errorcode, $errmessages)) {
-            $resp->error = get_string($errmessages[$errorcode], 'core_dndupload', $param);
-        }
-        die(json_encode($resp));
     }
 }
