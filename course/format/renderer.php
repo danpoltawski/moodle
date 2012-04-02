@@ -326,8 +326,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
      */
     protected function get_nav_links($course, $sections, $sectionno) {
         // FIXME: This is really evil and should by using the navigation API.
-        $canviewhidden = has_capability('moodle/course:viewhiddensections', context_course::instance($course->id))
-            or !$course->hiddensections;
+        $canviewhidden = $thissection->uservisible;
 
         $links = array('previous' => '', 'next' => '');
         $back = $sectionno - 1;
@@ -417,7 +416,10 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
 
         // Can we view the section in question?
         $context = context_course::instance($course->id);
-        $canviewhidden = has_capability('moodle/course:viewhiddensections', $context);
+        $thissection = $sections[$displaysection];
+
+        $showsection = $thissection->uservisible ||
+            ($thissection->visible && !$thissection->available && $thissection->showavailability);
 
         if (!isset($sections[$displaysection])) {
             // This section doesn't exist
@@ -425,7 +427,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
             return;
         }
 
-        if (!$sections[$displaysection]->visible && !$canviewhidden) {
+        if (!$thissection->uservisible && empty($thissection->availableinfo)) {
             if (!$course->hiddensections) {
                 echo $this->start_section_list();
                 echo $this->section_hidden($displaysection);
@@ -514,7 +516,6 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
             echo $this->section_footer();
         }
 
-        $canviewhidden = has_capability('moodle/course:viewhiddensections', $context);
         for ($section = 1; $section <= $course->numsections; $section++) {
             if (!empty($sections[$section])) {
                 $thissection = $sections[$section];
@@ -522,8 +523,9 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
                 // This will create a course section if it doesn't exist..
                 $thissection = get_course_section($section, $course->id);
             }
-            $showsection = ($canviewhidden or $thissection->visible or !$course->hiddensections);
-            if (!$thissection->visible && !$canviewhidden) {
+            $showsection = $thissection->uservisible ||
+                ($thissection->visible && !$thissection->available && $thissection->showavailability);
+            if (!$thissection->uservisible && empty($thissection->availableinfo)) {
                 if (!$course->hiddensections) {
                     echo $this->section_hidden($section);
                 }
