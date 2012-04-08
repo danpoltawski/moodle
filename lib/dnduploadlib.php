@@ -501,7 +501,7 @@ class dndupload_processor {
      */
     protected function create_course_module() {
         if (!course_allowed_module($this->course, $this->module->name)) {
-            throw new coding_exeception("The module {$this->module->name} is not allowed to be added to this course");
+            throw new coding_exception("The module {$this->module->name} is not allowed to be added to this course");
         }
 
         $this->cm = new stdClass();
