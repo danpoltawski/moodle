@@ -3215,6 +3215,7 @@ class filetype_parser {
  */
 function file_pluginfile($relativepath, $forcedownload) {
     global $DB, $CFG, $USER;
+
     // relative path must start with '/'
     if (!$relativepath) {
         print_error('invalidargorconf');
