@@ -27,15 +27,14 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
+$assignmentid = required_param('id', PARAM_INT);
 
-admin_externalpage_setup('assignmentupgrade', '', array(),
-        tool_assignmentupgrade_url('upgradesingle'));
+// admin_externalpage_setup calls require_login and checks moodle/site:config
+admin_externalpage_setup('assignmentupgrade', '', array(), tool_assignmentupgrade_url('upgradesingle', array('id' => $assignmentid)));
+
 $PAGE->navbar->add(get_string('upgradesingle', 'tool_assignmentupgrade'));
-
 $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
 
-$assignmentinfo = tool_assignmentupgrade_get_assignment(required_param('id', PARAM_INT));
+$assignmentinfo = tool_assignmentupgrade_get_assignment($assignmentid);
 
 echo $renderer->convert_assignment_are_you_sure($assignmentinfo);

@@ -37,8 +37,7 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
+// admin_externalpage_setup calls require_login and checks moodle/site:config
 admin_externalpage_setup('assignmentupgrade');
 
 $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
