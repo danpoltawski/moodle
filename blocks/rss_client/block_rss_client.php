@@ -194,7 +194,7 @@
             if (!empty($channellink)){
                 //NOTE: this means the 'last feed' display wins the block title - but
                 //this is exiting behaviour..
-                $this->content->footer = '<a href="'.htmlspecialchars(clean_param($channellink,PARAM_URL)).'">'. get_string('clientchannellink', 'block_rss_client') .'</a>';
+                $this->content->footer = html_writer::link(clean_param($channellink, PARAM_URL), get_string('clientchannellink', 'block_rss_client'), array('onclick'=>'this.target="_blank"'));
             }
         }
 
