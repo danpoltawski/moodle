@@ -15,15 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Script to show all the assignments that have not been upgraded
- * after the main upgrade. 
+ * Script to show all the assignments that have not been upgraded after the main upgrade.
  *
- * @package    tool
- * @subpackage assignmentupgrade
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -32,8 +29,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_login();
 require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
-admin_externalpage_setup('assignmentupgrade', '', array(),
-        tool_assignmentupgrade_url('listnotupgraded'));
+admin_externalpage_setup('assignmentupgrade', '', array(), tool_assignmentupgrade_url('listnotupgraded'));
 $PAGE->navbar->add(get_string('listnotupgraded', 'tool_assignmentupgrade'));
 
 $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
@@ -42,7 +38,6 @@ $assignments = new tool_assignmentupgrade_assignment_list();
 
 if ($assignments->is_empty()) {
     echo $renderer->simple_message_page(get_string('nothingtoupgrade', 'tool_upgradehelper'));
-
 } else {
     echo $renderer->assignment_list_page($assignments);
 }

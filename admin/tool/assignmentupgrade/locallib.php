@@ -15,22 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Question engine upgrade helper library code.
+ * Assignment upgrade tool library functions
  *
- * @package    tool
- * @subpackage assignmentupgrade
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * Get the URL of a script within this plugin.
- * @param string $script the script name, without .php. E.g. 'index'.
- * @param array $params URL parameters (optional).
+ * @param string $script the script name, without .php. E.g. 'index'
+ * @param array $params URL parameters (optional)
+ * @return moodle_url
  */
 function tool_assignmentupgrade_url($script, $params = array()) {
     return new moodle_url('/admin/tool/assignmentupgrade/' . $script . '.php', $params);
@@ -40,6 +38,7 @@ function tool_assignmentupgrade_url($script, $params = array()) {
 /**
  * Class to encapsulate one of the functionalities that this plugin offers.
  *
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -53,6 +52,13 @@ class tool_assignmentupgrade_action {
 
     /**
      * Constructor to set the fields.
+     *
+     * In order to create a new tool_assignmentupgrade_action instance you must use the tool_assignmentupgrade_action::make
+     * method.
+     *
+     * @param string $name the name of this action.
+     * @param moodle_url $url the URL to launch this action.
+     * @param string $description a description of this aciton.
      */
     protected function __construct($name, moodle_url $url, $description) {
         $this->name = $name;
@@ -62,9 +68,9 @@ class tool_assignmentupgrade_action {
 
     /**
      * Make an action with standard values.
-     * @param string $shortname internal name of the action. Used to get strings
-     * and build a URL.
+     * @param string $shortname internal name of the action. Used to get strings and build a URL.
      * @param array $params any URL params required.
+     * @return tool_assignmentupgrade_action
      */
     public static function make($shortname, $params = array()) {
         return new self(
@@ -76,9 +82,9 @@ class tool_assignmentupgrade_action {
 
 
 /**
- * A class to represent a list of assignments with various information about
- * plugins that can be displayed as a table.
+ * A class to represent a list of assignments with various information about plugins that can be displayed as a table.
  *
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -91,35 +97,47 @@ class tool_assignmentupgrade_assignment_list {
     public $totalupgradable = 0;
     public $totalsubmissions = 0;
 
-    function __construct() {
+    /**
+     * Constructor
+     *
+     * @global moodle_database $DB
+     */
+    public function __construct() {
         global $DB;
         $this->title = get_string('notupgradedtitle', 'tool_assignmentupgrade');
         $this->intro = get_string('notupgradedintro', 'tool_assignmentupgrade');
         $this->build_sql();
         $this->assignmentlist = $DB->get_records_sql($this->sql);
-
     }
 
     /**
-     * Check against the list of supported types for upgrade
-     * to see if there is any assign plugin that can upgrade this 
-     * assignment type
+     * Check to see whether the assignment type is upgradeable.
+     * @param string $type The assignment type to check
+     * @return bool Returns true if the given type can be upgraded.
      */
     protected function is_upgradable($type) {
-        $version = get_config('assignment_' . $type, 'version');
-            
         global $CFG;
+        $version = get_config('assignment_' . $type, 'version');
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
         return assignment::can_upgrade_assignment($type, $version);
     }
 
+    /**
+     * Sets the SQL used to gather the required information about assignments
+     */
     protected function build_sql() {
-        $this->sql = '
-            SELECT                                                                                                                        assignment.id,                                                                                                      assignment.name,                                                                                                    assignment.assignmenttype,                                                                                          c.shortname,                                                                                                        c.id AS courseid,COUNT(submission.id) as submissioncount                                                        FROM {assignment} assignment                                                                                      JOIN {course} c ON c.id = assignment.course                                                                       LEFT JOIN {assignment_submissions} submission ON assignment.id = submission.assignment 
-              GROUP BY assignment.id, assignment.name, assignment.assignmenttype, c.shortname, c.id 
-              ORDER BY c.shortname, assignment.name, assignment.id';
+        $this->sql = 'SELECT a.id, a.name, a.assignmenttype, c.shortname, c.id AS courseid, COUNT(s.id) as submissioncount
+                        FROM {assignment} a
+                        JOIN {course} c ON c.id = a.course
+                   LEFT JOIN {assignment_submissions} s ON a.id = s.assignment
+                    GROUP BY a.id, a.name, a.assignmenttype, c.shortname, c.id
+                    ORDER BY c.shortname, a.name, a.id';
     }
 
+    /**
+     * Returns an array of strings to use as column headings
+     * @return array
+     */
     public function get_col_headings() {
         return array(
             get_string('assignmentid', 'tool_assignmentupgrade'),
@@ -131,6 +149,13 @@ class tool_assignmentupgrade_assignment_list {
         );
     }
 
+    /**
+     * This function converts a row from the database into a row in the table ready for display.
+     *
+     * The columns returned should match the column heading returned by {@see tool_assignmentupgrade_assignment_list::get_col_headings()}
+     * @param stdClass $assignmentinfo
+     * @return array
+     */
     public function get_row($assignmentinfo) {
         $this->totalassignments += 1;
         $upgradable = $this->is_upgradable($assignmentinfo->assignmenttype);
@@ -140,10 +165,8 @@ class tool_assignmentupgrade_assignment_list {
         $this->totalsubmissions += $assignmentinfo->submissioncount;
         return array(
             $assignmentinfo->id,
-            html_writer::link(new moodle_url('/course/view.php',
-                    array('id' => $assignmentinfo->courseid)), format_string($assignmentinfo->shortname)),
-            html_writer::link(new moodle_url('/mod/assignment/view.php',
-                    array('a' => $assignmentinfo->id)), format_string($assignmentinfo->name)),
+            html_writer::link(new moodle_url('/course/view.php', array('id' => $assignmentinfo->courseid)), format_string($assignmentinfo->shortname)),
+            html_writer::link(new moodle_url('/mod/assignment/view.php', array('a' => $assignmentinfo->id)), format_string($assignmentinfo->name)),
             $assignmentinfo->assignmenttype,
             $assignmentinfo->submissioncount,
             $upgradable ? 
@@ -152,10 +175,18 @@ class tool_assignmentupgrade_assignment_list {
             : get_string('notsupported', 'tool_assignmentupgrade'));
     }
 
+    /**
+     * Returns a CSS class to apply to the row or null if there are none
+     * @param stdClass|array $assignmentinfo
+     * @return null
+     */
     public function get_row_class($assignmentinfo) {
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function get_total_row() {
         return array(
             '',
@@ -167,6 +198,10 @@ class tool_assignmentupgrade_assignment_list {
         );
     }
 
+    /**
+     * Returns true if there are no assignments left to upgrade.
+     * @return bool
+     */
     public function is_empty() {
         return empty($this->assignmentlist);
     }
@@ -174,11 +209,11 @@ class tool_assignmentupgrade_assignment_list {
 
 /**
  * Convert a single assignment from the old format to the new one.
- * @param integer $assignmentid the assignment id.
- * @param string log This gets appended to with the details of the conversion process
+ * @param stdClass $assignmentinfo An object containing information about this class
+ * @param string $log This gets appended to with the details of the conversion process
  * @return boolean This is the overall result (true/false)
  */
-function tool_assignmentupgrade_upgrade_assignment($assignmentinfo, & $log) {
+function tool_assignmentupgrade_upgrade_assignment($assignmentinfo, &$log) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
     require_once($CFG->dirroot . '/mod/assign/upgradelib.php');
@@ -188,23 +223,15 @@ function tool_assignmentupgrade_upgrade_assignment($assignmentinfo, & $log) {
 
 /**
  * Get the information about a assignment to be upgraded.
- * @param integer $assignmentid the assignment id.
- * @return object the information about that assignment, as for
- *      {@link tool_assignmentupgrade_get_upgradable_assignments()}.
+ * @param int $assignmentid the assignment id.
+ * @return stdClass the information about that assignment, as for {@see tool_assignmentupgrade_get_upgradable_assignments()}.
  */
 function tool_assignmentupgrade_get_assignment($assignmentid) {
     global $DB;
     return $DB->get_record_sql("
-            SELECT
-                assignment.id,
-                assignment.name,
-                c.shortname,
-                c.id AS courseid
-
-            FROM {assignment} assignment
-            JOIN {course} c ON c.id = assignment.course
-
-            WHERE assignment.id = ?
-            ", array($assignmentid));
+            SELECT a.id, a.name, c.shortname, c.id AS courseid
+            FROM {assignment} a
+            JOIN {course} c ON c.id = a.course
+            WHERE a.id = ?", array($assignmentid));
 }
 
