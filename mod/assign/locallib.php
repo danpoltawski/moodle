@@ -707,7 +707,11 @@ class assignment {
             $mform->addHelpButton($plugin->get_subtype() . '_' . $plugin->get_type() . '_enabled', 'enabled', $plugin->get_subtype() . '_' . $plugin->get_type());
 
             $setting = $plugin->get_subtype() . '_' . $plugin->get_type() . '_default';
+    
             $default = $CFG->$setting;
+            if ($plugin->get_config('enabled') !== false) {
+                $default = $plugin->is_enabled();
+            }
             $mform->setDefault($plugin->get_subtype() . '_' . $plugin->get_type() . '_enabled', $default);
 
             $plugin->get_settings($mform);
