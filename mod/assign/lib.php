@@ -345,15 +345,15 @@ function assign_print_recent_activity($course, $viewfullnames, $timestart) {
          return false;
     }
 
-    $modinfo =& get_fast_modinfo($course); // reference needed because we might load the groups
+    $modinfo = get_fast_modinfo($course); // no need pass this by reference as the return object already being cached
     $show    = array();
     $grader  = array();
 
     foreach($submissions as $submission) {
-        if (!array_key_exists($submission->cmid, $modinfo->cms)) {
+        if (!array_key_exists($submission->cmid, $modinfo->get_cms())) {
             continue;
         }
-        $cm = $modinfo->cms[$submission->cmid];
+        $cm = $modinfo->get_cm($submission->cmid);
         if (!$cm->uservisible) {
             continue;
         }
@@ -362,10 +362,11 @@ function assign_print_recent_activity($course, $viewfullnames, $timestart) {
             continue;
         }
 
+        $context = context_module::instance($submission->cmid);      
         // the act of sumbitting of assignment may be considered private - only graders will see it if specified
         if (empty($CFG->assign_showrecentsubmissions)) {
             if (!array_key_exists($cm->id, $grader)) {
-                $grader[$cm->id] = has_capability('moodle/grade:viewall', get_context_instance(CONTEXT_MODULE, $cm->id));
+                $grader[$cm->id] = has_capability('moodle/grade:viewall',$context);
             }
             if (!$grader[$cm->id]) {
                 continue;
@@ -374,13 +375,13 @@ function assign_print_recent_activity($course, $viewfullnames, $timestart) {
 
         $groupmode = groups_get_activity_groupmode($cm, $course);
 
-        if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', get_context_instance(CONTEXT_MODULE, $cm->id))) {
+        if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups',  $context)) {
             if (isguestuser()) {
                 // shortcut - guest user does not belong into any group
                 continue;
             }
 
-            if (is_null($modinfo->groups)) {
+            if (is_null($modinfo->get_groups())) {
                 $modinfo->groups = groups_get_user_groups($course->id); // load all my groups and cache it in modinfo
             }
 
@@ -407,7 +408,7 @@ function assign_print_recent_activity($course, $viewfullnames, $timestart) {
     echo $OUTPUT->heading(get_string('newsubmissions', 'assign').':', 3);
 
     foreach ($show as $submission) {
-        $cm = $modinfo->cms[$submission->cmid];
+        $cm = $modinfo->get_cm($submission->cmid);
         $link = $CFG->wwwroot.'/mod/assign/view.php?id='.$cm->id;
         print_recent_activity_note($submission->timemodified, $submission, $cm->name, $link, false, $viewfullnames);
     }
@@ -427,9 +428,9 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
         $course = $DB->get_record('course', array('id'=>$courseid));
     }
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course); // no need pass this by reference as the return object already being cached
 
-    $cm = $modinfo->cms[$cmid];
+    $cm = $modinfo->get_cm($cmid);
 
     $params = array();
     if ($userid) {
@@ -466,12 +467,12 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
     }
 
     $groupmode       = groups_get_activity_groupmode($cm, $course);
-    $cm_context      = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $cm_context      = context_module::instance($cm->id);
     $grader          = has_capability('moodle/grade:viewall', $cm_context);
     $accessallgroups = has_capability('moodle/site:accessallgroups', $cm_context);
     $viewfullnames   = has_capability('moodle/site:viewfullnames', $cm_context);
 
-    if (is_null($modinfo->groups)) {
+    if (is_null($modinfo->get_groups())) {
         $modinfo->groups = groups_get_user_groups($course->id); // load all my groups and cache it in modinfo
     }
 
