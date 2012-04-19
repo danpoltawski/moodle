@@ -204,6 +204,7 @@ abstract class page_wiki {
 
         $this->page = $page;
         $this->title = $page->title;
+        // set_title calls format_string itself so no probs there
         $PAGE->set_title($this->title);
     }
 
@@ -217,6 +218,7 @@ abstract class page_wiki {
 
         $this->page = null;
         $this->title = $title;
+        // set_title calls format_string itself so no probs there
         $PAGE->set_title($this->title);
     }
 
@@ -347,7 +349,7 @@ class page_wiki_view extends page_wiki {
             print_error(get_string('invalidparameters', 'wiki'));
         }
 
-        $PAGE->set_url($CFG->wwwroot . '/mod/wiki/view.php', $params);
+        $PAGE->set_url(new moodle_url($CFG->wwwroot . '/mod/wiki/view.php', $params));
     }
 
     function set_coursemodule($id) {
@@ -355,7 +357,7 @@ class page_wiki_view extends page_wiki {
     }
 
     protected function create_navbar() {
-        global $PAGE, $CFG;
+        global $PAGE;
 
         $PAGE->navbar->add(format_string($this->title));
         $PAGE->navbar->add(get_string('view', 'wiki'));
@@ -540,7 +542,13 @@ class page_wiki_edit extends page_wiki {
             $url .= "&section=" . urlencode($this->section);
         }
 
-        $params = array('attachmentoptions' => page_wiki_edit::$attachmentoptions, 'format' => $version->contentformat, 'version' => $versionnumber, 'pagetitle'=>$this->page->title);
+        $params = array(
+            'attachmentoptions' => page_wiki_edit::$attachmentoptions,
+            'format' => $version->contentformat,
+            'version' => $versionnumber,
+            'pagetitle' => $this->page->title,
+            'contextid' => $this->modcontext->id
+        );
 
         $data = new StdClass();
         $data->newcontent = $content;
@@ -556,11 +564,10 @@ class page_wiki_edit extends page_wiki {
             break;
         default:
             break;
-            }
+        }
 
         if ($version->contentformat != 'html') {
             $params['fileitemid'] = $this->subwiki->id;
-            $params['contextid']  = $this->modcontext->id;
             $params['component']  = 'mod_wiki';
             $params['filearea']   = 'attachments';
         }
@@ -764,7 +771,7 @@ class page_wiki_editcomment extends page_wiki {
         }
     }
 
-    protected function setup_tabs() {
+    protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'comments', 'activetab' => 'comments'));
     }
 
@@ -865,19 +872,17 @@ class page_wiki_create extends page_wiki {
         global $PAGE, $CFG;
 
         $params = array();
+        $params['swid'] = $this->swid;
         if ($this->action == 'new') {
             $params['action'] = 'new';
-            $params['swid'] = $this->swid;
             $params['wid'] = $this->wid;
             if ($this->title != get_string('newpage', 'wiki')) {
                 $params['title'] = $this->title;
             }
-            $PAGE->set_url($CFG->wwwroot . '/mod/wiki/create.php', $params);
         } else {
             $params['action'] = 'create';
-            $params['swid'] = $this->swid;
-            $PAGE->set_url($CFG->wwwroot . '/mod/wiki/create.php', $params);
         }
+        $PAGE->set_url(new moodle_url('/mod/wiki/create.php', $params));
     }
 
     function set_format($format) {
@@ -908,7 +913,7 @@ class page_wiki_create extends page_wiki {
 
     protected function create_navbar() {
         global $PAGE;
-
+        // navigation_node::get_content formats this before printing.
         $PAGE->navbar->add($this->title);
     }
 
@@ -935,11 +940,14 @@ class page_wiki_create extends page_wiki {
             $this->subwiki = wiki_get_subwiki($swid);
         }
         if ($data) {
+            $this->set_title($data->pagetitle);
             $id = wiki_create_page($this->subwiki->id, $data->pagetitle, $data->pageformat, $USER->id);
         } else {
+            $this->set_title($pagetitle);
             $id = wiki_create_page($this->subwiki->id, $pagetitle, $PAGE->activityrecord->defaultformat, $USER->id);
         }
-        redirect($CFG->wwwroot . '/mod/wiki/edit.php?pageid=' . $id);
+        $this->page = $id;
+        return $id;
     }
 }
 
@@ -987,7 +995,7 @@ class page_wiki_preview extends page_wiki_edit {
         $PAGE->set_url($CFG->wwwroot . '/mod/wiki/edit.php', $params);
     }
 
-    protected function setup_tabs() {
+    protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'view', 'activetab' => 'view'));
     }
 
@@ -1006,10 +1014,14 @@ class page_wiki_preview extends page_wiki_edit {
         if (!empty($this->section)) {
             $url .= "&section=" . urlencode($this->section);
         }
-        $params = array('attachmentoptions' => page_wiki_edit::$attachmentoptions, 'format' => $this->format, 'version' => $this->versionnumber);
+        $params = array(
+            'attachmentoptions' => page_wiki_edit::$attachmentoptions,
+            'format' => $this->format,
+            'version' => $this->versionnumber,
+            'contextid' => $this->modcontext->id
+        );
 
         if ($this->format != 'html') {
-            $params['contextid'] = $this->modcontext->id;
             $params['component'] = 'mod_wiki';
             $params['filearea'] = 'attachments';
             $params['fileitemid'] = $this->page->id;
@@ -1093,7 +1105,7 @@ class page_wiki_diff extends page_wiki {
         $PAGE->navbar->add(get_string('diff', 'wiki'));
     }
 
-    protected function setup_tabs() {
+    protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'history', 'activetab' => 'history'));
     }
 
@@ -1247,7 +1259,7 @@ class page_wiki_history extends page_wiki {
                 $time = userdate($row->timecreated, get_string('strftimetime', 'langconfig'));
                 $versionid = wiki_get_version($row->id);
                 $versionlink = new moodle_url('/mod/wiki/viewversion.php', array('pageid' => $pageid, 'versionid' => $versionid->id));
-                $userlink = new moodle_url('/user/view.php', array('id' => $username->id));
+                $userlink = new moodle_url('/user/view.php', array('id' => $username->id, 'course' => $PAGE->cm->course));
                 $contents[] = array('', html_writer::link($versionlink->out(false), $row->version), $picture . html_writer::link($userlink->out(false), fullname($username)), $time, $OUTPUT->container($date, 'wiki_histdate'));
 
                 $table = new html_table();
@@ -1275,7 +1287,7 @@ class page_wiki_history extends page_wiki {
                     } else {
                         $viewlink = $version->version;
                     }
-                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid));
+                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid, 'course' => $PAGE->cm->course));
                     $contents[] = array($this->choose_from_radio(array($version->version  => null), 'compare', 'M.mod_wiki.history()', $checked - 1, true) . $this->choose_from_radio(array($version->version  => null), 'comparewith', 'M.mod_wiki.history()', $checked, true), $viewlink, $picture . html_writer::link($userlink->out(false), fullname($user)), $time, $OUTPUT->container($date, 'wiki_histdate'));
                 }
 
@@ -1499,10 +1511,10 @@ class page_wiki_map extends page_wiki {
                     $user = $users[$version->userid];
                 }
 
-                $link = wiki_parser_link(format_string($page->title), array('swid' => $swid));
+                $link = wiki_parser_link($page->title, array('swid' => $swid));
                 $class = ($link['new']) ? 'class="wiki_newentry"' : '';
 
-                $linkpage = '<a href="' . $link['url'] . '"' . $class . '>' . $link['content'] . '</a>';
+                $linkpage = '<a href="' . $link['url'] . '"' . $class . '>' . format_string($link['content'], true, array('context' => $this->modcontext)) . '</a>';
                 $icon = $OUTPUT->user_picture($user, array('popup' => true));
 
                 $table->data[] = array("$icon&nbsp;$linkpage");
@@ -1579,6 +1591,7 @@ class page_wiki_map extends page_wiki {
             $page = $fresh['page'];
         }
 
+        // navigation_node get_content calls format string for us
         $node = new navigation_node($page->title);
 
         $keys = array();
@@ -1613,15 +1626,14 @@ class page_wiki_map extends page_wiki {
         $strspecial = get_string('special', 'wiki');
 
         foreach ($pages as $page) {
-            $letter = textlib::strtoupper(textlib::substr($page->title, 0, 1));
-            if (preg_match('/[A-Z]/', $letter)) {
-                $stdaux->{
-                    $letter}
-                [] = wiki_parser_link($page);
+            // We need to format the title here to account for any filtering
+            $letter = format_string($page->title, true, array('context' => $this->modcontext));
+            $letter = textlib::substr($letter, 0, 1);
+            if (preg_match('/^[a-zA-Z]$/', $letter)) {
+                $letter = textlib::strtoupper($letter);
+                $stdaux->{$letter}[] = wiki_parser_link($page);
             } else {
-                $stdaux->{
-                    $strspecial}
-                [] = wiki_parser_link($page);
+                $stdaux->{$strspecial}[] = wiki_parser_link($page);
             }
         }
 
@@ -1632,7 +1644,7 @@ class page_wiki_map extends page_wiki {
         foreach ($stdaux as $key => $elem) {
             $table->data[] = array($key);
             foreach ($elem as $e) {
-                $table->data[] = array(html_writer::link($e['url'], $e['content']));
+                $table->data[] = array(html_writer::link($e['url'], format_string($e['content'], true, array('context' => $this->modcontext))));
             }
         }
         echo html_writer::table($table);
@@ -1851,7 +1863,7 @@ class page_wiki_restoreversion extends page_wiki {
         $PAGE->navbar->add(get_string('restoreversion', 'wiki'));
     }
 
-    protected function setup_tabs() {
+    protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'history', 'activetab' => 'history'));
     }
 
@@ -1919,7 +1931,7 @@ class page_wiki_deletecomment extends page_wiki {
         $PAGE->navbar->add(get_string('deletecommentcheck', 'wiki'));
     }
 
-    protected function setup_tabs() {
+    protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'comments', 'activetab' => 'comments'));
     }
 
@@ -1990,11 +2002,15 @@ class page_wiki_save extends page_wiki_edit {
             $url .= "&section=" . urlencode($this->section);
         }
 
-        $params = array('attachmentoptions' => page_wiki_edit::$attachmentoptions, 'format' => $this->format, 'version' => $this->versionnumber);
+        $params = array(
+            'attachmentoptions' => page_wiki_edit::$attachmentoptions,
+            'format' => $this->format,
+            'version' => $this->versionnumber,
+            'contextid' => $this->modcontext->id
+        );
 
         if ($this->format != 'html') {
             $params['fileitemid'] = $this->page->id;
-            $params['contextid']  = $this->modcontext->id;
             $params['component']  = 'mod_wiki';
             $params['filearea']   = 'attachments';
         }
@@ -2086,7 +2102,7 @@ class page_wiki_viewversion extends page_wiki {
         $PAGE->navbar->add(get_string('versionnum', 'wiki', $this->version->version));
     }
 
-    protected function setup_tabs() {
+    protected function setup_tabs($options = array()) {
         parent::setup_tabs(array('linkedwhenactive' => 'history', 'activetab' => 'history', 'inactivetabs' => array('edit')));
     }
 
@@ -2531,10 +2547,11 @@ class page_wiki_admin extends page_wiki {
     /**
      * Prints lists of versions which can be deleted
      *
-     * @global object $OUTPUT
+     * @global core_renderer $OUTPUT
+     * @global moodle_page $PAGE
      */
     private function print_delete_version() {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
         $pageid = $this->page->id;
 
         // versioncount is the latest version
@@ -2564,7 +2581,7 @@ class page_wiki_admin extends page_wiki {
                 $time = userdate($row->timecreated, get_string('strftimetime', 'langconfig'));
                 $versionid = wiki_get_version($row->id);
                 $versionlink = new moodle_url('/mod/wiki/viewversion.php', array('pageid' => $pageid, 'versionid' => $versionid->id));
-                $userlink = new moodle_url('/user/view.php', array('id' => $username->id));
+                $userlink = new moodle_url('/user/view.php', array('id' => $username->id, 'course' => $PAGE->cm->course));
                 $picturelink = $picture . html_writer::link($userlink->out(false), fullname($username));
                 $historydate = $OUTPUT->container($date, 'wiki_histdate');
                 $contents[] = array('', html_writer::link($versionlink->out(false), $row->version), $picturelink, $time, $historydate);
@@ -2601,7 +2618,7 @@ class page_wiki_admin extends page_wiki {
                         $viewlink = $version->version;
                     }
 
-                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid));
+                    $userlink = new moodle_url('/user/view.php', array('id' => $version->userid, 'course' => $PAGE->cm->course));
                     $picturelink = $picture . html_writer::link($userlink->out(false), fullname($user));
                     $historydate = $OUTPUT->container($date, 'wiki_histdate');
                     $radiofromelement = $this->choose_from_radio(array($version->version  => null), 'fromversion', 'M.mod_wiki.deleteversion()', $versioncount, true);

@@ -393,8 +393,7 @@ function lesson_get_user_grades($lesson, $userid=0) {
 /**
  * Update grades in central gradebook
  *
- * @global stdclass
- * @global object
+ * @category grade
  * @param object $lesson
  * @param int $userid specific user only, 0 means all
  * @param bool $nullifnone
@@ -453,7 +452,7 @@ function lesson_upgrade_grades() {
 /**
  * Create grade item for given lesson
  *
- * @global stdClass
+ * @category grade
  * @uses GRADE_TYPE_VALUE
  * @uses GRADE_TYPE_NONE
  * @param object $lesson object with extra cmidnumber
@@ -513,7 +512,7 @@ function lesson_grade_item_update($lesson, $grades=NULL) {
 /**
  * Delete grade item for given lesson
  *
- * @global stdClass
+ * @category grade
  * @param object $lesson object
  * @return object lesson
  */
@@ -659,7 +658,9 @@ function lesson_process_post_save(&$lesson) {
         if ($lesson->available) {
             $event->name = $lesson->name.' ('.get_string('lessonopens', 'lesson').')';
             calendar_event::create(clone($event));
-        } else if ($lesson->deadline) {
+        }
+
+        if ($lesson->deadline) {
             $event->name      = $lesson->name.' ('.get_string('lessoncloses', 'lesson').')';
             $event->timestart = $lesson->deadline;
             $event->eventtype = 'close';
@@ -887,12 +888,14 @@ function lesson_get_import_export_formats($type) {
 /**
  * Serves the lesson attachments. Implements needed access control ;-)
  *
- * @param object $course
- * @param object $cm
- * @param object $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
+ * @package mod_lesson
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function lesson_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
@@ -939,7 +942,11 @@ function lesson_pluginfile($course, $cm, $context, $filearea, $args, $forcedownl
 
 /**
  * Returns an array of file areas
- * @return array
+ *
+ * @package  mod_lesson
+ * @category files
+ * @todo MDL-31048 localize
+ * @return array a list of available file areas
  */
 function lesson_get_file_areas() {
     $areas = array();
@@ -952,16 +959,18 @@ function lesson_get_file_areas() {
 /**
  * Returns a file_info_stored object for the file being requested here
  *
- * @global <type> $CFG
- * @param file_browse $browser
- * @param array $areas
- * @param object $course
- * @param object $cm
- * @param object $context
- * @param string $filearea
- * @param int $itemid
- * @param string $filepath
- * @param string $filename
+ * @package  mod_lesson
+ * @category files
+ * @global stdClass $CFG
+ * @param file_browse $browser file browser instance
+ * @param array $areas file areas
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param int $itemid item ID
+ * @param string $filepath file path
+ * @param string $filename file name
  * @return file_info_stored
  */
 function lesson_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {

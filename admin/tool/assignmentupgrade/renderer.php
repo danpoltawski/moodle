@@ -17,19 +17,17 @@
 /**
  * Defines the renderer for the assignment upgrade helper plugin.
  *
- * @package    tool
- * @subpackage assignmentupgrade
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * Renderer for the assignment upgrade helper plugin.
  *
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -73,8 +71,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
 
     /**
      * Render the list of assignments that still need to be upgraded page.
-     * @param array $assignments of data about assignments.
-     * @param int $numveryoldattemtps only relevant before upgrade.
+     * @param tool_assignmentupgrade_assignment_list $assignments of data about assignments.
      * @return string html to output.
      */
     public function assignment_list_page(tool_assignmentupgrade_assignment_list $assignments) {
@@ -104,7 +101,9 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
     
     /**
      * Render the result of an assignment conversion
-     * @param object $assignmentsummary data about the assignment to upgrade.
+     * @param stdClass $assignmentsummary data about the assignment to upgrade.
+     * @param bool $success Set to true if the outcome of the conversion was a success
+     * @param string $log The log from the conversion
      * @return string html to output.
      */
     public function convert_assignment_result($assignmentsummary, $success, $log) {
@@ -125,7 +124,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
 
     /**
      * Render the are-you-sure page to confirm a manual upgrade.
-     * @param object $assignmentsummary data about the assignment to upgrade.
+     * @param stdClass $assignmentsummary data about the assignment to upgrade.
      * @return string html to output.
      */
     public function convert_assignment_are_you_sure($assignmentsummary) {
@@ -144,13 +143,12 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
 
     /**
      * Render a link in a div, such as the 'Back to plugin main page' link.
-     * @param $url the link URL.
-     * @param $text the link text.
+     * @param string|moodle_url $url the link URL.
+     * @param string $text the link text.
      * @return string html to output.
      */
     public function end_of_page_link($url, $text) {
-        return html_writer::tag('div', html_writer::link($url ,$text),
-                array('class' => 'mdl-align'));
+        return html_writer::tag('div', html_writer::link($url, $text), array('class' => 'mdl-align'));
     }
 
     /**
@@ -158,7 +156,6 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
      * @return string html to output.
      */
     public function back_to_index() {
-        return $this->end_of_page_link(tool_assignmentupgrade_url('index'),
-                get_string('backtoindex', 'tool_assignmentupgrade'));
+        return $this->end_of_page_link(tool_assignmentupgrade_url('index'), get_string('backtoindex', 'tool_assignmentupgrade'));
     }
 }

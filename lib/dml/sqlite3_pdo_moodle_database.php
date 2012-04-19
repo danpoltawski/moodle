@@ -20,7 +20,7 @@
  * Experimental pdo database class.
  *
  * @package    core
- * @subpackage dml
+ * @subpackage dml_driver
  * @copyright  2008 Andrei Bautu
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,6 +31,11 @@ require_once($CFG->libdir.'/dml/pdo_moodle_database.php');
 
 /**
  * Experimental pdo database class
+ *
+ * @package    core
+ * @subpackage dml_driver
+ * @copyright  2008 Andrei Bautu
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class sqlite3_pdo_moodle_database extends pdo_moodle_database {
     protected $database_file_extension = '.sq3.php';
@@ -132,7 +137,8 @@ class sqlite3_pdo_moodle_database extends pdo_moodle_database {
     }
 
     /**
-     * Return tables in database WITHOUT current prefix
+     * Return tables in database WITHOUT current prefix.
+     * @param bool $usecache if true, returns list of cached tables.
      * @return array of table names in lowercase and without prefix
      */
     public function get_tables($usecache=true) {
@@ -146,16 +152,20 @@ class sqlite3_pdo_moodle_database extends pdo_moodle_database {
         foreach ($rstables as $table) {
             $table = $table['name'];
             $table = strtolower($table);
-            if (empty($this->prefix) || strpos($table, $this->prefix) === 0) {
+            if ($this->prefix !== '') {
+                if (strpos($table, $this->prefix) !== 0) {
+                    continue;
+                }
                 $table = substr($table, strlen($this->prefix));
-                $tables[$table] = $table;
             }
+            $tables[$table] = $table;
         }
         return $tables;
     }
 
     /**
      * Return table indexes - everything lowercased
+     * @param string $table The table we want to get indexes from.
      * @return array of arrays
      */
     public function get_indexes($table) {
@@ -253,13 +263,6 @@ class sqlite3_pdo_moodle_database extends pdo_moodle_database {
                     $columninfo['meta_type'] = 'C';
                     break;
                 case 'enu': // enums
-                    if (preg_match('|'.$columninfo['name'].'\W+in\W+\(/\*liststart\*/(.*?)/\*listend\*/\)|im', $createsql, $tmp)) {
-                        $tmp = explode(',', $tmp[1]);
-                        foreach($tmp as $value) {
-                            $columninfo['enums'][] = trim($value, '\'"');
-                        }
-                        unset($tmp);
-                    }
                     $columninfo['meta_type'] = 'C';
                     break;
                 case 'tex': // text

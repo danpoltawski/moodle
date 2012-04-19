@@ -818,6 +818,9 @@ abstract class repository {
         } else {
             $accepted_types = '*';
         }
+        // Sortorder should be unique, which is not true if we use $record->sortorder
+        // and there are multiple instances of any repository type
+        $sortorder = 1;
         foreach ($records as $record) {
             if (!file_exists($CFG->dirroot . '/repository/'. $record->repositorytype.'/lib.php')) {
                 continue;
@@ -826,7 +829,7 @@ abstract class repository {
             $options['visible'] = $record->visible;
             $options['type']    = $record->repositorytype;
             $options['typeid']  = $record->typeid;
-            $options['sortorder'] = $record->sortorder;
+            $options['sortorder'] = $sortorder++;
             // tell instance what file types will be accepted by file picker
             $classname = 'repository_' . $record->repositorytype;
 
@@ -1669,7 +1672,7 @@ abstract class repository {
      *
      * @return mixed, see get_listing()
      */
-    public function search($search_text) {
+    public function search($search_text, $page = 0) {
         $list = array();
         $list['list'] = array();
         return false;
@@ -1751,7 +1754,7 @@ abstract class repository {
      * @param object $mform Moodle form (passed by reference)
      * @param string $classname repository class name
      */
-    public function type_config_form($mform, $classname = 'repository') {
+    public static function type_config_form($mform, $classname = 'repository') {
         $instnaceoptions = call_user_func(array($classname, 'get_instance_option_names'), $mform, $classname);
         if (empty($instnaceoptions)) {
             // this plugin has only one instance
@@ -1949,7 +1952,7 @@ final class repository_instance_form extends moodleform {
         }
     }
 
-    public function validation($data) {
+    public function validation($data, $files) {
         global $DB;
         $errors = array();
         $plugin = $this->_customdata['plugin'];
@@ -2059,7 +2062,7 @@ final class repository_type_form extends moodleform {
         $this->add_action_buttons(true, get_string('save','repository'));
     }
 
-    public function validation($data) {
+    public function validation($data, $files) {
         $errors = array();
         $plugin = $this->_customdata['plugin'];
         $instance = (isset($this->_customdata['instance'])

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Messaging libraries
+ * Contains renderer objects for messaging
  *
- * @package    message
+ * @package    core_message
  * @copyright  2011 Lancaster University Network Services Limited
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * Class for rendering various message objects
  *
- * @package    message
+ * @package    core_message
+ * @subpackage message
  * @copyright  2011 Lancaster University Network Services Limited
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -38,8 +39,8 @@ class core_message_renderer extends plugin_renderer_base {
     /**
      * Display the interface to manage message outputs
      *
-     * @param   mixed   $processors array of objects containing message processors
-     * @return  string              The text to render
+     * @param  array  $processors array of objects containing message processors
+     * @return string The text to render
      */
     public function manage_messageoutputs($processors) {
         global $CFG;
@@ -106,10 +107,10 @@ class core_message_renderer extends plugin_renderer_base {
     /**
      * Display the interface to manage default message outputs
      *
-     * @param   mixed   $processors  array of objects containing message processors
-     * @param   mixed   $providers   array of objects containing message providers
-     * @param   mixed   $preferences array of objects containing current preferences
-     * @return  string               The text to render
+     * @param  array $processors  array of objects containing message processors
+     * @param  array $providers   array of objects containing message providers
+     * @param  array $preferences array of objects containing current preferences
+     * @return string The text to render
      */
     public function manage_defaultmessageoutputs($processors, $providers, $preferences) {
         global $CFG;
@@ -206,13 +207,12 @@ class core_message_renderer extends plugin_renderer_base {
     /**
      * Display the interface for messaging options
      *
-     * @param   mixed   $processors         array of objects containing message processors
-     * @param   mixed   $providers          array of objects containing message providers
-     * @param   mixed   $preferences        array of objects containing current preferences
-     * @param   mixed   $defaultpreferences array of objects containing site default preferences
-     * $param   boolean $notificationsdisabled indicates whether the user's "emailstop" flag is
-     *                                      set so shouldn't receive any non-forced notifications
-     * @return  string                      The text to render
+     * @param array $processors Array of objects containing message processors
+     * @param array $providers Array of objects containing message providers
+     * @param array $preferences Array of objects containing current preferences
+     * @param array $defaultpreferences Array of objects containing site default preferences
+     * @param bool $notificationsdisabled Indicate if the user's "emailstop" flag is set (shouldn't receive any non-forced notifications)
+     * @return string The text to render
      */
     public function manage_messagingoptions($processors, $providers, $preferences, $defaultpreferences, $notificationsdisabled = false) {
         // Filter out enabled, available system_configured and user_configured processors only.
@@ -262,40 +262,33 @@ class core_message_renderer extends plugin_renderer_base {
                     if (isset($defaultpreferences->{$defaultpreference})) {
                         $permitted = $defaultpreferences->{$defaultpreference};
                     }
-                    // If settings are disallowed, just display the message that
-                    // the setting is not permitted, if not use user settings or
-                    // force them.
-                    if ($permitted == 'disallowed') {
+                    // If settings are disallowed or forced, just display the
+                    // corresponding message, if not use user settings.
+                    if (in_array($permitted, array('disallowed', 'forced'))) {
                         if ($state == 'loggedoff') {
                             // skip if we are rendering the second line
                             continue;
                         }
-                        $cellcontent = html_writer::nonempty_tag('div', get_string('notpermitted', 'message'), array('class' => 'dimmed_text'));
+                        $cellcontent = html_writer::nonempty_tag('div', get_string($permitted, 'message'), array('class' => 'dimmed_text'));
                         $optioncell = new html_table_cell($cellcontent);
                         $optioncell->rowspan = 2;
                         $optioncell->attributes['class'] = 'disallowed';
                     } else {
-                        // determine user preferences and use then unless we force
-                        // the preferences.
+                        // determine user preferences and use them.
                         $disabled = array();
-                        if ($permitted == 'forced') {
-                            $checked = true;
+                        $checked = false;
+                        if ($notificationsdisabled) {
                             $disabled['disabled'] = 1;
+                        }
+                        // See if user has touched this preference
+                        if (isset($preferences->{$preferencebase.'_'.$state})) {
+                            // User have some preferneces for this state in the database, use them
+                            $checked = isset($preferences->{$preferencebase.'_'.$state}[$processor->name]);
                         } else {
-                            $checked = false;
-                            if ($notificationsdisabled) {
-                                $disabled['disabled'] = 1;
-                            }
-                            // See if user has touched this preference
-                            if (isset($preferences->{$preferencebase.'_'.$state})) {
-                                // User have some preferneces for this state in the database, use them
-                                $checked = isset($preferences->{$preferencebase.'_'.$state}[$processor->name]);
-                            } else {
-                                // User has not set this preference yet, using site default preferences set by admin
-                                $defaultpreference = 'message_provider_'.$preferencebase.'_'.$state;
-                                if (isset($defaultpreferences->{$defaultpreference})) {
-                                    $checked = (int)in_array($processor->name, explode(',', $defaultpreferences->{$defaultpreference}));
-                                }
+                            // User has not set this preference yet, using site default preferences set by admin
+                            $defaultpreference = 'message_provider_'.$preferencebase.'_'.$state;
+                            if (isset($defaultpreferences->{$defaultpreference})) {
+                                $checked = (int)in_array($processor->name, explode(',', $defaultpreferences->{$defaultpreference}));
                             }
                         }
                         $elementname = $preferencebase.'_'.$state.'['.$processor->name.']';

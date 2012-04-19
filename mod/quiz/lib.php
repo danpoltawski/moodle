@@ -58,6 +58,13 @@ define('QUIZ_ATTEMPTLAST',  '4');
  */
 define('QUIZ_MAX_EVENT_LENGTH', 5*24*60*60); // 5 days
 
+/**#@+
+ * Options for navigation method within quizzes.
+ */
+define('QUIZ_NAVMETHOD_FREE', 'free');
+define('QUIZ_NAVMETHOD_SEQ',  'sequential');
+/**#@-*/
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -442,6 +449,8 @@ function quiz_cron() {
     // Run cron for our sub-plugin types.
     cron_execute_plugin_type('quiz', 'quiz reports');
     cron_execute_plugin_type('quizaccess', 'quiz access rules');
+
+    return true;
 }
 
 /**
@@ -537,8 +546,10 @@ function quiz_format_question_grade($quiz, $grade) {
 /**
  * Update grades in central gradebook
  *
+ * @category grade
  * @param object $quiz the quiz settings.
  * @param int $userid specific user only, 0 means all users.
+ * @param bool $nullifnone If a single user is specified and $nullifnone is true a grade item with a null rawgrade will be inserted
  */
 function quiz_update_grades($quiz, $userid = 0, $nullifnone = true) {
     global $CFG, $DB;
@@ -590,8 +601,9 @@ function quiz_upgrade_grades() {
 }
 
 /**
- * Create grade item for given quiz
+ * Create or update the grade item for given quiz
  *
+ * @category grade
  * @param object $quiz object with extra cmidnumber
  * @param mixed $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
@@ -680,6 +692,7 @@ function quiz_grade_item_update($quiz, $grades = null) {
 /**
  * Delete grade item for given quiz
  *
+ * @category grade
  * @param object $quiz object
  * @return object quiz
  */
@@ -752,7 +765,7 @@ function quiz_get_recent_mod_activity(&$activities, &$index, $timestart,
         $course = $DB->get_record('course', array('id' => $courseid));
     }
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
 
     $cm = $modinfo->cms[$cmid];
     $quiz = $DB->get_record('quiz', array('id' => $cm->instance));
@@ -1634,12 +1647,14 @@ function quiz_extend_settings_navigation($settings, $quiznode) {
 /**
  * Serves the quiz files.
  *
- * @param object $course
- * @param object $cm
- * @param object $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
+ * @package  mod_quiz
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function quiz_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
@@ -1679,17 +1694,21 @@ function quiz_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
  * Called via pluginfile.php -> question_pluginfile to serve files belonging to
  * a question in a question_attempt when that attempt is a quiz attempt.
  *
- * @param object $course course settings object
- * @param object $context context object
+ * @package  mod_quiz
+ * @category files
+ * @param stdClass $course course settings object
+ * @param stdClass $context context object
  * @param string $component the name of the component we are serving files for.
  * @param string $filearea the name of the file area.
+ * @param int $qubaid the attempt usage id.
+ * @param int $slot the id of a question in this quiz attempt.
  * @param array $args the remaining bits of the file path.
  * @param bool $forcedownload whether the user must be forced to download the file.
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function mod_quiz_question_pluginfile($course, $context, $component,
         $filearea, $qubaid, $slot, $args, $forcedownload) {
-    global $USER, $CFG;
+    global $CFG;
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
     $attemptobj = quiz_attempt::create_from_usage_id($qubaid);
@@ -1734,4 +1753,14 @@ function quiz_page_type_list($pagetype, $parentcontext, $currentcontext) {
         'mod-quiz-*'=>get_string('page-mod-quiz-x', 'quiz'),
         'mod-quiz-edit'=>get_string('page-mod-quiz-edit', 'quiz'));
     return $module_pagetype;
+}
+
+/**
+ * @return the options for quiz navigation.
+ */
+function quiz_get_navigation_options() {
+    return array(
+        QUIZ_NAVMETHOD_FREE => get_string('navmethod_free', 'quiz'),
+        QUIZ_NAVMETHOD_SEQ  => get_string('navmethod_seq', 'quiz')
+    );
 }

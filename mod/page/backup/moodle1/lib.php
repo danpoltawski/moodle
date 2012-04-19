@@ -38,7 +38,7 @@ class moodle1_mod_page_handler extends moodle1_resource_successor_handler {
      * Converts /MOODLE_BACKUP/COURSE/MODULES/MOD/RESOURCE data
      * Called by moodle1_mod_resource_handler::process_resource()
      */
-    public function process_legacy_resource(array $data) {
+    public function process_legacy_resource(array $data, array $raw = null) {
 
         // get the course module id and context id
         $instanceid = $data['id'];
@@ -53,11 +53,18 @@ class moodle1_mod_page_handler extends moodle1_resource_successor_handler {
         $page['intro']              = $data['intro'];
         $page['introformat']        = $data['introformat'];
         $page['content']            = $data['alltext'];
-        $page['contentformat']      = (int)$data['reference'];
 
-        // this is unexpected but just in case (the same step applied during upgrade)
-        if ($page['contentformat'] < 0 or $page['contentformat'] > 4) {
-            $page['contentformat']  = FORMAT_MOODLE;
+        if ($data['type'] === 'html') {
+            // legacy Resource of the type Web page
+            $page['contentformat'] = FORMAT_HTML;
+
+        } else {
+            // legacy Resource of the type Plain text page
+            $page['contentformat'] = (int)$data['reference'];
+
+            if ($page['contentformat'] < 0 or $page['contentformat'] > 4) {
+                $page['contentformat'] = FORMAT_MOODLE;
+            }
         }
 
         $page['legacyfiles']        = RESOURCELIB_LEGACYFILES_ACTIVE;

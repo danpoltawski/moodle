@@ -1,70 +1,70 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-// NOTICE OF COPYRIGHT                                                   //
-//                                                                       //
-// Moodle - Modular Object-Oriented Dynamic Learning Environment         //
-//          http://moodle.org                                            //
-//                                                                       //
-// Copyright (C) 1999 onwards Martin Dougiamas  http://dougiamas.com     //
-//                                                                       //
-// This program is free software; you can redistribute it and/or modify  //
-// it under the terms of the GNU General Public License as published by  //
-// the Free Software Foundation; either version 2 of the License, or     //
-// (at your option) any later version.                                   //
-//                                                                       //
-// This program is distributed in the hope that it will be useful,       //
-// but WITHOUT ANY WARRANTY; without even the implied warranty of        //
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         //
-// GNU General Public License for more details:                          //
-//                                                                       //
-//          http://www.gnu.org/copyleft/gpl.html                         //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
+
+/**
+ * Group of date and time input element
+ *
+ * Contains class for a group of elements used to input a date and time.
+ *
+ * @package   core_form
+ * @copyright 2006 Jamie Pratt <me@jamiep.org>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 global $CFG;
 require_once($CFG->libdir . '/form/group.php');
 require_once($CFG->libdir . '/formslib.php');
 
 /**
+ * Element used to input a date and time.
+ *
  * Class for a group of elements used to input a date and time.
  *
- * Emulates moodle print_date_selector function and also allows you to select a time.
- *
- * @package formslib
+ * @package   core_form
+ * @category  form
+ * @copyright 2006 Jamie Pratt <me@jamiep.org>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
     /**
-    * Options for the element
-    *
-    * startyear => integer start of range of years that can be selected
-    * stopyear => integer last year that can be selected
-    * defaulttime => default time value if the field is currently not set
-    * timezone => float/string timezone
-    * applydst => apply users daylight savings adjustment?
-    * step     => step to increment minutes by
-    * optional => if true, show a checkbox beside the date to turn it on (or off)
-    */
+     * Options for the element
+     * startyear => int start of range of years that can be selected
+     * stopyear => int last year that can be selected
+     * defaulttime => default time value if the field is currently not set
+     * timezone => float/string timezone
+     * applydst => apply users daylight savings adjustment?
+     * step => step to increment minutes by
+     * optional => if true, show a checkbox beside the date to turn it on (or off)
+     * @var array
+     */
     var $_options = array('startyear' => 1970, 'stopyear' => 2020, 'defaulttime' => 0,
                     'timezone' => 99, 'applydst' => true, 'step' => 5, 'optional' => false);
 
-   /**
-    * These complement separators, they are appended to the resultant HTML
-    * @access   private
-    * @var      array
-    */
+    /** @var array These complement separators, they are appended to the resultant HTML */
     var $_wrap = array('', '');
 
-   /**
-    * Class constructor
-    *
-    * @access   public
-    * @param    string  Element's name
-    * @param    mixed   Label(s) for an element
-    * @param    array   Options to control the element's display
-    * @param    mixed   Either a typical HTML attribute string or an associative array
-    */
+    /**
+     * Class constructor
+     *
+     * @param string $elementName Element's name
+     * @param mixed $elementLabel Label(s) for an element
+     * @param array $options Options to control the element's display
+     * @param mixed $attributes Either a typical HTML attribute string or an associative array
+     */
     function MoodleQuickForm_date_time_selector($elementName = null, $elementLabel = null, $options = array(), $attributes = null)
     {
         $this->HTML_QuickForm_element($elementName, $elementLabel, $attributes);
@@ -86,9 +86,11 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
         form_init_date_js();
     }
 
-    // }}}
-    // {{{ _createElements()
-
+    /**
+     * This will create date group element constisting of day, month and year.
+     *
+     * @access private
+     */
     function _createElements()
     {
         $this->_elements = array();
@@ -107,19 +109,20 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
         for ($i=0; $i<60; $i+=$this->_options['step']) {
             $minutes[$i] = sprintf("%02d",$i);
         }
-        $this->_elements[] =& MoodleQuickForm::createElement('select', 'day', get_string('day', 'form'), $days, $this->getAttributes(), true);
-        $this->_elements[] =& MoodleQuickForm::createElement('select', 'month', get_string('month', 'form'), $months, $this->getAttributes(), true);
-        $this->_elements[] =& MoodleQuickForm::createElement('select', 'year', get_string('year', 'form'), $years, $this->getAttributes(), true);
+        // E_STRICT creating elements without forms is nasty because it internally uses $this
+        $this->_elements[] = @MoodleQuickForm::createElement('select', 'day', get_string('day', 'form'), $days, $this->getAttributes(), true);
+        $this->_elements[] = @MoodleQuickForm::createElement('select', 'month', get_string('month', 'form'), $months, $this->getAttributes(), true);
+        $this->_elements[] = @MoodleQuickForm::createElement('select', 'year', get_string('year', 'form'), $years, $this->getAttributes(), true);
         if (right_to_left()) {   // Switch order of elements for Right-to-Left
-            $this->_elements[] =& MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
-            $this->_elements[] =& MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
+            $this->_elements[] = @MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
+            $this->_elements[] = @MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
         } else {
-            $this->_elements[] =& MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
-            $this->_elements[] =& MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
+            $this->_elements[] = @MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
+            $this->_elements[] = @MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
         }
         // If optional we add a checkbox which the user can use to turn if on
         if($this->_options['optional']) {
-            $this->_elements[] =& MoodleQuickForm::createElement('checkbox', 'enabled', null, get_string('enable'), $this->getAttributes(), true);
+            $this->_elements[] = @MoodleQuickForm::createElement('checkbox', 'enabled', null, get_string('enable'), $this->getAttributes(), true);
         }
         foreach ($this->_elements as $element){
             if (method_exists($element, 'setHiddenLabel')){
@@ -129,18 +132,13 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
 
     }
 
-    // }}}
-    // {{{ onQuickFormEvent()
-
     /**
      * Called by HTML_QuickForm whenever form event is made on this element
      *
-     * @param     string    $event  Name of event
-     * @param     mixed     $arg    event arguments
-     * @param     object    $caller calling object
-     * @since     1.0
-     * @access    public
-     * @return    void
+     * @param string $event Name of event
+     * @param mixed $arg event arguments
+     * @param object $caller calling object
+     * @return bool
      */
     function onQuickFormEvent($event, $arg, &$caller)
     {
@@ -197,9 +195,11 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
         }
     }
 
-    // }}}
-    // {{{ toHtml()
-
+    /**
+     * Returns HTML for advchecbox form element.
+     *
+     * @return string
+     */
     function toHtml()
     {
         include_once('HTML/QuickForm/Renderer/Default.php');
@@ -209,21 +209,23 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
         return $this->_wrap[0] . $renderer->toHtml() . $this->_wrap[1];
     }
 
-    // }}}
-    // {{{ accept()
-
+    /**
+     * Accepts a renderer
+     *
+     * @param HTML_QuickForm_Renderer $renderer An HTML_QuickForm_Renderer object
+     * @param bool $required Whether a group is required
+     * @param string $error An error message associated with a group
+     */
     function accept(&$renderer, $required = false, $error = null)
     {
         $renderer->renderElement($this, $required, $error);
     }
 
-    // }}}
-
     /**
      * Output a timestamp. Give it the name of the group.
      *
-     * @param array $submitValues
-     * @param bool $assoc
+     * @param array $submitValues values submitted.
+     * @param bool $assoc specifies if returned array is associative
      * @return array
      */
     function exportValue(&$submitValues, $assoc = false)
@@ -261,6 +263,4 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group{
             return null;
         }
     }
-
-    // }}}
 }

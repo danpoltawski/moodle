@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,9 +17,9 @@
 /**
  * A page displaying the user's contacts and messages
  *
- * @package   moodlecore
- * @copyright 2010 Andrew Davis
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    core_message
+ * @copyright  2010 Andrew Davis
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../config.php');
@@ -87,6 +86,9 @@ $PAGE->set_context(get_context_instance(CONTEXT_USER, $USER->id));
 $PAGE->navigation->extend_for_user($USER);
 $PAGE->set_pagelayout('course');
 
+// Disable message notification popups while the user is viewing their messages
+$PAGE->set_popup_notification_allowed(false);
+
 $context = get_context_instance(CONTEXT_SYSTEM);
 
 $user1 = null;
@@ -113,8 +115,14 @@ if (!empty($user2id)) {
 }
 unset($user2id);
 
-//the current user isnt involved in this discussion at all
-if ($user1->id != $USER->id && (!empty($user2) && $user2->id != $USER->id) && !has_capability('moodle/site:readallmessages', $context)) {
+// Is the user involved in the conversation?
+// Do they have the ability to read other user's conversations?
+// There will always be a $user1
+// but $user2 may be null. For example, if viewing $user1's recent conversations
+if ($user1->id != $USER->id
+    && (empty($user2) || $user2->id != $USER->id)
+    && !has_capability('moodle/site:readallmessages', $context)){
+
     print_error('accessdenied','admin');
 }
 

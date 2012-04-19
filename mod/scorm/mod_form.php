@@ -48,27 +48,27 @@ class mod_scorm_mod_form extends moodleform_mod {
         $this->add_intro_editor(true);
 
         // Scorm types
-        $options = array(SCORM_TYPE_LOCAL => get_string('typelocal', 'scorm'));
+        $scormtypes = array(SCORM_TYPE_LOCAL => get_string('typelocal', 'scorm'));
 
         if ($cfg_scorm->allowtypeexternal) {
-            $options[SCORM_TYPE_EXTERNAL] = get_string('typeexternal', 'scorm');
+            $scormtypes[SCORM_TYPE_EXTERNAL] = get_string('typeexternal', 'scorm');
         }
 
         if ($cfg_scorm->allowtypelocalsync) {
-            $options[SCORM_TYPE_LOCALSYNC] = get_string('typelocalsync', 'scorm');
+            $scormtypes[SCORM_TYPE_LOCALSYNC] = get_string('typelocalsync', 'scorm');
         }
 
         if (!empty($CFG->repositoryactivate) and $cfg_scorm->allowtypeimsrepository) {
-            $options[SCORM_TYPE_IMSREPOSITORY] = get_string('typeimsrepository', 'scorm');
+            $scormtypes[SCORM_TYPE_IMSREPOSITORY] = get_string('typeimsrepository', 'scorm');
         }
 
         if ($cfg_scorm->allowtypeexternalaicc) {
-            $options[SCORM_TYPE_AICCURL] = get_string('typeaiccurl', 'scorm');
+            $scormtypes[SCORM_TYPE_AICCURL] = get_string('typeaiccurl', 'scorm');
         }
 
         // Reference
-        if (count($options) > 1) {
-            $mform->addElement('select', 'scormtype', get_string('scormtype', 'scorm'), $options);
+        if (count($scormtypes) > 1) {
+            $mform->addElement('select', 'scormtype', get_string('scormtype', 'scorm'), $scormtypes);
             $mform->addHelpButton('scormtype', 'scormtype', 'scorm');
             $mform->addElement('text', 'packageurl', get_string('packageurl', 'scorm'), array('size'=>60));
             $mform->setType('packageurl', PARAM_RAW);
@@ -237,11 +237,16 @@ class mod_scorm_mod_form extends moodleform_mod {
         $mform->setDefault('auto', $cfg_scorm->auto);
         $mform->setAdvanced('auto', $cfg_scorm->auto_adv);
 
-        // Update packages timing
-        $mform->addElement('select', 'updatefreq', get_string('updatefreq', 'scorm'), scorm_get_updatefreq_array());
-        $mform->setDefault('updatefreq', $cfg_scorm->updatefreq);
-        $mform->setAdvanced('updatefreq', $cfg_scorm->updatefreq_adv);
-
+        if (count($scormtypes) > 1) {
+            // Update packages timing
+            $mform->addElement('select', 'updatefreq', get_string('updatefreq', 'scorm'), scorm_get_updatefreq_array());
+            $mform->setDefault('updatefreq', $cfg_scorm->updatefreq);
+            $mform->setAdvanced('updatefreq', $cfg_scorm->updatefreq_adv);
+            $mform->addHelpButton('updatefreq', 'updatefreq', 'scorm');
+            $mform->disabledIf('updatefreq', 'scormtype', 'eq', SCORM_TYPE_LOCAL);
+        } else {
+            $mform->addElement('hidden', 'updatefreq', 0);
+        }
         //-------------------------------------------------------------------------------
         // Hidden Settings
         $mform->addElement('hidden', 'datadir', null);
@@ -310,6 +315,24 @@ class mod_scorm_mod_form extends moodleform_mod {
         if (empty($default_values['timeclose'])) {
             $default_values['timeclose'] = 0;
         }
+
+        // Set some completion default data
+        if (!empty($default_values['completionstatusrequired']) && !is_array($default_values['completionstatusrequired'])) {
+            // Unpack values
+            $cvalues = array();
+            foreach (scorm_status_options() as $key => $value) {
+                if (($default_values['completionstatusrequired'] & $key) == $key) {
+                    $cvalues[$key] = 1;
+                }
+            }
+
+            $default_values['completionstatusrequired'] = $cvalues;
+        }
+
+        if (!isset($default_values['completionscorerequired']) || !strlen($default_values['completionscorerequired'])) {
+            $default_values['completionscoredisabled'] = 1;
+        }
+
     }
 
     function validation($data, $files) {
@@ -415,5 +438,79 @@ class mod_scorm_mod_form extends moodleform_mod {
 
         $this->data_preprocessing($default_values);
         parent::set_data($default_values);
+    }
+
+    function add_completion_rules() {
+        $mform =& $this->_form;
+        $items = array();
+
+        // Require score
+        $group = array();
+        $group[] =& $mform->createElement('text', 'completionscorerequired', '', array('size' => 5));
+        $group[] =& $mform->createElement('checkbox', 'completionscoredisabled', null, get_string('disable'));
+        $mform->setType('completionscorerequired', PARAM_INT);
+        $mform->addGroup($group, 'completionscoregroup', get_string('completionscorerequired', 'scorm'), '', false);
+        $mform->addHelpButton('completionscoregroup', 'completionscorerequired', 'scorm');
+        $mform->disabledIf('completionscorerequired', 'completionscoredisabled', 'checked');
+        $mform->setDefault('completionscorerequired', 0);
+
+        $items[] = 'completionscoregroup';
+
+
+        // Require status
+        $first = true;
+        $firstkey = null;
+        foreach (scorm_status_options(true) as $key => $value) {
+            $name = null;
+            $key = 'completionstatusrequired['.$key.']';
+            if ($first) {
+                $name = get_string('completionstatusrequired', 'scorm');
+                $first = false;
+                $firstkey = $key;
+            }
+            $mform->addElement('checkbox', $key, $name, $value);
+            $mform->setType($key, PARAM_BOOL);
+            $items[] = $key;
+        }
+        $mform->addHelpButton($firstkey, 'completionstatusrequired', 'scorm');
+
+        return $items;
+    }
+
+    function completion_rule_enabled($data) {
+        $status = !empty($data['completionstatusrequired']);
+        $score = empty($data['completionscoredisabled']) && strlen($data['completionscorerequired']);
+
+        return $status || $score;
+    }
+
+    function get_data($slashed = true) {
+        $data = parent::get_data($slashed);
+
+        if (!$data) {
+            return false;
+        }
+
+        // Turn off completion settings if the checkboxes aren't ticked
+        $autocompletion = !empty($data->completion) && $data->completion == COMPLETION_TRACKING_AUTOMATIC;
+
+        if (isset($data->completionstatusrequired) && is_array($data->completionstatusrequired)) {
+            $total = 0;
+            foreach (array_keys($data->completionstatusrequired) as $state) {
+                $total |= $state;
+            }
+
+            $data->completionstatusrequired = $total;
+        }
+
+        if (!$autocompletion) {
+            $data->completionstatusrequired = null;
+        }
+
+        if (!empty($data->completionscoredisabled) || !$autocompletion) {
+            $data->completionscorerequired = null;
+        }
+
+        return $data;
     }
 }

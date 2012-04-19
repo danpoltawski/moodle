@@ -16,10 +16,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
- * @subpackage backup-moodle2
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Defines backup_plan_builder class
+ *
+ * @package     core_backup
+ * @subpackage  moodle2
+ * @category    backup
+ * @copyright   2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -123,12 +126,23 @@ abstract class backup_plan_builder {
 
         // Add the activity task, responsible for outputting
         // all the module related information
-        $plan->add_task(backup_factory::get_backup_activity_task($controller->get_format(), $id));
+        try {
+            $plan->add_task(backup_factory::get_backup_activity_task($controller->get_format(), $id));
 
-        // For the given activity, add as many block tasks as necessary
-        $blockids = backup_plan_dbops::get_blockids_from_moduleid($id);
-        foreach ($blockids as $blockid) {
-            $plan->add_task(backup_factory::get_backup_block_task($controller->get_format(), $blockid, $id));
+            // For the given activity, add as many block tasks as necessary
+            $blockids = backup_plan_dbops::get_blockids_from_moduleid($id);
+            foreach ($blockids as $blockid) {
+                try {
+                    $plan->add_task(backup_factory::get_backup_block_task($controller->get_format(), $blockid, $id));
+                } catch (backup_task_exception $e) {
+                    $a = stdClass();
+                    $a->mid = $id;
+                    $a->bid = $blockid;
+                    $controller->log(get_string('error_block_for_module_not_found', 'backup', $a), backup::LOG_WARNING);
+                }
+            }
+        } catch (backup_task_exception $e) {
+            $controller->log(get_string('error_course_module_not_found', 'backup', $id), backup::LOG_WARNING);
         }
     }
 

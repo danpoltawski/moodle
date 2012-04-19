@@ -190,7 +190,7 @@ class qtype_multianswer extends question_type {
         parent::delete_question($questionid, $contextid);
     }
 
-    protected function initialise_question_instance($question, $questiondata) {
+    protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
 
         $bits = preg_split('/\{#(\d+)\}/', $question->questiontext,
@@ -222,6 +222,16 @@ class qtype_multianswer extends question_type {
                     $subqdata->qtype)->get_random_guess_score($subqdata);
         }
         return $fractionsum / $fractionmax;
+    }
+
+    public function move_files($questionid, $oldcontextid, $newcontextid) {
+        parent::move_files($questionid, $oldcontextid, $newcontextid);
+        $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
+    }
+
+    protected function delete_files($questionid, $contextid) {
+        parent::delete_files($questionid, $contextid);
+        $this->delete_files_in_hints($questionid, $contextid);
     }
 }
 
@@ -289,6 +299,7 @@ function qtype_multianswer_extract_question($text) {
     $question->generalfeedback['format'] = FORMAT_HTML;
     $question->generalfeedback['itemid'] = '';
 
+    $question->options = new stdClass();
     $question->options->questions = array();
     $question->defaultmark = 0; // Will be increased for each answer norm
 

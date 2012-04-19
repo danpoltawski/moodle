@@ -149,7 +149,7 @@ class data_field_file extends data_field_base {
 
 
     // content: "a##b" where a is the file name, b is the display name
-    function update_content($recordid, $value, $name) {
+    function update_content($recordid, $value, $name='') {
         global $CFG, $DB, $USER;
         $fs = get_file_storage();
 
@@ -167,27 +167,29 @@ class data_field_file extends data_field_base {
         $fs->delete_area_files($this->context->id, 'mod_data', 'content', $content->id);
 
         $usercontext = get_context_instance(CONTEXT_USER, $USER->id);
-        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $value);
+        $files = $fs->get_area_files($usercontext->id, 'user', 'draft', $value, 'timecreated DESC');
 
         if (count($files)<2) {
             // no file
         } else {
-            $count = 0;
             foreach ($files as $draftfile) {
-                $file_record = array('contextid'=>$this->context->id, 'component'=>'mod_data', 'filearea'=>'content', 'itemid'=>$content->id, 'filepath'=>'/');
                 if (!$draftfile->is_directory()) {
-                    $file_record['filename'] = $draftfile->get_filename();
+                    $file_record = array(
+                        'contextid' => $this->context->id,
+                        'component' => 'mod_data',
+                        'filearea' => 'content',
+                        'itemid' => $content->id,
+                        'filepath' => '/',
+                        'filename' => $draftfile->get_filename(),
+                    );
 
-                    $content->content = $draftfile->get_filename();
+                    $content->content = $file_record['filename'];
 
                     $fs->create_file_from_storedfile($file_record, $draftfile);
                     $DB->update_record('data_content', $content);
 
-                    if ($count > 0) {
-                        break;
-                    } else {
-                        $count++;
-                    }
+                    // Break from the loop now to avoid overwriting the uploaded file record
+                    break;
                 }
             }
         }

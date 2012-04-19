@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,8 +17,7 @@
 /**
  * Capability definitions for the workshop module
  *
- * @package    mod
- * @subpackage workshop
+ * @package    mod_workshop
  * @copyright  2009 David Mudrak <david.mudrak@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,6 +38,19 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         )
+    ),
+
+    // Ability to add a new workshop to the course.
+    'mod/workshop:addinstance' => array(
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
     // Ability to change the current phase (stage) of the workshop, for example

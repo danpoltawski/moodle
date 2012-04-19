@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,12 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Definition of log events
+ * Definition of log events associated with the current component
  *
- * @package    core
- * @subpackage admin
- * @copyright  2010 Petr Skoda (http://skodak.org)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * The log events defined on this file are processed and stored into
+ * the Moodle DB after any install or upgrade operation. All plugins
+ * support this.
+ *
+ * For more information, take a look to the documentation available:
+ *     - Logging API: {@link http://docs.moodle.org/dev/Logging_API}
+ *     - Upgrade API: {@link http://docs.moodle.org/dev/Upgrade_API}
+ *
+ * @package   core
+ * @category  log
+ * @copyright 2010 Petr Skoda (http://skodak.org)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -29,7 +36,6 @@ defined('MOODLE_INTERNAL') || die();
 global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables
 
 $logs = array(
-    array('module'=>'user', 'action'=>'view', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
     array('module'=>'course', 'action'=>'user report', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
     array('module'=>'course', 'action'=>'view', 'mtable'=>'course', 'field'=>'fullname'),
     array('module'=>'course', 'action'=>'update', 'mtable'=>'course', 'field'=>'fullname'),
@@ -48,4 +54,6 @@ $logs = array(
     array('module'=>'message', 'action'=>'unblock contact', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
     array('module'=>'group', 'action'=>'view', 'mtable'=>'groups', 'field'=>'name'),
     array('module'=>'tag', 'action'=>'update', 'mtable'=>'tag', 'field'=>'name'),
+    array('module'=>'tag', 'action'=>'flag', 'mtable'=>'tag', 'field'=>'name'),
+    array('module'=>'user', 'action'=>'view', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
 );

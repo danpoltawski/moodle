@@ -84,11 +84,9 @@ class csv_import_reader {
         $this->close();
         $this->_error = null;
 
-        $textlib = textlib_get_instance();
-
-        $content = $textlib->convert($content, $encoding, 'utf-8');
+        $content = textlib::convert($content, $encoding, 'utf-8');
         // remove Unicode BOM from first line
-        $content = $textlib->trim_utf8_bom($content);
+        $content = textlib::trim_utf8_bom($content);
         // Fix mac/dos newlines
         $content = preg_replace('!\r\n?!', "\n", $content);
         // is there anyting in file?
@@ -291,7 +289,7 @@ class csv_import_reader {
      * @param string separator name
      * @return string encoded delimiter char
      */
-    function get_encoded_delimiter($delimiter_name) {
+    static function get_encoded_delimiter($delimiter_name) {
         global $CFG;
         if ($delimiter_name == 'cfg' and isset($CFG->CSV_ENCODE)) {
             return $CFG->CSV_ENCODE;
@@ -307,7 +305,7 @@ class csv_import_reader {
      * @param string who imports?
      * @return int iid
      */
-    function get_new_iid($type) {
+    static function get_new_iid($type) {
         global $USER;
 
         $filename = make_temp_directory('csvimport/'.$type.'/'.$USER->id);

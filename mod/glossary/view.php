@@ -48,7 +48,8 @@ if (!empty($id)) {
 }
 
 require_course_login($course->id, true, $cm);
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
+require_capability('mod/glossary:view', $context);
 
 // Prepare format_string/text options
 $fmtoptions = array(
@@ -56,9 +57,6 @@ $fmtoptions = array(
 
 require_once($CFG->dirroot . '/comment/lib.php');
 comment::init();
-
-/// Loading the textlib singleton instance. We are going to need it.
-$textlib = textlib_get_instance();
 
 /// redirecting if adding a new entry
 if ($tab == GLOSSARY_ADDENTRY_VIEW ) {
@@ -173,6 +171,11 @@ break;
 
 case 'approval':    /// Looking for entries waiting for approval
     $tab = GLOSSARY_APPROVAL_VIEW;
+    // Override the display format with the approvaldisplayformat
+    if ($glossary->approvaldisplayformat !== 'default' && ($df = $DB->get_record("glossary_formats",
+            array("name" => $glossary->approvaldisplayformat)))) {
+        $displayformat = $df->popupformatname;
+    }
     if ( !$hook and !$sortkey and !$sortorder) {
         $hook = 'ALL';
     }
@@ -420,12 +423,12 @@ if ($allentries) {
 
         // Setting the pivot for the current entry
         $pivot = $entry->glossarypivot;
-        $upperpivot = $textlib->strtoupper($pivot);
-        $pivottoshow = $textlib->strtoupper(format_string($pivot, true, $fmtoptions));
+        $upperpivot = textlib::strtoupper($pivot);
+        $pivottoshow = textlib::strtoupper(format_string($pivot, true, $fmtoptions));
         // Reduce pivot to 1cc if necessary
         if ( !$fullpivot ) {
-            $upperpivot = $textlib->substr($upperpivot, 0, 1);
-            $pivottoshow = $textlib->substr($pivottoshow, 0, 1);
+            $upperpivot = textlib::substr($upperpivot, 0, 1);
+            $pivottoshow = textlib::substr($pivottoshow, 0, 1);
         }
 
         // if there's a group break

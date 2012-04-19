@@ -129,6 +129,12 @@ class repository_upload extends repository {
             }
         }
 
+        // Check the file has some non-null contents - usually an indication that a user has
+        // tried to upload a folder by mistake
+        if (!$this->check_valid_contents($_FILES[$elname]['tmp_name'])) {
+            throw new moodle_exception('upload_error_invalid_file', 'repository_upload', '', $record->filename);
+        }
+
         if ($this->mimetypes != '*') {
             // check filetype
             $filemimetype = mimeinfo('type', $_FILES[$elname]['name']);
@@ -179,10 +185,36 @@ class repository_upload extends repository {
     }
 
     /**
+     * Checks the contents of the given file is not completely NULL - this can happen if a
+     * user drags & drops a folder onto a filemanager / filepicker element
+     * @param string $filepath full path (including filename) to file to check
+     * @return true if file has at least one non-null byte within it
+     */
+    protected function check_valid_contents($filepath) {
+        $buffersize = 4096;
+
+        $fp = fopen($filepath, 'r');
+        if (!$fp) {
+            return false; // Cannot read the file - something has gone wrong
+        }
+        while (!feof($fp)) {
+            // Read the file 4k at a time
+            $data = fread($fp, $buffersize);
+            if (preg_match('/[^\0]+/', $data)) {
+                fclose($fp);
+                return true; // Return as soon as a non-null byte is found
+            }
+        }
+        // Entire file is NULL
+        fclose($fp);
+        return false;
+    }
+
+    /**
      * Return a upload form
      * @return array
      */
-    public function get_listing() {
+    public function get_listing($path = '', $page = '') {
         global $CFG;
         $ret = array();
         $ret['nologin']  = true;
@@ -191,6 +223,7 @@ class repository_upload extends repository {
         $ret['list'] = array();
         $ret['dynload'] = false;
         $ret['upload'] = array('label'=>get_string('attachment', 'repository'), 'id'=>'repo-form');
+        $ret['allowcaching'] = true; // indicates that result of get_listing() can be cached in filepicker.js
         return $ret;
     }
 

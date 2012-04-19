@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,8 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File in which the user_report class is defined.
- * @package gradebook
+ * Definition of the grade_user_report class is defined
+ *
+ * @package gradereport_user
+ * @copyright 2007 Nicolas Connault
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/grade/report/lib.php');
@@ -31,7 +33,7 @@ define("GRADE_REPORT_USER_SHOW_HIDDEN", 2);
 /**
  * Class providing an API for the user report building and displaying.
  * @uses grade_report
- * @package gradebook
+ * @package gradereport_user
  */
 class grade_report_user extends grade_report {
 
@@ -310,6 +312,7 @@ class grade_report_user extends grade_report {
         $hidden = '';
         $excluded = '';
         $class = '';
+        $classfeedback = '';
 
         // If this is a hidden grade category, hide it completely from the user
         if ($type == 'category' && $grade_object->is_hidden() && !$this->canviewhidden && (
@@ -366,6 +369,10 @@ class grade_report_user extends grade_report {
                 /// Actual Grade
                 $gradeval = $grade_grade->finalgrade;
 
+                if ($this->showfeedback) {
+                    // Copy $class before appending itemcenter as feedback should not be centered
+                    $classfeedback = $class;
+                }
                 $class .= " itemcenter ";
                 if ($this->showweight) {
                     $data['weight']['class'] = $class;
@@ -475,13 +482,13 @@ class grade_report_user extends grade_report {
                 // Feedback
                 if ($this->showfeedback) {
                     if ($grade_grade->overridden > 0 AND ($type == 'categoryitem' OR $type == 'courseitem')) {
-                    $data['feedback']['class'] = $class.' feedbacktext';
+                    $data['feedback']['class'] = $classfeedback.' feedbacktext';
                         $data['feedback']['content'] = get_string('overridden', 'grades').': ' . format_text($grade_grade->feedback, $grade_grade->feedbackformat);
                     } else if (empty($grade_grade->feedback) or (!$this->canviewhidden and $grade_grade->is_hidden())) {
-                        $data['feedback']['class'] = $class.' feedbacktext';
+                        $data['feedback']['class'] = $classfeedback.' feedbacktext';
                         $data['feedback']['content'] = '&nbsp;';
                     } else {
-                        $data['feedback']['class'] = $class.' feedbacktext';
+                        $data['feedback']['class'] = $classfeedback.' feedbacktext';
                         $data['feedback']['content'] = format_text($grade_grade->feedback, $grade_grade->feedbackformat);
                     }
                 }

@@ -296,6 +296,15 @@ class moodlelib_test extends UnitTestCase {
         $this->assertEqual(array('gecko', 'gecko19'), get_browser_version_classes());
     }
 
+    function test_get_device_type() {
+        // IE8 (common pattern ~1.5% of IE7/8 users have embedded IE6 agent))
+        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; BT Openworld BB; Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1) ; Hotbar 10.2.197.0; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 2.0.50727)';
+        $this->assertEqual('default', get_device_type());
+        // Genuine IE6
+        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/4.0 (compatible; MSIE 6.0; AOL 9.0; Windows NT 5.1; SV1; FunWebProducts; .NET CLR 1.0.3705; Media Center PC 2.8)';
+        $this->assertEqual('legacy', get_device_type());
+    }
+
     function test_fix_utf8() {
         // make sure valid data including other types is not changed
         $this->assertidentical(null, fix_utf8(null));
@@ -360,7 +369,7 @@ class moodlelib_test extends UnitTestCase {
         // make sure warning is displayed if array submitted - TODO: throw exception in Moodle 2.3
         $debugging = isset($CFG->debug) ? $CFG->debug : null;
         $debugdisplay = isset($CFG->debugdisplay) ? $CFG->debugdisplay : null;
-        $CFG->debug = 38911;
+        $CFG->debug = DEBUG_DEVELOPER;
         $CFG->debugdisplay = true;
 
         ob_start();
@@ -432,7 +441,7 @@ class moodlelib_test extends UnitTestCase {
         // do not allow non-arrays
         $debugging = isset($CFG->debug) ? $CFG->debug : null;
         $debugdisplay = isset($CFG->debugdisplay) ? $CFG->debugdisplay : null;
-        $CFG->debug = 38911;
+        $CFG->debug = DEBUG_DEVELOPER;
         $CFG->debugdisplay = true;
 
         ob_start();
@@ -502,7 +511,7 @@ class moodlelib_test extends UnitTestCase {
         // make sure warning is displayed if array submitted - TODO: throw exception in Moodle 2.3
         $debugging = isset($CFG->debug) ? $CFG->debug : null;
         $debugdisplay = isset($CFG->debugdisplay) ? $CFG->debugdisplay : null;
-        $CFG->debug = 38911;
+        $CFG->debug = DEBUG_DEVELOPER;
         $CFG->debugdisplay = true;
 
         ob_start();
@@ -574,7 +583,7 @@ class moodlelib_test extends UnitTestCase {
         // do not allow non-arrays
         $debugging = isset($CFG->debug) ? $CFG->debug : null;
         $debugdisplay = isset($CFG->debugdisplay) ? $CFG->debugdisplay : null;
-        $CFG->debug = 38911;
+        $CFG->debug = DEBUG_DEVELOPER;
         $CFG->debugdisplay = true;
 
         // make sure array keys are sanitised
@@ -944,6 +953,48 @@ class moodlelib_test extends UnitTestCase {
         $text = "<h1>123456789</h1>";//a string with no convenient breaks
         $this->assertEqual("<h1>12345...</h1>",
             shorten_text($text, 8));
+
+        // ==== this must work with UTF-8 too! ======
+
+        // text without tags
+        $text = "Žluťoučký koníček přeskočil";
+        $this->assertEqual($text, shorten_text($text)); // 30 chars by default
+        $this->assertEqual("Žluťoučký koníče...", shorten_text($text, 19, true));
+        $this->assertEqual("Žluťoučký ...", shorten_text($text, 19, false));
+        // And try it with 2-less (that are, in bytes, the middle of a sequence)
+        $this->assertEqual("Žluťoučký koní...", shorten_text($text, 17, true));
+        $this->assertEqual("Žluťoučký ...", shorten_text($text, 17, false));
+
+        $text = "<p>Žluťoučký koníček <b>přeskočil</b> potůček</p>";
+        $this->assertEqual($text, shorten_text($text, 60));
+        $this->assertEqual("<p>Žluťoučký koníček ...</p>", shorten_text($text, 21));
+        $this->assertEqual("<p>Žluťoučký koníče...</p>", shorten_text($text, 19, true));
+        $this->assertEqual("<p>Žluťoučký ...</p>", shorten_text($text, 19, false));
+        // And try it with 2-less (that are, in bytes, the middle of a sequence)
+        $this->assertEqual("<p>Žluťoučký koní...</p>", shorten_text($text, 17, true));
+        $this->assertEqual("<p>Žluťoučký ...</p>", shorten_text($text, 17, false));
+        // And try over one tag (start/end), it does proper text len
+        $this->assertEqual("<p>Žluťoučký koníček <b>př...</b></p>", shorten_text($text, 23, true));
+        $this->assertEqual("<p>Žluťoučký koníček <b>přeskočil</b> pot...</p>", shorten_text($text, 34, true));
+        // And in the middle of one tag
+        $this->assertEqual("<p>Žluťoučký koníček <b>přeskočil...</b></p>", shorten_text($text, 30, true));
+
+        // Japanese
+        $text = '言語設定言語設定abcdefghijkl';
+        $this->assertEqual($text, shorten_text($text)); // 30 chars by default
+        $this->assertEqual("言語設定言語...", shorten_text($text, 9, true));
+        $this->assertEqual("言語設定言語...", shorten_text($text, 9, false));
+        $this->assertEqual("言語設定言語設定ab...", shorten_text($text, 13, true));
+        $this->assertEqual("言語設定言語設定...", shorten_text($text, 13, false));
+
+        // Chinese
+        $text = '简体中文简体中文abcdefghijkl';
+        $this->assertEqual($text, shorten_text($text)); // 30 chars by default
+        $this->assertEqual("简体中文简体...", shorten_text($text, 9, true));
+        $this->assertEqual("简体中文简体...", shorten_text($text, 9, false));
+        $this->assertEqual("简体中文简体中文ab...", shorten_text($text, 13, true));
+        $this->assertEqual("简体中文简体中文...", shorten_text($text, 13, false));
+
     }
 
     function test_usergetdate() {
@@ -1308,13 +1359,13 @@ class moodlelib_test extends UnitTestCase {
                 'time' => '1309514400',
                 'usertimezone' => 'America/Moncton',
                 'timezone' => '99', //dst offset and timezone offset.
-                'expectedoutput' => 'Friday, 1 July 2011, 07:00 AM'
+                'expectedoutput' => 'Friday, 1 July 2011, 7:00 AM'
             ),
             array(
                 'time' => '1309514400',
                 'usertimezone' => 'America/Moncton',
                 'timezone' => 'America/Moncton', //dst offset and timezone offset.
-                'expectedoutput' => 'Friday, 1 July 2011, 07:00 AM'
+                'expectedoutput' => 'Friday, 1 July 2011, 7:00 AM'
             ),
             array(
                 'time' => '1293876000 ',
@@ -1326,13 +1377,13 @@ class moodlelib_test extends UnitTestCase {
                 'time' => '1293876000 ',
                 'usertimezone' => 'America/Moncton',
                 'timezone' => '99', //no dst offset in jan, so just timezone offset.
-                'expectedoutput' => 'Saturday, 1 January 2011, 06:00 AM'
+                'expectedoutput' => 'Saturday, 1 January 2011, 6:00 AM'
             ),
             array(
                 'time' => '1293876000 ',
                 'usertimezone' => 'America/Moncton',
                 'timezone' => 'America/Moncton', //no dst offset in jan
-                'expectedoutput' => 'Saturday, 1 January 2011, 06:00 AM'
+                'expectedoutput' => 'Saturday, 1 January 2011, 6:00 AM'
             ),
             array(
                 'time' => '1293876000 ',
@@ -1344,7 +1395,7 @@ class moodlelib_test extends UnitTestCase {
                 'time' => '1293876000 ',
                 'usertimezone' => '-2',
                 'timezone' => '99', //take user timezone
-                'expectedoutput' => 'Saturday, 1 January 2011, 08:00 AM'
+                'expectedoutput' => 'Saturday, 1 January 2011, 8:00 AM'
             ),
             array(
                 'time' => '1293876000 ',
@@ -1356,19 +1407,19 @@ class moodlelib_test extends UnitTestCase {
                 'time' => '1293876000 ',
                 'usertimezone' => '-10',
                 'timezone' => '-2', //take this timezone
-                'expectedoutput' => 'Saturday, 1 January 2011, 08:00 AM'
+                'expectedoutput' => 'Saturday, 1 January 2011, 8:00 AM'
             ),
             array(
                 'time' => '1293876000 ',
                 'usertimezone' => '-10',
                 'timezone' => 'random/time', //this should show server time
-                'expectedoutput' => 'Saturday, 1 January 2011, 06:00 PM'
+                'expectedoutput' => 'Saturday, 1 January 2011, 6:00 PM'
             ),
             array(
                 'time' => '1293876000 ',
                 'usertimezone' => '14', //server time zone
                 'timezone' => '99', //this should show user time
-                'expectedoutput' => 'Saturday, 1 January 2011, 06:00 PM'
+                'expectedoutput' => 'Saturday, 1 January 2011, 6:00 PM'
             ),
         );
 
@@ -1391,15 +1442,13 @@ class moodlelib_test extends UnitTestCase {
         $systemdefaulttimezone = date_default_timezone_get();
         date_default_timezone_set('Australia/Perth');
 
-        //get instance of textlib for strtolower
-        $textlib = textlib_get_instance();
         foreach ($testvalues as $vals) {
             $USER->timezone = $vals['usertimezone'];
             $actualoutput = userdate($vals['time'], '%A, %d %B %Y, %I:%M %p', $vals['timezone']);
 
             //On different systems case of AM PM changes so compare case insenitive
-            $vals['expectedoutput'] = $textlib->strtolower($vals['expectedoutput']);
-            $actualoutput = $textlib->strtolower($actualoutput);
+            $vals['expectedoutput'] = textlib::strtolower($vals['expectedoutput']);
+            $actualoutput = textlib::strtolower($actualoutput);
 
             $this->assertEqual($vals['expectedoutput'], $actualoutput,
                 "Expected: {$vals['expectedoutput']} => Actual: {$actualoutput},
@@ -1565,8 +1614,6 @@ class moodlelib_test extends UnitTestCase {
         $systemdefaulttimezone = date_default_timezone_get();
         date_default_timezone_set('Australia/Perth');
 
-        //get instance of textlib for strtolower
-        $textlib = textlib_get_instance();
         //Test make_timestamp with all testvals and assert if anything wrong.
         foreach ($testvalues as $vals) {
             $USER->timezone = $vals['usertimezone'];
@@ -1582,8 +1629,8 @@ class moodlelib_test extends UnitTestCase {
                     );
 
             //On different systems case of AM PM changes so compare case insenitive
-            $vals['expectedoutput'] = $textlib->strtolower($vals['expectedoutput']);
-            $actualoutput = $textlib->strtolower($actualoutput);
+            $vals['expectedoutput'] = textlib::strtolower($vals['expectedoutput']);
+            $actualoutput = textlib::strtolower($actualoutput);
 
             $this->assertEqual($vals['expectedoutput'], $actualoutput,
                 "Expected: {$vals['expectedoutput']} => Actual: {$actualoutput},

@@ -343,7 +343,7 @@ function workshop_print_recent_activity($course, $viewfullnames, $timestart) {
 
     $rs = $DB->get_recordset_sql($sql, array($course->id, $timestart, $timestart));
 
-    $modinfo =& get_fast_modinfo($course); // reference needed because we might load the groups
+    $modinfo = get_fast_modinfo($course); // reference needed because we might load the groups
 
     $submissions = array(); // recent submissions indexed by submission id
     $assessments = array(); // recent assessments indexed by assessment id
@@ -552,7 +552,7 @@ function workshop_get_recent_mod_activity(&$activities, &$index, $timestart, $co
         $course = $DB->get_record('course', array('id'=>$courseid));
     }
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
 
     $cm = $modinfo->cms[$cmid];
 
@@ -1054,6 +1054,7 @@ function workshop_grade_item_update(stdclass $workshop, $submissiongrades=null, 
  *
  * Needed by grade_update_mod_grades() in lib/gradelib.php
  *
+ * @category grade
  * @param stdClass $workshop instance object with extra cmidnumber and modname property
  * @param int $userid        update grade of specific user only, 0 means all participants
  * @return void
@@ -1144,6 +1145,9 @@ function workshop_grade_item_category_update($workshop) {
  * The file area workshop_intro for the activity introduction field is added automatically
  * by {@link file_browser::get_file_info_context_module()}
  *
+ * @package  mod_workshop
+ * @category files
+ *
  * @param stdClass $course
  * @param stdClass $cm
  * @param stdClass $context
@@ -1169,6 +1173,9 @@ function workshop_get_file_areas($course, $cm, $context) {
  * of the submission or have capability ... (todo) to access the submission files.
  * Besides that, areas workshop_instructauthors and mod_workshop instructreviewers contain the media
  * embedded using the mod_form.php.
+ *
+ * @package  mod_workshop
+ * @category files
  *
  * @param stdClass $course
  * @param stdClass $cm
@@ -1254,8 +1261,11 @@ function workshop_pluginfile($course, $cm, $context, $filearea, array $args, $fo
 /**
  * File browsing support for workshop file areas
  *
- * @param stdClass $browser
- * @param stdClass $areas
+ * @package  mod_workshop
+ * @category files
+ *
+ * @param file_browser $browser
+ * @param array $areas
  * @param stdClass $course
  * @param stdClass $cm
  * @param stdClass $context
@@ -1263,7 +1273,7 @@ function workshop_pluginfile($course, $cm, $context, $filearea, array $args, $fo
  * @param int $itemid
  * @param string $filepath
  * @param string $filename
- * @return stdclass file_info instance or null if not found
+ * @return file_info instance or null if not found
  */
 function workshop_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     global $CFG, $DB;

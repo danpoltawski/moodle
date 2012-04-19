@@ -216,7 +216,7 @@ class assignment_base {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
         echo format_module_intro('assignment', $this->assignment, $this->cm->id);
         echo $OUTPUT->box_end();
-        plagiarism_print_disclosure($this->cm->id);
+        echo plagiarism_print_disclosure($this->cm->id);
     }
 
     /**
@@ -405,7 +405,8 @@ class assignment_base {
         } else {
             if (isloggedin()) {
                 if ($submission = $this->get_submission($USER->id)) {
-                    if ($submission->timemodified) {
+                    // If the submission has been completed
+                    if ($this->is_submitted_with_required_data($submission)) {
                         if ($submission->timemodified <= $this->assignment->timedue || empty($this->assignment->timedue)) {
                             $submitted = '<span class="early">'.userdate($submission->timemodified).'</span>';
                         } else {
@@ -598,6 +599,8 @@ class assignment_base {
 
     /**
      * Update grade item for this submission.
+     *
+     * @param stdClass $submission The submission instance
      */
     function update_grade($submission) {
         assignment_update_grades($this->assignment, $submission->userid);
@@ -1226,7 +1229,7 @@ class assignment_base {
         echo '<div class="usersubmissions">';
 
         //hook to allow plagiarism plugins to update status/print links.
-        plagiarism_update_status($this->course, $this->cm);
+        echo plagiarism_update_status($this->course, $this->cm);
 
         $course_context = get_context_instance(CONTEXT_COURSE, $course->id);
         if (has_capability('gradereport/grader:view', $course_context) && has_capability('moodle/grade:viewall', $course_context)) {
@@ -1413,6 +1416,7 @@ class assignment_base {
             $offset = $page * $perpage;
             $strupdate = get_string('update');
             $strgrade  = get_string('grade');
+            $strview  = get_string('view');
             $grademenu = make_grades_menu($this->assignment->grade);
 
             if ($ausers !== false) {
@@ -1529,6 +1533,9 @@ class assignment_base {
                         }
 
                         $buttontext = ($auser->status == 1) ? $strupdate : $strgrade;
+                        if ($final_grade->locked or $final_grade->overridden) {
+                            $buttontext = $strview;
+                        }
 
                         ///No more buttons, we use popups ;-).
                         $popup_url = '/mod/assignment/submissions.php?id='.$this->cm->id
@@ -1829,6 +1836,18 @@ class assignment_base {
     }
 
     /**
+     * Check the given submission is complete. Preliminary rows are often created in the assignment_submissions
+     * table before a submission actually takes place. This function checks to see if the given submission has actually
+     * been submitted.
+     *
+     * @param  stdClass $submission The submission we want to check for completion
+     * @return bool                 Indicates if the submission was found to be complete
+     */
+    public function is_submitted_with_required_data($submission) {
+        return $submission->timemodified;
+    }
+
+    /**
      * Instantiates a new submission object for a given user
      *
      * Sets the assignment, userid and times, everything else is set to default values.
@@ -1872,13 +1891,29 @@ class assignment_base {
     }
 
     /**
-     * Counts all real assignment submissions by ENROLLED students (not empty ones)
+     * Counts all complete (real) assignment submissions by enrolled students
      *
-     * @param int $groupid optional If nonzero then count is restricted to this group
-     * @return int The number of submissions
+     * @param  int $groupid (optional) If nonzero then count is restricted to this group
+     * @return int          The number of submissions
      */
     function count_real_submissions($groupid=0) {
-        return assignment_count_real_submissions($this->cm, $groupid);
+        global $CFG;
+        global $DB;
+
+        // Grab the context assocated with our course module
+        $context = get_context_instance(CONTEXT_MODULE, $this->cm->id);
+
+        // Get ids of users enrolled in the given course.
+        list($enroledsql, $params) = get_enrolled_sql($context, 'mod/assignment:view', $groupid);
+        $params['assignmentid'] = $this->cm->instance;
+
+        // Get ids of users enrolled in the given course.
+        return $DB->count_records_sql("SELECT COUNT('x')
+                                         FROM {assignment_submissions} s
+                                    LEFT JOIN {assignment} a ON a.id = s.assignment
+                                   INNER JOIN ($enroledsql) u ON u.id = s.userid
+                                        WHERE s.assignment = :assignmentid AND
+                                              s.timemodified > 0", $params);
     }
 
     /**
@@ -2438,6 +2473,9 @@ class mod_assignment_grading_form extends moodleform {
         return $this->advancegradinginstance;
     }
 
+    /**
+     * Add the grades configuration section to the assignment configuration form
+     */
     function add_grades_section() {
         global $CFG;
         $mform =& $this->_form;
@@ -2527,7 +2565,7 @@ class mod_assignment_grading_form extends moodleform {
         }
     }
 
-    function add_action_buttons() {
+    function add_action_buttons($cancel = true, $submitlabel = NULL) {
         $mform =& $this->_form;
         //if there are more to be graded.
         if ($this->_customdata->nextid>0) {
@@ -2858,9 +2896,9 @@ function assignment_cron () {
 /**
  * Return grade for given user or all users.
  *
- * @param int $assignmentid id of assignment
- * @param int $userid optional user id, 0 means all users
- * @return array array of grades, false if none
+ * @param stdClass $assignment An assignment instance
+ * @param int $userid Optional user id, 0 means all users
+ * @return array An array of grades, false if none
  */
 function assignment_get_user_grades($assignment, $userid=0) {
     global $CFG, $DB;
@@ -2885,8 +2923,10 @@ function assignment_get_user_grades($assignment, $userid=0) {
 /**
  * Update activity grades
  *
- * @param object $assignment
+ * @category grade
+ * @param stdClass $assignment Assignment instance
  * @param int $userid specific user only, 0 means all
+ * @param bool $nullifnone Not used
  */
 function assignment_update_grades($assignment, $userid=0, $nullifnone=true) {
     global $CFG, $DB;
@@ -2941,8 +2981,9 @@ function assignment_upgrade_grades() {
 /**
  * Create grade item for given assignment
  *
- * @param object $assignment object with extra cmidnumber
- * @param mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
+ * @category grade
+ * @param stdClass $assignment An assignment instance with extra cmidnumber property
+ * @param mixed $grades Optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
  */
 function assignment_grade_item_update($assignment, $grades=NULL) {
@@ -2979,6 +3020,7 @@ function assignment_grade_item_update($assignment, $grades=NULL) {
 /**
  * Delete grade item for given assignment
  *
+ * @category grade
  * @param object $assignment object
  * @return object assignment
  */
@@ -3030,12 +3072,14 @@ function assignment_get_participants($assignmentid) {
 /**
  * Serves assignment submissions and other files.
  *
- * @param object $course
- * @param object $cm
- * @param object $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
+ * @package  mod_assignment
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
  * @return bool false if file not found, does not return if found - just send the file
  */
 function assignment_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
@@ -3172,7 +3216,7 @@ function assignment_print_recent_activity($course, $viewfullnames, $timestart) {
          return false;
     }
 
-    $modinfo =& get_fast_modinfo($course); // reference needed because we might load the groups
+    $modinfo = get_fast_modinfo($course); // reference needed because we might load the groups
     $show    = array();
     $grader  = array();
 
@@ -3255,7 +3299,7 @@ function assignment_get_recent_mod_activity(&$activities, &$index, $timestart, $
         $course = $DB->get_record('course', array('id'=>$courseid));
     }
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
 
     $cm = $modinfo->cms[$cmid];
 
@@ -3455,43 +3499,37 @@ function assignment_get_unmailed_submissions($starttime, $endtime) {
 }
 
 /**
- * Counts all real assignment submissions by ENROLLED students (not empty ones)
+ * Counts all complete (real) assignment submissions by enrolled students for the given course modeule.
  *
- * There are also assignment type methods count_real_submissions() which in the default
- * implementation simply call this function.
- * @param $groupid int optional If nonzero then count is restricted to this group
- * @return int The number of submissions
+ * @deprecated                         Since Moodle 2.2 MDL-abc - Please do not use this function any more.
+ * @param  cm_info $cm                 The course module that we wish to perform the count on.
+ * @param  int     $groupid (optional) If nonzero then count is restricted to this group
+ * @return int                         The number of submissions
  */
 function assignment_count_real_submissions($cm, $groupid=0) {
     global $CFG, $DB;
 
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    // Grab the assignment type for the given course module
+    $assignmenttype = $DB->get_field($cm->modname, 'assignmenttype', array('id' => $cm->instance), MUST_EXIST);
 
-    // this is all the users with this capability set, in this context or higher
-    if ($users = get_enrolled_users($context, 'mod/assignment:view', $groupid, 'u.id')) {
-        $users = array_keys($users);
+    // Create the expected class file path and class name for the returned assignemnt type
+    $filename = "{$CFG->dirroot}/mod/assignment/type/{$assignmenttype}/assignment.class.php";
+    $classname = "assignment_{$assignmenttype}";
+
+    // If the file exists and the class is not already loaded we require the class file
+    if (file_exists($filename) && !class_exists($classname)) {
+        require_once($filename);
     }
-
-    // if groupmembersonly used, remove users who are not in any group
-    if ($users and !empty($CFG->enablegroupmembersonly) and $cm->groupmembersonly) {
-        if ($groupingusers = groups_get_grouping_members($cm->groupingid, 'u.id', 'u.id')) {
-            $users = array_intersect($users, array_keys($groupingusers));
-        }
+    // If the required class is still not loaded then we revert to assignment base
+    if (!class_exists($classname)) {
+        $classname = 'assignment_base';
     }
+    $instance = new $classname;
 
-    if (empty($users)) {
-        return 0;
-    }
-
-    $userlists = implode(',', $users);
-
-    return $DB->count_records_sql("SELECT COUNT('x')
-                                     FROM {assignment_submissions}
-                                    WHERE assignment = ? AND
-                                          timemodified > 0 AND
-                                          userid IN ($userlists)", array($cm->instance));
+    // Attach the course module to the assignment type instance and then call the method for counting submissions
+    $instance->cm = $cm;
+    return $instance->count_real_submissions($groupid);
 }
-
 
 /**
  * Return all assignment submissions by ENROLLED students (even empty)
@@ -3593,6 +3631,7 @@ function assignment_types() {
 
 function assignment_print_overview($courses, &$htmlarray) {
     global $USER, $CFG, $DB;
+    require_once($CFG->libdir.'/gradelib.php');
 
     if (empty($courses) || !is_array($courses) || count($courses) == 0) {
         return array();
@@ -3661,6 +3700,9 @@ function assignment_print_overview($courses, &$htmlarray) {
                                       assignment $sqlassignmentids", array_merge(array($USER->id), $assignmentidparams));
 
     foreach ($assignments as $assignment) {
+        $grading_info = grade_get_grades($assignment->course, 'mod', 'assignment', $assignment->id, $USER->id);
+        $final_grade = $grading_info->items[0]->grades[$USER->id];
+
         $str = '<div class="assignment overview"><div class="name">'.$strassignment. ': '.
                '<a '.($assignment->visible ? '':' class="dimmed"').
                'title="'.$strassignment.'" href="'.$CFG->wwwroot.
@@ -3694,9 +3736,9 @@ function assignment_print_overview($courses, &$htmlarray) {
 
                 $submission = $mysubmissions[$assignment->id];
 
-                if ($submission->teacher == 0 && $submission->timemarked == 0) {
+                if ($submission->teacher == 0 && $submission->timemarked == 0 && !$final_grade->grade) {
                     $str .= $strsubmitted . ', ' . $strnotgradedyet;
-                } else if ($submission->grade <= 0) {
+                } else if ($submission->grade <= 0 && !$final_grade->grade) {
                     $str .= $strsubmitted . ', ' . $strreviewed;
                 } else {
                     $str .= $strsubmitted . ', ' . $strgraded;
@@ -3782,8 +3824,9 @@ function assignment_get_types() {
 
 /**
  * Removes all grades from gradebook
- * @param int $courseid
- * @param string optional type
+ *
+ * @param int $courseid The ID of the course to reset
+ * @param string $type Optional type of assignment to limit the reset to a particular assignment type
  */
 function assignment_reset_gradebook($courseid, $type='') {
     global $CFG, $DB;
@@ -3932,10 +3975,12 @@ function assignment_pack_files($filesforzipping) {
 /**
  * Lists all file areas current user may browse
  *
- * @param object $course
- * @param object $cm
- * @param object $context
- * @return array
+ * @package  mod_assignment
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @return array available file areas
  */
 function assignment_get_file_areas($course, $cm, $context) {
     $areas = array();
@@ -3943,6 +3988,45 @@ function assignment_get_file_areas($course, $cm, $context) {
         $areas['submission'] = get_string('assignmentsubmission', 'assignment');
     }
     return $areas;
+}
+
+/**
+ * File browsing support for assignment module.
+ *
+ * @param file_browser $browser
+ * @param array $areas
+ * @param stdClass $course
+ * @param cm_info $cm
+ * @param context $context
+ * @param string $filearea
+ * @param int $itemid
+ * @param string $filepath
+ * @param string $filename
+ * @return file_info_stored file_info_stored instance or null if not found
+ */
+function mod_assignment_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+    global $CFG, $DB, $USER;
+
+    if ($context->contextlevel != CONTEXT_MODULE || $filearea != 'submission') {
+        return null;
+    }
+    if (!$submission = $DB->get_record('assignment_submissions', array('id' => $itemid))) {
+        return null;
+    }
+    if (!(($submission->userid == $USER->id && has_capability('mod/assignment:view', $context))
+            || has_capability('mod/assignment:grade', $context))) {
+        // no permission to view this submission
+        return null;
+    }
+
+    $fs = get_file_storage();
+    $filepath = is_null($filepath) ? '/' : $filepath;
+    $filename = is_null($filename) ? '.' : $filename;
+    if (!($storedfile = $fs->get_file($context->id, 'mod_assignment', $filearea, $itemid, $filepath, $filename))) {
+        return null;
+    }
+    $urlbase = $CFG->wwwroot.'/pluginfile.php';
+    return new file_info_stored($browser, $context, $storedfile, $urlbase, $filearea, $itemid, true, true, false);
 }
 
 /**

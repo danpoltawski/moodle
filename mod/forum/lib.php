@@ -365,6 +365,19 @@ WHERE
     return $result;
 }
 
+/**
+ * Create a message-id string to use in the custom headers of forum notification emails
+ *
+ * message-id is used by email clients to identify emails and to nest conversations
+ *
+ * @param int $postid The ID of the forum post we are notifying the user about
+ * @param int $usertoid The ID of the user being notified
+ * @param string $hostname The server's hostname
+ * @return string A unique message-id
+ */
+function forum_get_email_message_id($postid, $usertoid, $hostname) {
+    return '<'.hash('sha256',$postid.'to'.$usertoid.'@'.$hostname).'>';
+}
 
 /**
  * Function to be run periodically according to the moodle cron
@@ -523,7 +536,8 @@ function forum_cron() {
                 }
 
                 // Don't send email if the forum is Q&A and the user has not posted
-                if ($forum->type == 'qanda' && !forum_get_user_posted_time($discussion->id, $userto->id)) {
+                // Initial topics are still mailed
+                if ($forum->type == 'qanda' && !forum_get_user_posted_time($discussion->id, $userto->id) && $pid != $discussion->firstpost) {
                     mtrace('Did not email '.$userto->id.' because user has not posted in discussion');
                     continue;
                 }
@@ -603,14 +617,14 @@ function forum_cron() {
                            'Precedence: Bulk',
                            'List-Id: "'.$cleanforumname.'" <moodleforum'.$forum->id.'@'.$hostname.'>',
                            'List-Help: '.$CFG->wwwroot.'/mod/forum/view.php?f='.$forum->id,
-                           'Message-ID: <moodlepost'.$post->id.'@'.$hostname.'>',
+                           'Message-ID: '.forum_get_email_message_id($post->id, $userto->id, $hostname),
                            'X-Course-Id: '.$course->id,
                            'X-Course-Name: '.format_string($course->fullname, true)
                 );
 
                 if ($post->parent) {  // This post is a reply, so add headers for threading (see MDL-22551)
-                    $userfrom->customheaders[] = 'In-Reply-To: <moodlepost'.$post->parent.'@'.$hostname.'>';
-                    $userfrom->customheaders[] = 'References: <moodlepost'.$post->parent.'@'.$hostname.'>';
+                    $userfrom->customheaders[] = 'In-Reply-To: '.forum_get_email_message_id($post->parent, $userto->id, $hostname);
+                    $userfrom->customheaders[] = 'References: '.forum_get_email_message_id($post->parent, $userto->id, $hostname);
                 }
 
                 $shortname = format_string($course->shortname, true, array('context' => get_context_instance(CONTEXT_COURSE, $course->id)));
@@ -1359,7 +1373,7 @@ function forum_print_recent_activity($course, $viewfullnames, $timestart) {
          return false;
     }
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
 
     $groupmodes = array();
     $cms    = array();
@@ -1479,8 +1493,7 @@ function forum_get_user_grades($forum, $userid = 0) {
 /**
  * Update activity grades
  *
- * @global object
- * @global object
+ * @category grade
  * @param object $forum
  * @param int $userid specific user only, 0 means all
  * @param boolean $nullifnone return null if grade does not exist
@@ -1539,12 +1552,12 @@ function forum_upgrade_grades() {
 /**
  * Create/update grade item for given forum
  *
- * @global object
+ * @category grade
  * @uses GRADE_TYPE_NONE
  * @uses GRADE_TYPE_VALUE
  * @uses GRADE_TYPE_SCALE
- * @param object $forum object with extra cmidnumber
- * @param mixed $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
+ * @param stdClass $forum Forum object with extra cmidnumber
+ * @param mixed $grades Optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok
  */
 function forum_grade_item_update($forum, $grades=NULL) {
@@ -1579,9 +1592,9 @@ function forum_grade_item_update($forum, $grades=NULL) {
 /**
  * Delete grade item for given forum
  *
- * @global object
- * @param object $forum object
- * @return object grade_item
+ * @category grade
+ * @param stdClass $forum Forum object
+ * @return grade_item
  */
 function forum_grade_item_delete($forum) {
     global $CFG;
@@ -1845,7 +1858,7 @@ function forum_get_readable_forums($userid, $courseid=0) {
 
     foreach ($courses as $course) {
 
-        $modinfo =& get_fast_modinfo($course);
+        $modinfo = get_fast_modinfo($course);
         if (is_null($modinfo->groups)) {
             $modinfo->groups = groups_get_user_groups($course->id, $userid);
         }
@@ -2429,7 +2442,7 @@ function forum_count_discussions($forum, $cm, $course) {
 
     require_once($CFG->dirroot.'/course/lib.php');
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
     if (is_null($modinfo->groups)) {
         $modinfo->groups = groups_get_user_groups($course->id, $USER->id);
     }
@@ -4005,9 +4018,11 @@ function forum_print_attachments($post, $cm, $type) {
 /**
  * Lists all browsable file areas
  *
- * @param object $course
- * @param object $cm
- * @param object $context
+ * @package  mod_forum
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
  * @return array
  */
 function forum_get_file_areas($course, $cm, $context) {
@@ -4018,16 +4033,18 @@ function forum_get_file_areas($course, $cm, $context) {
 /**
  * File browsing support for forum module.
  *
- * @param object $browser
- * @param object $areas
- * @param object $course
- * @param object $cm
- * @param object $context
- * @param string $filearea
- * @param int $itemid
- * @param string $filepath
- * @param string $filename
- * @return object file_info instance or null if not found
+ * @package  mod_forum
+ * @category files
+ * @param stdClass $browser file browser object
+ * @param stdClass $areas file areas
+ * @param stdClass $course course object
+ * @param stdClass $cm course module
+ * @param stdClass $context context module
+ * @param string $filearea file area
+ * @param int $itemid item ID
+ * @param string $filepath file path
+ * @param string $filename file name
+ * @return file_info instance or null if not found
  */
 function forum_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     global $CFG, $DB;
@@ -4084,12 +4101,14 @@ function forum_get_file_info($browser, $areas, $course, $cm, $context, $filearea
 /**
  * Serves the forum attachments. Implements needed access control ;-)
  *
- * @param object $course
- * @param object $cm
- * @param object $context
- * @param string $filearea
- * @param array $args
- * @param bool $forcedownload
+ * @package  mod_forum
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function forum_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
@@ -4414,7 +4433,7 @@ function forum_delete_post($post, $children, $course, $cm, $forum, $skipcompleti
 
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 
-    if ($children != 'ignore' && ($childposts = $DB->get_records('forum_posts', array('parent'=>$post->id)))) {
+    if ($children !== 'ignore' && ($childposts = $DB->get_records('forum_posts', array('parent'=>$post->id)))) {
        if ($children) {
            foreach ($childposts as $childpost) {
                forum_delete_post($childpost, true, $course, $cm, $forum, $skipcompletion);
@@ -5731,7 +5750,7 @@ function forum_get_recent_mod_activity(&$activities, &$index, $timestart, $cours
         $course = $DB->get_record('course', array('id' => $courseid));
     }
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
 
     $cm = $modinfo->cms[$cmid];
     $params = array($timestart, $cm->instance);
@@ -6432,7 +6451,7 @@ function forum_tp_count_forum_unread_posts($cm, $course) {
 
     require_once($CFG->dirroot.'/course/lib.php');
 
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
     if (is_null($modinfo->groups)) {
         $modinfo->groups = groups_get_user_groups($course->id, $USER->id);
     }

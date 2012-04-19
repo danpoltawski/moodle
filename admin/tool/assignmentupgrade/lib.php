@@ -18,8 +18,7 @@
  * Lib functions (cron) to automatically complete the assignment module upgrade
  * if it was not done all at once during the main upgrade.
  *
- * @package    tool
- * @subpackage assignmentupgrade
+ * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

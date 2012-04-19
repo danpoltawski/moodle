@@ -17,8 +17,7 @@
 /**
  * Capability definitions for the quiz module.
  *
- * @package    mod
- * @subpackage quiz
+ * @package    mod_quiz
  * @copyright  2006 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,6 +38,19 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         )
+    ),
+
+    // Ability to add a new quiz to the course.
+    'mod/quiz:addinstance' => array(
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
     // Ability to do the quiz as a 'student'.

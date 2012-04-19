@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,12 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
 /**
  * Core external functions and service definitions.
  *
- * @package    core
- * @subpackage webservice
- * @copyright  2009 Petr Skoda (http://skodak.org)
+ * The functions and services defined on this file are
+ * processed and registered into the Moodle DB after any
+ * install or upgrade operation. All plugins support this.
+ *
+ * For more information, take a look to the documentation available:
+ *     - Webservices API: {@link http://docs.moodle.org/dev/Web_services_API}
+ *     - External API: {@link http://docs.moodle.org/dev/External_functions_API}
+ *     - Upgrade API: {@link http://docs.moodle.org/dev/Upgrade_API}
+ *
+ * @package    core_webservice
+ * @category   webservice
+ * @copyright  2009 Petr Skodak
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

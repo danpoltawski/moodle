@@ -288,7 +288,7 @@ function wiki_print_recent_activity($course, $viewfullnames, $timestart) {
     if (!$pages = $DB->get_records_sql($sql, array($timestart, $course->id))) {
         return false;
     }
-    $modinfo =& get_fast_modinfo($course);
+    $modinfo = get_fast_modinfo($course);
 
     $wikis = array();
 
@@ -434,9 +434,17 @@ function wiki_scale_used_anywhere($scaleid) {
 }
 
 /**
- * Pluginfile hook
+ * file serving callback
  *
- * @author Josep Arus
+ * @copyright Josep Arus
+ * @package  mod_wiki
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module object
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
  */
 function wiki_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
     global $CFG;
@@ -583,6 +591,9 @@ function wiki_get_extra_capabilities() {
  * Capability check has been done in comment->check_permissions(), we
  * don't need to do it again here.
  *
+ * @package  mod_wiki
+ * @category comment
+ *
  * @param stdClass $comment_param {
  *              context  => context the context object
  *              courseid => int course id
@@ -606,6 +617,10 @@ function wiki_comment_permissions($comment_param) {
  *              commentarea => string comment area
  *              itemid      => int itemid
  * }
+ *
+ * @package  mod_wiki
+ * @category comment
+ *
  * @return boolean
  */
 function wiki_comment_validate($comment_param) {

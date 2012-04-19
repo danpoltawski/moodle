@@ -198,6 +198,10 @@ function css_send_css_not_found() {
 function css_minify_css($files) {
     global $CFG;
 
+    if (empty($files)) {
+        return '';
+    }
+
     set_include_path($CFG->libdir . '/minify/lib' . PATH_SEPARATOR . get_include_path());
     require_once('Minify.php');
 
@@ -220,8 +224,31 @@ function css_minify_css($files) {
         // This returns the CSS rather than echoing it for display
         'quiet' => true
     );
-    $result = Minify::serve('Files', $options);
-    return $result['content'];
+
+    $error = 'unknown';
+    try {
+        $result = Minify::serve('Files', $options);
+        if ($result['success']) {
+            return $result['content'];
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        $error = str_replace("\r", ' ', $error);
+        $error = str_replace("\n", ' ', $error);
+    }
+
+    // minification failed - try to inform the theme developer and include the non-minified version
+    $css = <<<EOD
+/* Error: $error */
+/* Problem detected during theme CSS minimisation, please review the following code */
+/* ================================================================================ */
+
+
+EOD;
+    foreach ($files as $cssfile) {
+        $css .= file_get_contents($cssfile)."\n";
+    }
+    return $css;
 }
 
 /**
@@ -611,6 +638,13 @@ class css_optimiser {
                     }
                     switch ($char) {
                         case ';':
+                            if ($inparenthesis) {
+                                $buffer .= $char;
+                                // continue 1: The switch processing chars
+                                // continue 2: The switch processing the state
+                                // continue 3: The for loop
+                                continue 3;
+                            }
                             $currentrule->add_style($buffer);
                             $buffer = '';
                             $inquotes = false;
@@ -629,6 +663,21 @@ class css_optimiser {
                             $this->rawrules++;
                             $buffer = '';
                             $inquotes = false;
+                            $inparenthesis = false;
+                            // continue 1: The switch processing chars
+                            // continue 2: The switch processing the state
+                            // continue 3: The for loop
+                            continue 3;
+                        case '(':
+                            $inparenthesis = true;
+                            $buffer .= $char;
+                            // continue 1: The switch processing chars
+                            // continue 2: The switch processing the state
+                            // continue 3: The for loop
+                            continue 3;
+                        case ')':
+                            $inparenthesis = false;
+                            $buffer .= $char;
                             // continue 1: The switch processing chars
                             // continue 2: The switch processing the state
                             // continue 3: The for loop
@@ -1222,7 +1271,7 @@ class css_rule {
                 list($name, $value) = array_map('trim', $bits);
             }
             if (isset($name) && isset($value) && $name !== '' && $value !== '') {
-                $style = css_style::init($name, $value);
+                $style = css_style::init_automatic($name, $value);
             }
         } else if ($style instanceof css_style) {
             // Clone the style as it may be coming from another rule and we don't
@@ -1619,7 +1668,7 @@ abstract class css_style {
      * @param string $value The value of the style.
      * @return css_style_generic
      */
-    public static function init($name, $value) {
+    public static function init_automatic($name, $value) {
         $specificclass = 'css_style_'.preg_replace('#[^a-zA-Z0-9]+#', '', $name);
         if (class_exists($specificclass)) {
             return $specificclass::init($value);

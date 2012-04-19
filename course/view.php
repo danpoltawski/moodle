@@ -138,12 +138,15 @@
 
             if (!empty($section)) {
                 if (!empty($move) and confirm_sesskey()) {
-                    if (!move_section($course, $section, $move)) {
+                    if (move_section($course, $section, $move)) {
+                        if ($course->id == SITEID) {
+                            redirect($CFG->wwwroot . '/?redirect=0');
+                        } else {
+                            redirect($PAGE->url);
+                        }
+                    } else {
                         echo $OUTPUT->notification('An error occurred while moving a section');
                     }
-                    // Clear the navigation cache at this point so that the affects
-                    // are seen immediately on the navigation.
-                    $PAGE->navigation->clear_cache();
                 }
             }
         }
@@ -223,12 +226,12 @@
     // Course wrapper start.
     echo html_writer::start_tag('div', array('class'=>'course-content'));
 
-    $modinfo =& get_fast_modinfo($COURSE);
+    $modinfo = get_fast_modinfo($COURSE);
     get_all_mods($course->id, $mods, $modnames, $modnamesplural, $modnamesused);
     foreach($mods as $modid=>$unused) {
         if (!isset($modinfo->cms[$modid])) {
             rebuild_course_cache($course->id);
-            $modinfo =& get_fast_modinfo($COURSE);
+            $modinfo = get_fast_modinfo($COURSE);
             debugging('Rebuilding course cache', DEBUG_DEVELOPER);
             break;
         }

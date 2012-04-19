@@ -112,7 +112,7 @@ class external_service_form extends moodleform {
         $mform->setType('id', PARAM_INT);
 
         if (!empty($service->id)) {
-            $buttonlabel = get_string('editaservice', 'webservice');
+            $buttonlabel = get_string('savechanges');
         } else {
             $buttonlabel = get_string('addaservice', 'webservice');
         }
@@ -160,7 +160,7 @@ class external_service_functions_form extends moodleform {
             $functions[$functionid] = $function->name . ':' . $function->description;
         }
 
-        $mform->addElement('searchableselector', 'fid', get_string('name'),
+        $mform->addElement('searchableselector', 'fids', get_string('name'),
                 $functions, array('multiple'));
 
         $mform->addElement('hidden', 'id');
@@ -254,7 +254,7 @@ class web_service_token_form extends moodleform {
         return $data;
     }
 
-    function validation(&$data, $files) {
+    function validation($data, $files) {
         global $DB;
 
         $errors = parent::validation($data, $files);

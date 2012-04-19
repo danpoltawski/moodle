@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,8 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File in which the grader_report class is defined.
- * @package gradebook
+ * Definition of the grader report class
+ *
+ * @package   gradereport_grader
+ * @copyright 2007 Nicolas Connault
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/grade/report/lib.php');
@@ -26,7 +28,7 @@ require_once($CFG->libdir.'/tablelib.php');
 /**
  * Class providing an API for the grader report building and displaying.
  * @uses grade_report
- * @package gradebook
+ * @package gradereport_grader
  */
 class grade_report_grader extends grade_report {
     /**
@@ -135,12 +137,11 @@ class grade_report_grader extends grade_report {
 
         $this->baseurl = new moodle_url('index.php', array('id' => $this->courseid));
 
-        $studentsperpage = $this->get_pref('studentsperpage');
-        if (!empty($studentsperpage)) {
-            $this->baseurl->params(array('perpage' => $studentsperpage, 'page' => $this->page));
+        if (!empty($this->page)) {
+            $this->baseurl->params(array('page' => $this->page));
         }
 
-        $this->pbarurl = new moodle_url('/grade/report/grader/index.php', array('id' => $this->courseid, 'perpage' => $studentsperpage));
+        $this->pbarurl = new moodle_url('/grade/report/grader/index.php', array('id' => $this->courseid));
 
         $this->setup_groups();
 
@@ -163,7 +164,7 @@ class grade_report_grader extends grade_report {
             $separategroups = true;
             $mygroups = groups_get_user_groups($this->course->id);
             $mygroups = $mygroups[0]; // ignore groupings
-            // reorder the groups fro better perf bellow
+            // reorder the groups fro better perf below
             $current = array_search($this->currentgroup, $mygroups);
             if ($current !== false) {
                 unset($mygroups[$current]);
@@ -278,6 +279,10 @@ class grade_report_grader extends grade_report {
     private function setup_sortitemid() {
 
         global $SESSION;
+
+        if (!isset($SESSION->gradeuserreport)) {
+            $SESSION->gradeuserreport = new stdClass();
+        }
 
         if ($this->sortitemid) {
             if (!isset($SESSION->gradeuserreport->sort)) {
@@ -438,7 +443,7 @@ class grade_report_grader extends grade_report {
             foreach ($grades as $graderec) {
                 if (in_array($graderec->userid, $userids) and array_key_exists($graderec->itemid, $this->gtree->get_items())) { // some items may not be present!!
                     $this->grades[$graderec->userid][$graderec->itemid] = new grade_grade($graderec, false);
-                    $this->grades[$graderec->userid][$graderec->itemid]->grade_item =& $this->gtree->get_item($graderec->itemid); // db caching
+                    $this->grades[$graderec->userid][$graderec->itemid]->grade_item = $this->gtree->get_item($graderec->itemid); // db caching
                 }
             }
         }
@@ -450,7 +455,7 @@ class grade_report_grader extends grade_report {
                     $this->grades[$userid][$itemid] = new grade_grade();
                     $this->grades[$userid][$itemid]->itemid = $itemid;
                     $this->grades[$userid][$itemid]->userid = $userid;
-                    $this->grades[$userid][$itemid]->grade_item =& $this->gtree->get_item($itemid); // db caching
+                    $this->grades[$userid][$itemid]->grade_item = $this->gtree->get_item($itemid); // db caching
                 }
             }
         }
@@ -1037,7 +1042,7 @@ class grade_report_grader extends grade_report {
         $module = array(
             'name'      => 'gradereport_grader',
             'fullpath'  => '/grade/report/grader/module.js',
-            'requires'  => array('base', 'dom', 'event', 'event-mouseenter', 'event-key', 'io-base', 'json-parse', 'overlay')
+            'requires'  => array('base', 'dom', 'event', 'event-mouseenter', 'event-key', 'io-queue', 'json-parse', 'overlay')
         );
         $PAGE->requires->js_init_call('M.gradereport_grader.init_report', $jsarguments, false, $module);
         $PAGE->requires->strings_for_js(array('addfeedback','feedback', 'grade'), 'grades');
@@ -1205,7 +1210,7 @@ class grade_report_grader extends grade_report {
 
             foreach ($this->gtree->items as $itemid=>$unused) {
                 // emulate grade element
-                $item =& $this->gtree->get_item($itemid);
+                $item = $this->gtree->get_item($itemid);
 
                 $eid = $this->gtree->get_item_eid($item);
                 $element = $this->gtree->locate_element($eid);

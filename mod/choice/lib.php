@@ -295,7 +295,7 @@ WHERE
             $DB->update_record("choice_answers", $newanswer);
             add_to_log($course->id, "choice", "choose again", "view.php?id=$cm->id", $choice->id, $cm->id);
         } else {
-            $newanswer = NULL;
+            $newanswer = stdClass();
             $newanswer->choiceid = $choice->id;
             $newanswer->userid = $userid;
             $newanswer->optionid = $formanswer;
@@ -585,29 +585,6 @@ function choice_delete_instance($id) {
     }
 
     return $result;
-}
-
-/**
- * Returns the users with data in one choice
- * (users with records in choice_responses, students)
- *
- * @todo: deprecated - to be deleted in 2.2
- *
- * @param int $choiceid
- * @return array
- */
-function choice_get_participants($choiceid) {
-    global $DB;
-
-    //Get students
-    $students = $DB->get_records_sql("SELECT DISTINCT u.id, u.id
-                                 FROM {user} u,
-                                      {choice_answers} a
-                                 WHERE a.choiceid = ? AND
-                                       u.id = a.userid", array($choiceid));
-
-    //Return students array (it contains an array of unique users)
-    return ($students);
 }
 
 /**

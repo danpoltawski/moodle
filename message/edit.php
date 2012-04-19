@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,9 +17,9 @@
 /**
  * Edit user message preferences
  *
- * @author Luis Rodrigues and Martin Dougiamas
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package message
+ * @package    core_message
+ * @copyright  2008 Luis Rodrigues and Martin Dougiamas
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(__FILE__) . '/../config.php');
@@ -31,12 +30,9 @@ $course = optional_param('course', SITEID, PARAM_INT);   // course id (defaults 
 $disableall = optional_param('disableall', 0, PARAM_BOOL); //disable all of this user's notifications
 
 $url = new moodle_url('/message/edit.php');
-if ($userid !== $USER->id) {
-    $url->param('id', $userid);
-}
-if ($course != SITEID) {
-    $url->param('course', $course);
-}
+$url->param('id', $userid);
+$url->param('course', $course);
+
 $PAGE->set_url($url);
 
 if (!$course = $DB->get_record('course', array('id' => $course))) {

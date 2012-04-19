@@ -98,6 +98,7 @@ class mnet_review_host_form extends moodleform {
 
         $mform->addElement('textarea', 'public_key', get_string('publickey', 'mnet'), array('rows' => 17, 'cols' => 100, 'class' => 'smalltext'));
         $mform->setType('public_key', PARAM_PEM);
+        $mform->addRule('public_key', get_string('required'), 'required');
 
         // finished with form controls, now the static informational stuff
         if ($mnet_peer && !empty($mnet_peer->bootstrapped)) {
@@ -140,10 +141,10 @@ class mnet_review_host_form extends moodleform {
 
         if ($mnet_peer && !empty($mnet_peer->deleted)) {
             $radioarray = array();
-            $radioarray[] = MoodleQuickForm::createElement('static', 'deletedinfo', '',
+            $radioarray[] = $mform->createElement('static', 'deletedinfo', '',
                 $OUTPUT->container(get_string('deletedhostinfo', 'mnet'), 'deletedhostinfo'));
-            $radioarray[] = MoodleQuickForm::createElement('radio', 'deleted', '', get_string('yes'), 1);
-            $radioarray[] = MoodleQuickForm::createElement('radio', 'deleted', '', get_string('no'), 0);
+            $radioarray[] = $mform->createElement('radio', 'deleted', '', get_string('yes'), 1);
+            $radioarray[] = $mform->createElement('radio', 'deleted', '', get_string('no'), 0);
             $mform->addGroup($radioarray, 'radioar', get_string('deleted'), array(' ', ' '), false);
         } else {
             $mform->addElement('hidden', 'deleted');
@@ -160,7 +161,9 @@ class mnet_review_host_form extends moodleform {
         }
         $mnet_peer = new mnet_peer(); // idiotic api
         $mnet_peer->wwwroot = $data['wwwroot']; // just hard-set this rather than bootstrap the object
-        if (!$credentials = $mnet_peer->check_credentials($data['public_key'])) {
+        if (empty($data['public_key'])) {
+            $errors['public_key'] = get_string('publickeyrequired', 'mnet');
+        } else if (!$credentials = $mnet_peer->check_credentials($data['public_key'])) {
             $errmsg = '';
             foreach ($mnet_peer->error as $err) {
                 $errmsg .= $err['code'] . ': ' . $err['text'].'<br />';

@@ -40,6 +40,14 @@ class qformat_blackboard_six extends qformat_default {
         return true;
     }
 
+    public function can_import_file($file) {
+        $mimetypes = array(
+            mimeinfo('type', '.dat'),
+            mimeinfo('type', '.zip')
+        );
+        return in_array($file->get_mimetype(), $mimetypes);
+    }
+
 
     //Function to check and create the needed dir to unzip file to
     function check_and_create_import_dir($unique_code) {
@@ -235,7 +243,7 @@ class qformat_blackboard_six extends qformat_default {
 
 
 
-  function readquestions ($lines) {
+  protected function readquestions($lines) {
     /// Parses an array of lines into an array of questions,
     /// where each item is a question object as defined by
     /// readquestion().

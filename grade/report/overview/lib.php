@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,8 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File in which the overview_report class is defined.
- * @package gradebook
+ * Definition of the grade_overview_report class
+ *
+ * @package gradereport_overview
+ * @copyright 2007 Nicolas Connault
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/grade/report/lib.php');
@@ -26,7 +28,7 @@ require_once($CFG->libdir.'/tablelib.php');
 /**
  * Class providing an API for the overview report building and displaying.
  * @uses grade_report
- * @package gradebook
+ * @package gradereport_overview
  */
 class grade_report_overview extends grade_report {
 
@@ -119,7 +121,14 @@ class grade_report_overview extends grade_report {
                 if (!$course->showgrades) {
                     continue;
                 }
+
                 $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+
+                if (!$course->visible && !has_capability('moodle/course:viewhiddencourses', $coursecontext)) {
+                    // The course is hidden and the user isn't allowed to see it
+                    continue;
+                }
+
                 $courseshortname = format_string($course->shortname, true, array('context' => $coursecontext));
                 $courselink = html_writer::link(new moodle_url('/grade/report/user/index.php', array('id' => $course->id, 'userid' => $this->user->id)), $courseshortname);
                 $canviewhidden = has_capability('moodle/grade:viewhidden', $coursecontext);
