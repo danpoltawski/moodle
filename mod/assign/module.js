@@ -81,6 +81,25 @@ M.mod_assign.init_grading_table = function(Y) {
         });
 
 
+        Y.use('node-menunav', function(Y) {
+            var menus = Y.all('.gradingtable .actionmenu');
+
+            menus.each(function(menu) {
+                Y.on("contentready", function() {
+                    this.plug(Y.Plugin.NodeMenuNav, {autoSubmenuDisplay: true});
+                    var submenus = this.all('.yui3-loading');
+                    submenus.each(function (n) {
+                        n.removeClass('yui3-loading');
+                    });
+
+                }, "#" + menu.getAttribute('id'));
+
+                
+            });
+
+        
+        });
+/*
         Y.use('yui2-button', 'yui2-menu', function(Y) {
             var containers = Y.all('.gradingtable .urlselect');
 
@@ -105,6 +124,7 @@ M.mod_assign.init_grading_table = function(Y) {
                 });
             });
         });
+*/
         
     });
 

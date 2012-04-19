@@ -890,7 +890,7 @@ class assignment {
             if ($grade == -1 || $grade === null) {
                 return '-';
             } else {
-                return format_float(($grade),2) .' / '. format_float($this->get_instance()->grade,0);
+                return format_float(($grade),2) .'&nbsp;/&nbsp;'. format_float($this->get_instance()->grade,2);
             }
 
         } else {                                // Scale

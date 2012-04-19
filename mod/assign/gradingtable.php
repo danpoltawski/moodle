@@ -210,7 +210,9 @@ class assign_grading_table extends table_sql implements renderable {
         if ($this->is_downloading()) {
             return $grade;
         }
-        return $this->assignment->display_grade($grade);
+        $o = $this->assignment->display_grade($grade);
+
+        return $o;
     }
     
     /**
@@ -266,13 +268,31 @@ class assign_grading_table extends table_sql implements renderable {
      * @return string
      */
     function col_grade(stdClass $row) {
-        $o = '-';
+        $o = '';
 
-        if ($row->grade) {
-            $o = $this->display_grade($row->grade);
+        $link = '';
+        $separator = '';
+        $grade = '';
+
+        if (!$this->is_downloading()) {
+            $icon = $this->output->pix_icon('gradefeedback', get_string('grade', 'assign'), 'mod_assign');
+            $url = new moodle_url('/mod/assign/view.php',
+                                            array('id' => $this->assignment->get_course_module()->id,
+                                                  'rownum'=>$this->rownum,'action'=>'grade'));
+            $link = $this->output->action_link($url, $icon);
+            $separator = $this->output->spacer(array(), true);
         }
 
-        return $o;
+
+        if ($row->grade) {
+            $grade = $this->display_grade($row->grade);
+        } else {
+            $grade = '-';
+        }
+       
+
+        //return $grade . $separator . $link;
+        return $link . $separator . $grade;
     }
     
     /**
@@ -399,8 +419,32 @@ class assign_grading_table extends table_sql implements renderable {
             $actions[$url->out(false)] = $description;
         }
 
-        $edit .= $this->output->url_select($actions, null, null, 'select' . $row->id);
-        $edit .= '<div id="actionselect' . $row->id . '"></div>';
+        $edit .= $this->output->container_start(array('yui3-menu', 'actionmenu'), 'actionselect' . $row->id);
+        $edit .= $this->output->container_start(array('yui3-menu-content'));
+        $edit .= html_writer::start_tag('ul');
+        $edit .= html_writer::start_tag('li', array('class'=>'menuicon'));
+
+        $menuicon = $this->output->pix_icon('i/menu', get_string('actions'));
+        $edit .= $this->output->action_link('#menu' . $row->id, $menuicon, null, array('class'=>'yui3-menu-label'));
+        $edit .= $this->output->container_start(array('yui3-menu', 'yui3-loading'), 'menu' . $row->id);
+        $edit .= $this->output->container_start(array('yui3-menu-content'));
+        $edit .= html_writer::start_tag('ul');
+        
+        foreach ($actions as $url => $description) {
+            $edit .= html_writer::start_tag('li', array('class'=>'yui3-menuitem'));
+            
+            $edit .= $this->output->action_link($url, $description, null, array('class'=>'yui3-menuitem-content')); 
+       
+            $edit .= html_writer::end_tag('li');
+        }
+        $edit .= html_writer::end_tag('ul');
+        $edit .= $this->output->container_end();
+        $edit .= $this->output->container_end();
+        $edit .= html_writer::end_tag('li');
+        $edit .= html_writer::end_tag('ul');
+
+        $edit .= $this->output->container_end();
+        $edit .= $this->output->container_end();
 
         return $edit;
     }
@@ -418,6 +462,7 @@ class assign_grading_table extends table_sql implements renderable {
         $link = '';
         $showviewlink = false;
         $summary = $plugin->view_summary($item, $showviewlink);
+        $separator = '';
         if ($showviewlink) {
             $icon = $this->output->pix_icon('t/preview', get_string('view' . substr($plugin->get_subtype(), strlen('assign')), 'mod_assign'));
             $link = $this->output->action_link(
@@ -430,10 +475,10 @@ class assign_grading_table extends table_sql implements renderable {
                                                      'returnaction'=>$returnaction,
                                                      'returnparams'=>http_build_query($returnparams))),
                                 $icon);
-            $link .= $this->output->spacer(array('width'=>15));
+            $separator = $this->output->spacer(array(), true);
         }
 
-        return $link . $summary;
+        return $link . $separator . $summary;
     }
 
 

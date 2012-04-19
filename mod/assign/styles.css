@@ -108,3 +108,23 @@ div.earlysubmission {
 .gradingtable tr.unselectedrow td { background-color: white; }
 
 .gradingtable .c0 div.selectall {margin-left: 7px;}
+
+.gradingtable .yui3-menu ul {
+    margin: 0px; 
+}
+
+.gradingtable .yui3-menu-label {
+    padding-left: 0px;
+}
+.gradingtable .yui3-menu li {
+    list-style-type: none;
+}
+
+.jsenabled .gradingtable .yui3-loading {
+    display: none;
+}
+
+.gradingtable .yui3-menu .yui3-menu-content {
+    border: 0px;
+}
+
