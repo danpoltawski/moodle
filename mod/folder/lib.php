@@ -397,12 +397,12 @@ function folder_dndupload_handle($uploadinfo) {
 
     $folder->id = $DB->insert_record('folder', $folder);
 
-    // Retrieve the file from the draft file area
+    // Retrieve the file from the draft file area.
     $context = context_module::instance($uploadinfo->coursemodule);
     file_save_draft_area_files($uploadinfo->draftitemid, $context->id, 'mod_folder', 'temp', 0, array('subdirs'=>true));
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'mod_folder', 'temp', 0, 'sortorder', false);
-    // Only ever one file - extract the contents
+    // Only ever one file - extract the contents.
     $file = reset($files);
 
     $success = $file->extract_to_storage(new zip_packer(), $context->id, 'mod_folder', 'content', 0, '/', $USER->id);

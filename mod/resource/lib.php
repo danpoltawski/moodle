@@ -509,7 +509,7 @@ function resource_dndupload_handle($uploadinfo) {
     global $DB, $CFG;
     require_once("$CFG->libdir/resourcelib.php");
 
-    // Set display options to site defaults
+    // Set display options to site defaults.
     $config = get_config('resource');
     $display = $config->display;
     $displayoptions = array();
@@ -523,7 +523,7 @@ function resource_dndupload_handle($uploadinfo) {
     }
     $displayoptions = serialize($displayoptions);
 
-    // Create the database entry
+    // Create the database entry.
     $resource = new stdClass();
     $resource->course = $uploadinfo->course->id;
     $resource->name = $uploadinfo->displayname;
@@ -535,12 +535,12 @@ function resource_dndupload_handle($uploadinfo) {
 
     $resource->id = $DB->insert_record('resource', $resource);
 
-    // Retrieve the file from the draft file area
+    // Retrieve the file from the draft file area.
     $context = context_module::instance($uploadinfo->coursemodule);
     file_save_draft_area_files($uploadinfo->draftitemid, $context->id, 'mod_resource', 'content', 0, array('subdirs' => false));
     $fs = get_file_storage();
     $files = $fs->get_area_files($context->id, 'mod_resource', 'content', 0, 'sortorder', false);
-    // Only ever one file - set it as the 'main' file
+    // Only ever one file - set it as the 'main' file.
     $file = reset($files);
     file_set_sortorder($context->id, 'mod_resource', 'content', 0, $file->get_filepath(), $file->get_filename(), 1);
 

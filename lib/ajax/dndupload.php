@@ -33,7 +33,7 @@ $section = required_param('section', PARAM_INT);
 $type = required_param('type', PARAM_TEXT);
 $modulename = required_param('module', PARAM_PLUGIN);
 $displayname = optional_param('displayname', null, PARAM_TEXT);
-$contents = optional_param('contents', null, PARAM_RAW); // It will be up to each plugin to clean this data, before saving it
+$contents = optional_param('contents', null, PARAM_RAW); // It will be up to each plugin to clean this data, before saving it.
 
 $dndproc = new dndupload_processor($courseid, $section, $type, $modulename);
 $dndproc->process($displayname, $contents);
