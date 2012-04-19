@@ -234,7 +234,7 @@ class assign_grading_table extends table_sql implements renderable {
      * @param stdClass $row
      * @return string
      */
-    function col_fullname(stdClass $row) {
+    function col_fullname($row) {
         return fullname($row);
     }
     
