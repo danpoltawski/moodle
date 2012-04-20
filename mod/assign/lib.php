@@ -277,7 +277,7 @@ function assign_print_overview($courses, &$htmlarray) {
         } else {
             $str .= '<div class="info">'.$strduedateno.'</div>';
         }
-        $context = get_context_instance(CONTEXT_MODULE, $assignment->coursemodule);
+        $context = context_module::instance($assignment->coursemodule);
         if (has_capability('mod/assign:grade', $context)) {
 
             // count how many people can submit
