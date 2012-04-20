@@ -431,7 +431,6 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
     $modinfo = get_fast_modinfo($course); // no need pass this by reference as the return object already being cached
 
     $cm = $modinfo->get_cm($cmid);
-
     $params = array();
     if ($userid) {
         $userselect = "AND u.id = :userid";
@@ -477,7 +476,10 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
     }
 
     $show = array();
-
+    $usersgroups = groups_get_all_groups($course->id, $USER->id, $cm->groupingid);
+    if (is_array($usersgroups)) {
+        $usersgroups = array_keys($usersgroups);
+    }
     foreach($submissions as $submission) {
         if ($submission->userid == $USER->id) {
             $show[] = $submission;
@@ -500,9 +502,7 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
             if (empty($modinfo->groups[$cm->id])) {
                 continue;
             }
-            $usersgroups = groups_get_all_groups($course->id, $cm->userid, $cm->groupingid);
             if (is_array($usersgroups)) {
-                $usersgroups = array_keys($usersgroups);
                 $intersect = array_intersect($usersgroups, $modinfo->groups[$cm->id]);
                 if (empty($intersect)) {
                     continue;
@@ -528,29 +528,29 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
 
     $aname = format_string($cm->name,true);
     foreach ($show as $submission) {
-        $tmpactivity = new stdClass();
+        $activity = new stdClass();
 
-        $tmpactivity->type         = 'assign';
-        $tmpactivity->cmid         = $cm->id;
-        $tmpactivity->name         = $aname;
-        $tmpactivity->sectionnum   = $cm->sectionnum;
-        $tmpactivity->timestamp    = $submission->timemodified;
-        $tmpactivity->user         = $submission;
+        $activity->type         = 'assign';
+        $activity->cmid         = $cm->id;
+        $activity->name         = $aname;
+        $activity->sectionnum   = $cm->sectionnum;
+        $activity->timestamp    = $submission->timemodified;
+        $activity->user         = new stdClass();
         if ($grader) {
-            $tmpactivity->grade = $grades->items[0]->grades[$submission->userid]->str_long_grade;
+            $activity->grade = $grades->items[0]->grades[$submission->userid]->str_long_grade;
         }
 
         $userfields = explode(',', user_picture::fields());
         foreach ($userfields as $userfield) {
             if ($userfield == 'id') {
-                $tmpactivity->user->{$userfield} = $submission->userid; // aliased in SQL above
+                $activity->user->{$userfield} = $submission->userid; // aliased in SQL above
             } else {
-                $tmpactivity->user->{$userfield} = $submission->{$userfield};
+                $activity->user->{$userfield} = $submission->{$userfield};
             }
         }
-        $tmpactivity->user->fullname = fullname($submission, $viewfullnames);
+        $activity->user->fullname = fullname($submission, $viewfullnames);
 
-        $activities[$index++] = $tmpactivity;
+        $activities[$index++] = $activity;
     }
 
     return;
