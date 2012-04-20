@@ -119,6 +119,13 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             if (!data) {
                 data = {};
             }
+
+            // Handle any variables which we must pass back through to
+            var pageparams = this.get('config').pageparams;
+            for (varname in pageparams) {
+                data[varname] = pageparams[varname];
+            }
+
             data.sesskey = M.cfg.sesskey;
             data.courseId = this.get('courseid');
 
@@ -184,6 +191,9 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                 'value' : 0
             },
             ajaxurl : {
+                'value' : 0
+            },
+            config : {
                 'value' : 0
             }
         }

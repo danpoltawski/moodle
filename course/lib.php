@@ -4429,11 +4429,13 @@ function course_page_type_list($pagetype, $parentcontext, $currentcontext) {
  * @param integer $id The ID of the course being applied to
  * @param array $modules An array containing the names of the modules in
  *                       use on the page
- * @param string $ajaxresourceurl The post URL to use for AJAX changes of resources
- * @param string $ajaxsectionurl The post URL to use for AJAX changes of sections
+ * @param object $config An object containing configuration parameters for ajax modules including:
+ *          * resourceurl   The URL to post changes to for resource changes
+ *          * sectionurl    The URL to post changes to for section changes
+ *          * pageparams    Additional parameters to pass through in the post
  * @return void
  */
-function include_course_ajax($course, $modules = array(), $ajaxresourceurl = '/course/rest.php', $ajaxsectionurl = '/course/rest.php') {
+function include_course_ajax($course, $modules = array(), $config = null) {
     global $PAGE, $CFG, $USER;
 
     // Ensure that ajax should be included
@@ -4447,12 +4449,32 @@ function include_course_ajax($course, $modules = array(), $ajaxresourceurl = '/c
         return;
     }
 
+    if (!$config) {
+        $config = new stdClass();
+    }
+
+    // The URL to use for resource changes
+    if (!isset($config->resourceurl)) {
+        $config->resourceurl = '/course/rest.php';
+    }
+
+    // The URL to use for section changes
+    if (!isset($config->sectionurl)) {
+        $config->sectionurl = '/course/rest.php';
+    }
+
+    // Any additional parameters which need to be included on page submission
+    if (!isset($config->pageparams)) {
+        $config->pageparams = array();
+    }
+
     // Include toolboxes
     $PAGE->requires->yui_module('moodle-course-toolboxes',
             'M.course.init_resource_toolbox',
             array(array(
                 'courseid' => $course->id,
-                'ajaxurl' => $ajaxresourceurl,
+                'ajaxurl' => $config->resourceurl,
+                'config' => $config,
             ))
     );
     $PAGE->requires->yui_module('moodle-course-toolboxes',
@@ -4460,7 +4482,8 @@ function include_course_ajax($course, $modules = array(), $ajaxresourceurl = '/c
             array(array(
                 'courseid' => $course->id,
                 'format' => $course->format,
-                'ajaxurl' => $ajaxsectionurl,
+                'ajaxurl' => $config->sectionurl,
+                'config' => $config,
             ))
     );
 
@@ -4468,14 +4491,18 @@ function include_course_ajax($course, $modules = array(), $ajaxresourceurl = '/c
     $PAGE->requires->yui_module('moodle-course-dragdrop',
             'M.core_course.init_resource_dragdrop',
             array(array(
-                'courseid' => $course->id),
-                'ajaxurl' => $ajaxresourceurl
-            ), null, true);
-    $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_section_dragdrop',
+                'courseid' => $course->id,
+                'ajaxurl' => $config->resourceurl,
+                'config' => $config,
+            )), null, true);
+
+    $PAGE->requires->yui_module('moodle-course-dragdrop',
+            'M.core_course.init_section_dragdrop',
             array(array(
-                'courseid' => $course->id),
-                'ajaxurl' => $ajaxsectionurl
-            ), null, true);
+                'courseid' => $course->id,
+                'ajaxurl' => $config->sectionurl,
+                'config' => $config,
+            )), null, true);
 
     // Include blocks dragdrop
     $params = array(
