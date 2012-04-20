@@ -473,7 +473,12 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                             if (responsetext.error) {
                                 new M.core.ajaxException(responsetext);
                             }
-                        } catch (e) {}
+                        } catch (e) {
+                            new M.core.ajaxException('Couldnt parse AJAX response');
+                        }
+                    },
+                    failure: function(tid, response) {
+                        new M.core.ajaxException(response);
                     }
                 },
                 context: this,
