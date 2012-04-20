@@ -535,7 +535,7 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
         $tmpactivity->name         = $aname;
         $tmpactivity->sectionnum   = $cm->sectionnum;
         $tmpactivity->timestamp    = $submission->timemodified;
-
+        $tmpactivity->user         = $submission;
         if ($grader) {
             $tmpactivity->grade = $grades->items[0]->grades[$submission->userid]->str_long_grade;
         }
