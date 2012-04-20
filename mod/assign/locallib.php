@@ -1400,6 +1400,7 @@ class assignment {
             $grade->timemodified = $grade->timecreated;
             $grade->locked = 0;
             $grade->grade = -1;
+            $grade->grader = $USER->id;
             $gid = $DB->insert_record('assign_grades', $grade);
             $grade->id = $gid;
             return $grade;
@@ -1964,8 +1965,7 @@ class assignment {
      * @return array 
      */
     private function convert_grade_for_gradebook(stdClass $grade) {
-        $gradebookgrade = array();
-        
+        $gradebookgrade = array();       
         // trying to match those array keys in grade update function in gradelib.php
         // with keys in th database table assign_grades
         // starting around line 262
