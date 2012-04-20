@@ -33,28 +33,183 @@ YUI.add('moodle-course-toolboxes', function(Y) {
     };
 
     /**
-     * The toolboxes class
+     * The toolbox classes
+     *
+     * TOOLBOX is a generic class which should never be directly instantiated
+     * RESOURCETOOLBOX is a class extending TOOLBOX containing code specific to resources
+     * SECTIONTOOLBOX is a class extending TOOLBOX containing code specific to sections
      */
-    var TOOLBOXESNAME = 'course-toolboxes';
-
-    var TOOLBOXES = function() {
-        TOOLBOXES.superclass.constructor.apply(this, arguments);
+    var TOOLBOX = function() {
+        TOOLBOX.superclass.constructor.apply(this, arguments);
     }
 
-    Y.extend(TOOLBOXES, Y.Base, {
+    Y.extend(TOOLBOX, Y.Base, {
+        /**
+         * Replace the button click at the selector with the specified
+         * callback
+         *
+         * @param toolboxtarget The selector of the working area
+         * @param selector The 'button' to replace
+         * @param callback The callback to apply
+         * @param cursor An optional cursor style to apply
+         */
+        replace_button : function(toolboxtarget, selector, callback, cursor) {
+            if (!cursor) {
+                // Set the default cursor type to pointer to match the
+                // anchor
+                cursor = 'pointer';
+            }
+            var button = Y.one(toolboxtarget).all(selector)
+                .removeAttribute('href')
+                .setStyle('cursor', cursor);
+
+            // on isn't chainable and will return an event
+            button.on('click', callback, this);
+
+            return button;
+        },
+          /**
+           * Toggle the visibility and availability for the specified
+           * resource show/hide button
+           */
+        toggle_hide_resource_ui : function(button) {
+            var element = button.ancestor(CSS.ACTIVITYLI);
+            var hideicon = button.one('img');
+
+            var dimarea;
+            var toggle_class;
+            if (this.is_label(element)) {
+                toggle_class = CSS.DIMMEDLABELCLASS;
+                dimarea = element.one(CSS.MODINDENTDIV + ' div');
+            } else {
+                toggle_class = CSS.DIMCLASS;
+                dimarea = element.one('a');
+            }
+
+            var status = '';
+            var value;
+            if (dimarea.hasClass(toggle_class)) {
+                status = 'hide';
+                value = 1;
+            } else {
+                status = 'show';
+                value = 0;
+            }
+
+            // Change the UI
+            dimarea.toggleClass(toggle_class);
+            var newstring = M.util.get_string(status, 'moodle');
+            hideicon.setAttrs({
+                'alt' : newstring,
+                'title' : newstring,
+                'src'   : M.util.image_url('t/' + status)
+            });
+            button.set('title', newstring);
+            button.set('className', 'editing_'+status);
+
+            return value;
+        },
+        /**
+         * Send a request using the REST API
+         *
+         * @param data The data to submit
+         * @param config (optional) Any additional configuration to submit
+         * @return response responseText field from responce
+         */
+        send_request : function(data, config) {
+            // Default data structure
+            if (!data) {
+                data = {};
+            }
+            data.sesskey = M.cfg.sesskey;
+            data.courseId = this.get('courseid');
+
+            // Default config structure
+            if (!config) {
+                config = {};
+            }
+
+            var uri = M.cfg.wwwroot + AJAXURL;
+
+            // Define the configuration to send with the request
+            var responsetext = [];
+            var config = {
+                method: 'POST',
+                data: data,
+                on: {
+                    success: function(tid, response) {
+                        try {
+                            responsetext = Y.JSON.parse(response.responseText);
+                            if (responsetext.error) {
+                                new M.core.ajaxException(responsetext);
+                            }
+                        } catch (e) {}
+                    },
+                    failure : function(tid, response) {
+                        new M.core.ajaxException(response);
+                    }
+                },
+                context: this,
+                sync: true
+            }
+            // Send the request
+            Y.io(uri, config);
+            return responsetext;
+        },
+        is_label : function(target) {
+            return target.hasClass(CSS.HASLABEL);
+        },
+        /**
+         * Return the module ID for the specified element
+         *
+         * @param element The <li> element to determine a module-id number for
+         * @return string The module ID
+         */
+        get_element_id : function(element) {
+            return element.get('id').replace(CSS.MODULEIDPREFIX, '');
+        },
+        /**
+         * Return the module ID for the specified element
+         *
+         * @param element The <li> element to determine a module-id number for
+         * @return string The module ID
+         */
+        get_section_id : function(section) {
+            return section.get('id').replace(CSS.SECTIONIDPREFIX, '');
+        }
+    },
+    {
+        NAME : 'course-toolbox',
+        ATTRS : {
+            // The ID of the current course
+            courseid : {
+                'value' : 0
+            },
+            posturl : {
+                'value' : 0
+            }
+        }
+    }
+    );
+
+
+    var RESOURCETOOLBOX = function() {
+        RESOURCETOOLBOX.superclass.constructor.apply(this, arguments);
+    }
+
+    Y.extend(RESOURCETOOLBOX, TOOLBOX, {
         // Variables
         GROUPS_NONE     : 0,
         GROUPS_SEPARATE : 1,
         GROUPS_VISIBLE  : 2,
 
         /**
-         * Initialize the toolboxes module
+         * Initialize the resource toolbox
          *
          * Updates all span.commands with relevant handlers and other required changes
          */
         initializer : function(config) {
             this.setup_for_resource();
-            this.setup_for_section();
             M.course.coursebase.register_module(this);
         },
 
@@ -71,21 +226,6 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             }
 
             Y.all(baseselector).each(this._setup_for_resource, this);
-        },
-
-        /**
-         * Update any section areas within the scope of the specified
-         * selector with AJAX equivelants
-         *
-         * @param baseselector The selector to limit scope to
-         * @return void
-         */
-        setup_for_section : function(baseselector) {
-            if (!baseselector) {
-                var baseselector = CSS.PAGECONTENT;
-            }
-
-            Y.all(baseselector).each(this._setup_for_section, this);
         },
         _setup_for_resource : function(toolboxtarget) {
             // Move left and right
@@ -117,37 +257,6 @@ YUI.add('moodle-course-toolboxes', function(Y) {
 
             groups = this.replace_button(toolboxtarget, CSS.COMMANDSPAN + ' ' + CSS.GROUPSVISIBLE, this.toggle_groupmode);
             groups.setAttribute('groupmode', this.GROUPS_VISIBLE);
-        },
-        _setup_for_section : function(toolboxtarget) {
-            // Section Highlighting
-            this.replace_button(toolboxtarget, CSS.RIGHTDIV + ' ' + CSS.HIGHLIGHT, this.toggle_highlight);
-
-            // Section Visibility
-            this.replace_button(toolboxtarget, CSS.RIGHTDIV + ' ' + CSS.SHOWHIDE, this.toggle_hide_section);
-        },
-        /**
-         * Replace the button click at the selector with the specified
-         * callback
-         *
-         * @param toolboxtarget The selector of the working area
-         * @param selector The 'button' to replace
-         * @param callback The callback to apply
-         * @param cursor An optional cursor style to apply
-         */
-        replace_button : function(toolboxtarget, selector, callback, cursor) {
-            if (!cursor) {
-                // Set the default cursor type to pointer to match the
-                // anchor
-                cursor = 'pointer';
-            }
-            var button = Y.one(toolboxtarget).all(selector)
-                .removeAttribute('href')
-                .setStyle('cursor', cursor);
-
-            // on isn't chainable and will return an event
-            button.on('click', callback, this);
-
-            return button;
         },
         move_left : function(e) {
             this.move_leftright(e, -1);
@@ -245,43 +354,6 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             };
             this.send_request(data);
         },
-        toggle_hide_resource_ui : function(button) {
-            var element = button.ancestor(CSS.ACTIVITYLI);
-            var hideicon = button.one('img');
-
-            var dimarea;
-            var toggle_class;
-            if (this.is_label(element)) {
-                toggle_class = CSS.DIMMEDLABELCLASS;
-                dimarea = element.one(CSS.MODINDENTDIV + ' div');
-            } else {
-                toggle_class = CSS.DIMCLASS;
-                dimarea = element.one('a');
-            }
-
-            var status = '';
-            var value;
-            if (dimarea.hasClass(toggle_class)) {
-                status = 'hide';
-                value = 1;
-            } else {
-                status = 'show';
-                value = 0;
-            }
-
-            // Change the UI
-            dimarea.toggleClass(toggle_class);
-            var newstring = M.util.get_string(status, 'moodle');
-            hideicon.setAttrs({
-                'alt' : newstring,
-                'title' : newstring,
-                'src'   : M.util.image_url('t/' + status)
-            });
-            button.set('title', newstring);
-            button.set('className', 'editing_'+status);
-
-            return value;
-        },
         toggle_groupmode : function(e) {
             // Get the element we're working on
             var element = e.target.ancestor(CSS.ACTIVITYLI);
@@ -332,6 +404,76 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                 'id'    : this.get_element_id(element)
             };
             this.send_request(data);
+        },
+        /**
+         * Add the moveleft button
+         * This is required after moving left from an initial position of 0
+         *
+         * @param target The encapsulating <li> element
+         */
+        add_moveleft : function(target) {
+            var left_string = M.util.get_string('moveleft', 'moodle');
+            var newicon = Y.Node.create('<img />')
+                .addClass(CSS.GENERICICONCLASS)
+                .setAttrs({
+                    'src'   : M.util.image_url('t/left', 'moodle'),
+                    'title' : left_string,
+                    'alt'   : left_string
+                });
+            var anchor = new Y.Node.create('<a />')
+                .setStyle('cursor', 'pointer')
+                .addClass(CSS.MOVELEFTCLASS)
+                .set('title', left_string);
+            anchor.appendChild(newicon);
+            anchor.on('click', this.move_left, this);
+            target.one(CSS.MOVERIGHT).insert(anchor, 'before');
+        }
+    }, {
+        NAME : 'course-resource-toolbox',
+        ATTRS : {
+            courseid : {
+                'value' : 0
+            },
+            format : {
+                'value' : 'topics'
+            }
+        }
+    });
+
+    var SECTIONTOOLBOX = function() {
+        SECTIONTOOLBOX.superclass.constructor.apply(this, arguments);
+    }
+
+    Y.extend(SECTIONTOOLBOX, TOOLBOX, {
+        /**
+         * Initialize the toolboxes module
+         *
+         * Updates all span.commands with relevant handlers and other required changes
+         */
+        initializer : function(config) {
+            this.setup_for_section();
+            M.course.coursebase.register_module(this);
+        },
+        /**
+         * Update any section areas within the scope of the specified
+         * selector with AJAX equivelants
+         *
+         * @param baseselector The selector to limit scope to
+         * @return void
+         */
+        setup_for_section : function(baseselector) {
+            if (!baseselector) {
+                var baseselector = CSS.PAGECONTENT;
+            }
+
+            Y.all(baseselector).each(this._setup_for_section, this);
+        },
+        _setup_for_section : function(toolboxtarget) {
+            // Section Highlighting
+            this.replace_button(toolboxtarget, CSS.RIGHTDIV + ' ' + CSS.HIGHLIGHT, this.toggle_highlight);
+
+            // Section Visibility
+            this.replace_button(toolboxtarget, CSS.RIGHTDIV + ' ' + CSS.SHOWHIDE, this.toggle_hide_section);
         },
         toggle_hide_section : function(e) {
             // Get the section we're working on
@@ -439,102 +581,9 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             };
             this.send_request(data);
         },
-        /**
-         * Send a request using the REST API
-         *
-         * @param data The data to submit
-         * @param config (optional) Any additional configuration to submit
-         * @return response responseText field from responce
-         */
-        send_request : function(data, config) {
-            // Default data structure
-            if (!data) {
-                data = {};
-            }
-            data.sesskey = M.cfg.sesskey;
-            data.courseId = this.get('courseid');
-
-            // Default config structure
-            if (!config) {
-                config = {};
-            }
-
-            var uri = M.cfg.wwwroot + AJAXURL;
-
-            // Define the configuration to send with the request
-            var responsetext = [];
-            var config = {
-                method: 'POST',
-                data: data,
-                on: {
-                    success: function(tid, response) {
-                        try {
-                            responsetext = Y.JSON.parse(response.responseText);
-                            if (responsetext.error) {
-                                new M.core.ajaxException(responsetext);
-                            }
-                        } catch (e) {}
-                    },
-                    failure : function(tid, response) {
-                        new M.core.ajaxException(response);
-                    }
-                },
-                context: this,
-                sync: true
-            }
-            // Send the request
-            Y.io(uri, config);
-            return responsetext;
-        },
-        /**
-         * Add the moveleft button
-         * This is required after moving left from an initial position of 0
-         *
-         * @param target The encapsulating <li> element
-         */
-        add_moveleft : function(target) {
-            var left_string = M.util.get_string('moveleft', 'moodle');
-            var newicon = Y.Node.create('<img />')
-                .addClass(CSS.GENERICICONCLASS)
-                .setAttrs({
-                    'src'   : M.util.image_url('t/left', 'moodle'),
-                    'title' : left_string,
-                    'alt'   : left_string
-                });
-            var anchor = new Y.Node.create('<a />')
-                .setStyle('cursor', 'pointer')
-                .addClass(CSS.MOVELEFTCLASS)
-                .set('title', left_string);
-            anchor.appendChild(newicon);
-            anchor.on('click', this.move_left, this);
-            target.one(CSS.MOVERIGHT).insert(anchor, 'before');
-        },
-        is_label : function(target) {
-            return target.hasClass(CSS.HASLABEL);
-        },
-        /**
-         * Return the module ID for the specified element
-         *
-         * @param element The <li> element to determine a module-id number for
-         * @return string The module ID
-         */
-        get_element_id : function(element) {
-            return element.get('id').replace(CSS.MODULEIDPREFIX, '');
-        },
-        /**
-         * Return the module ID for the specified element
-         *
-         * @param element The <li> element to determine a module-id number for
-         * @return string The module ID
-         */
-        get_section_id : function(section) {
-            return section.get('id').replace(CSS.SECTIONIDPREFIX, '');
-        }
-    },
-    {
-        NAME : TOOLBOXESNAME,
+    }, {
+        NAME : 'course-section-toolbox',
         ATTRS : {
-            // The ID of the current course
             courseid : {
                 'value' : 0
             },
@@ -542,13 +591,17 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                 'value' : 'topics'
             }
         }
-    }
-    );
+    });
 
     M.course = M.course || {};
-    M.course.init_toolboxes = function(config) {
-        return new TOOLBOXES(config);
-    }
+
+    M.course.init_resource_toolbox = function(config) {
+        return new RESOURCETOOLBOX(config);
+    };
+
+    M.course.init_section_toolbox = function(config) {
+        return new SECTIONTOOLBOX(config);
+    };
 
 },
 '@VERSION@', {

@@ -4447,10 +4447,16 @@ function include_course_ajax($course, $modules = array()) {
 
     // Include toolboxes
     $PAGE->requires->yui_module('moodle-course-toolboxes',
-            'M.course.init_toolboxes',
+            'M.course.init_resource_toolbox',
             array(array(
                 'courseid' => $course->id,
-                'format' => $course->format
+            ))
+    );
+    $PAGE->requires->yui_module('moodle-course-toolboxes',
+            'M.course.init_section_toolbox',
+            array(array(
+                'courseid' => $course->id,
+                'format' => $course->format,
             ))
     );
 
