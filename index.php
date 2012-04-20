@@ -95,6 +95,7 @@
     echo $OUTPUT->header();
 
 /// Print Section or custom info
+    get_all_mods($SITE->id, $mods, $modnames, $modnamesplural, $modnamesused);
     if (!empty($CFG->customfrontpageinclude)) {
         include($CFG->customfrontpageinclude);
 
@@ -138,9 +139,7 @@
                      " class=\"iconsmall\" alt=\"$streditsummary\" /></a><br /><br />";
             }
 
-            get_all_mods($SITE->id, $mods, $modnames, $modnamesplural, $modnamesused);
             print_section($SITE, $section, $mods, $modnamesused, true);
-            include_course_ajax($SITE, $modnamesused);
 
             if ($editing) {
                 print_section_add_menus($SITE, $section->section, $modnames);
@@ -148,6 +147,8 @@
             echo $OUTPUT->box_end();
         }
     }
+    include_course_ajax($SITE, $modnamesused);
+
 
     if (isloggedin() and !isguestuser() and isset($CFG->frontpageloggedin)) {
         $frontpagelayout = $CFG->frontpageloggedin;

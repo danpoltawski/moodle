@@ -4445,7 +4445,7 @@ function include_course_ajax($course, $modules = array(), $config = null) {
         || !$CFG->enableajax
         || empty($USER->editing)
         || !$PAGE->user_is_editing()
-        || !$courseformatajaxsupport->capable) {
+        || ($course->id != SITEID && !$courseformatajaxsupport->capable)) {
         return;
     }
 
@@ -4488,21 +4488,21 @@ function include_course_ajax($course, $modules = array(), $config = null) {
     );
 
     // Include course dragdrop
-    $PAGE->requires->yui_module('moodle-course-dragdrop',
-            'M.core_course.init_resource_dragdrop',
-            array(array(
-                'courseid' => $course->id,
-                'ajaxurl' => $config->resourceurl,
-                'config' => $config,
-            )), null, true);
-
-    $PAGE->requires->yui_module('moodle-course-dragdrop',
-            'M.core_course.init_section_dragdrop',
+    if ($course->id != SITEID) {
+        $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_section_dragdrop',
             array(array(
                 'courseid' => $course->id,
                 'ajaxurl' => $config->sectionurl,
                 'config' => $config,
             )), null, true);
+
+        $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_resource_dragdrop',
+            array(array(
+                'courseid' => $course->id,
+                'ajaxurl' => $config->resourceurl,
+                'config' => $config,
+            )), null, true);
+    }
 
     // Include blocks dragdrop
     $params = array(
@@ -4531,10 +4531,12 @@ function include_course_ajax($course, $modules = array(), $config = null) {
         ), 'moodle');
 
     // Include format-specific strings
-    $PAGE->requires->strings_for_js(array(
-            'showfromothers',
-            'hidefromothers',
-        ), 'format_' . $course->format);
+    if ($course->id != SITEID) {
+        $PAGE->requires->strings_for_js(array(
+                'showfromothers',
+                'hidefromothers',
+            ), 'format_' . $course->format);
+    }
 
     // For confirming resource deletion we need the name of the module in question
     foreach ($modules as $module => $modname) {
