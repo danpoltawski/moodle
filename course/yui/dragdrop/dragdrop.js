@@ -328,8 +328,10 @@ YUI.add('moodle-course-dragdrop', function(Y) {
     });
 
     M.core_course = M.core_course || {};
-    M.core_course.init_dragdrop = function(params) {
-        new DRAGSECTION(params);
+    M.core_course.init_resource_dragdrop = function(params) {
         new DRAGRESOURCE(params);
+    }
+    M.core_course.init_section_dragdrop = function(params) {
+        new DRAGSECTION(params);
     }
 }, '@VERSION@', {requires:['base', 'node', 'io', 'dom', 'dd', 'moodle-core-dragdrop', 'moodle-enrol-notification', 'moodle-course-coursebase']});

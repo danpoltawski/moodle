@@ -4461,7 +4461,9 @@ function include_course_ajax($course, $modules = array()) {
     );
 
     // Include course dragdrop
-    $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_dragdrop',
+    $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_section_dragdrop',
+            array(array('courseid' => $course->id)), null, true);
+    $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_resource_dragdrop',
             array(array('courseid' => $course->id)), null, true);
 
     // Include blocks dragdrop
