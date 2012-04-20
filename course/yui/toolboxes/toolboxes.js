@@ -1,7 +1,5 @@
 YUI.add('moodle-course-toolboxes', function(Y) {
 
-    // The URL for AJAX requests
-    var AJAXURL = '/course/rest.php';
     // The CSS selectors we use
     var CSS = {
         ACTIVITYLI : 'li.activity',
@@ -129,7 +127,7 @@ YUI.add('moodle-course-toolboxes', function(Y) {
                 config = {};
             }
 
-            var uri = M.cfg.wwwroot + AJAXURL;
+            var uri = M.cfg.wwwroot + this.get('ajaxurl');
 
             // Define the configuration to send with the request
             var responsetext = [];
@@ -185,7 +183,7 @@ YUI.add('moodle-course-toolboxes', function(Y) {
             courseid : {
                 'value' : 0
             },
-            posturl : {
+            ajaxurl : {
                 'value' : 0
             }
         }

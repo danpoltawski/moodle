@@ -4429,9 +4429,11 @@ function course_page_type_list($pagetype, $parentcontext, $currentcontext) {
  * @param integer $id The ID of the course being applied to
  * @param array $modules An array containing the names of the modules in
  *                       use on the page
+ * @param string $ajaxresourceurl The post URL to use for AJAX changes of resources
+ * @param string $ajaxsectionurl The post URL to use for AJAX changes of sections
  * @return void
  */
-function include_course_ajax($course, $modules = array()) {
+function include_course_ajax($course, $modules = array(), $ajaxresourceurl = '/course/rest.php', $ajaxsectionurl = '/course/rest.php') {
     global $PAGE, $CFG, $USER;
 
     // Ensure that ajax should be included
@@ -4450,6 +4452,7 @@ function include_course_ajax($course, $modules = array()) {
             'M.course.init_resource_toolbox',
             array(array(
                 'courseid' => $course->id,
+                'ajaxurl' => $ajaxresourceurl,
             ))
     );
     $PAGE->requires->yui_module('moodle-course-toolboxes',
@@ -4457,14 +4460,22 @@ function include_course_ajax($course, $modules = array()) {
             array(array(
                 'courseid' => $course->id,
                 'format' => $course->format,
+                'ajaxurl' => $ajaxsectionurl,
             ))
     );
 
     // Include course dragdrop
+    $PAGE->requires->yui_module('moodle-course-dragdrop',
+            'M.core_course.init_resource_dragdrop',
+            array(array(
+                'courseid' => $course->id),
+                'ajaxurl' => $ajaxresourceurl
+            ), null, true);
     $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_section_dragdrop',
-            array(array('courseid' => $course->id)), null, true);
-    $PAGE->requires->yui_module('moodle-course-dragdrop', 'M.core_course.init_resource_dragdrop',
-            array(array('courseid' => $course->id)), null, true);
+            array(array(
+                'courseid' => $course->id),
+                'ajaxurl' => $ajaxsectionurl
+            ), null, true);
 
     // Include blocks dragdrop
     $params = array(
