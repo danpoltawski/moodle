@@ -17,7 +17,8 @@ YUI.add('moodle-course-dragdrop', function(Y) {
             SECTIONADDMENUS : 'section_add_menus',
             SECTIONHANDLE : 'section-handle',
             SUMMARY : 'summary',
-            TOPICS : 'topics'
+            TOPICS : 'topics',
+            WEEKDATES: 'weekdates'
         }
 
     var DRAGSECTION = function() {
@@ -167,6 +168,11 @@ YUI.add('moodle-course-dragdrop', function(Y) {
                                     sectionlist.item(i-1).one('.'+CSS.RIGHT).swap(sectionlist.item(i).one('.'+CSS.RIGHT));
                                     // Swap menus
                                     sectionlist.item(i-1).one('.'+CSS.SECTIONADDMENUS).swap(sectionlist.item(i).one('.'+CSS.SECTIONADDMENUS));
+                                    // Swap week dates if in weekly format
+                                    weekdates = sectionlist.item(i-1).one('.'+CSS.WEEKDATES);
+                                    if (weekdates) {
+                                        weekdates.swap(sectionlist.item(i).one('.'+CSS.WEEKDATES));
+                                    }
                                     // Update flag
                                     swapped = true;
                                 }
