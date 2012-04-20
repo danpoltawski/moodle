@@ -307,7 +307,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     public function upgrade(context $oldcontext, stdClass $oldassignment, stdClass $oldsubmission, stdClass $submission, $log) {
         global $DB;
         
-        $commentssubmission = new stdClass();
+        $onlinetextsubmission = new stdClass();
         $onlinetextsubmission->onlinetext = $oldsubmission->data1;
         $onlinetextsubmission->onlineformat = $oldsubmission->data2;
                
