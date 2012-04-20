@@ -1831,7 +1831,7 @@ class assignment {
      * @return string - the html summary
      */
     public function view_student_summary($user, $showlinks) {
-        global $CFG, $DB;
+        global $CFG, $DB, $PAGE;
 
         $grade = $this->get_user_grade($user->id, false);
         $submission = $this->get_user_submission($user->id, false);
