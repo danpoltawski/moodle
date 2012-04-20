@@ -338,4 +338,4 @@ YUI.add('moodle-course-dragdrop', function(Y) {
         new DRAGSECTION(params);
         new DRAGRESOURCE(params);
     }
-}, '@VERSION@', {requires:['base', 'node', 'io', 'dom', 'dd', 'moodle-core-dragdrop', 'moodle-enrol-notification', 'moodle-course-modulebase']});
+}, '@VERSION@', {requires:['base', 'node', 'io', 'dom', 'dd', 'moodle-core-dragdrop', 'moodle-enrol-notification', 'moodle-course-coursebase']});
