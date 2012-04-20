@@ -47,8 +47,7 @@ $PAGE->set_url('/course/rest.php', array('courseId'=>$courseid,'class'=>$class))
 //NOTE: when making any changes here please make sure it is using the same access control as course/mod.php !!
 
 if (empty($CFG->enablecourseajax)) {
-    error_log('Course AJAX not allowed');
-    die;
+    throw new moodle_exception('Course AJAX not allowed');
 }
 
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
@@ -80,8 +79,7 @@ switch($requestmethod) {
                 require_capability('moodle/course:update', $coursecontext);
 
                 if (!$DB->record_exists('course_sections', array('course'=>$course->id, 'section'=>$id))) {
-                    error_log('AJAX commands.php: Bad Section ID '.$id);
-                    die;
+                    throw new moodle_exception('AJAX commands.php: Bad Section ID '.$id);
                 }
 
                 switch ($field) {
@@ -120,8 +118,7 @@ switch($requestmethod) {
                     case 'move':
                         require_capability('moodle/course:manageactivities', $modcontext);
                         if (!$section = $DB->get_record('course_sections', array('course'=>$course->id, 'section'=>$sectionid))) {
-                            error_log('AJAX commands.php: Bad section ID '.$sectionid);
-                            die;
+                            throw new moodle_exception('AJAX commands.php: Bad section ID '.$sectionid);
                         }
 
                         if ($beforeid > 0){
@@ -161,14 +158,13 @@ switch($requestmethod) {
                 if (file_exists($modlib)) {
                     include_once($modlib);
                 } else {
-                    error_log("Ajax rest.php: This module is missing mod/$cm->modname/lib.php");
-                    die;
+                    throw new moodle_exception("Ajax rest.php: This module is missing mod/$cm->modname/lib.php");
                 }
                 $deleteinstancefunction = $cm->modname."_delete_instance";
 
                 // Run the module's cleanup funtion.
                 if (!$deleteinstancefunction($cm->instance)) {
-                    error_log("Ajax rest.php: Could not delete the $cm->modname $cm->name (instance)");
+                    throw new moodle_exception("Ajax rest.php: Could not delete the $cm->modname $cm->name (instance)");
                     die;
                 }
 
@@ -177,11 +173,11 @@ switch($requestmethod) {
                 $fs->delete_area_files($modcontext->id);
 
                 if (!delete_course_module($cm->id)) {
-                    error_log("Ajax rest.php: Could not delete the $cm->modname $cm->name (coursemodule)");
+                    throw new moodle_exception("Ajax rest.php: Could not delete the $cm->modname $cm->name (coursemodule)");
                 }
                 // Remove the course_modules entry.
                 if (!delete_mod_from_section($cm->id, $cm->section)) {
-                    error_log("Ajax rest.php: Could not delete the $cm->modname $cm->name from section");
+                    throw new moodle_exception("Ajax rest.php: Could not delete the $cm->modname $cm->name from section");
                 }
 
                 // Trigger a mod_deleted event with information about this module.
@@ -201,5 +197,3 @@ switch($requestmethod) {
         }
         break;
 }
-
-
