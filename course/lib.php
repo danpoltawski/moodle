@@ -4462,8 +4462,9 @@ function include_course_ajax($course, $modules = array()) {
     $params = array(
         'courseid' => $course->id,
         'pagetype' => $PAGE->pagetype,
-        'pagelayout' => $PAGE->pagelayout
-        );
+        'pagelayout' => $PAGE->pagelayout,
+        'regions' => $PAGE->blocks->get_regions(),
+    );
     $PAGE->requires->yui_module('moodle-core-blocks', 'M.core_blocks.init_dragdrop', array($params), null, true);
 
     // Require various strings for the command toolbox
