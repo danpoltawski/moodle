@@ -38,6 +38,11 @@
 
     $PAGE->set_url('/course/view.php', array('id' => $course->id)); // Defined here to avoid notices on errors etc
 
+    //TODO FIXME:
+    if ($section) {
+        $PAGE->set_url('/course/view.php', array('id' => $course->id, 'section' => $section));
+    }
+
     preload_course_contexts($course->id);
     if (!$context = get_context_instance(CONTEXT_COURSE, $course->id)) {
         print_error('nocontext');
@@ -176,7 +181,7 @@
     // what to do, even though the link also appears in the course admin block.  It also
     // means you can back out of a situation where you removed the admin block. :)
     if ($PAGE->user_allowed_editing()) {
-        $buttons = $OUTPUT->edit_button(new moodle_url('/course/view.php', array('id' => $course->id)));
+        $buttons = $OUTPUT->edit_button($PAGE->url);
         $PAGE->set_button($buttons);
     }
 
@@ -200,38 +205,50 @@
     // Course wrapper start.
     echo html_writer::start_tag('div', array('class'=>'course-content'));
 
-    $modinfo = get_fast_modinfo($COURSE);
-    get_all_mods($course->id, $mods, $modnames, $modnamesplural, $modnamesused);
-    foreach($mods as $modid=>$unused) {
-        if (!isset($modinfo->cms[$modid])) {
-            rebuild_course_cache($course->id);
-            $modinfo = get_fast_modinfo($COURSE);
-            debugging('Rebuilding course cache', DEBUG_DEVELOPER);
-            break;
+    if (file_exists($CFG->dirroot.'/course/format/'.$course->format.'/renderer.php')) {
+        $output = $PAGE->get_renderer('format_'.$course->format);
+        $controller = new course_section_controller($course, $PAGE->user_is_editing());
+        $structure = new course_structure($course);
+        if ($section) {
+            echo $output->format_collapsed_requested($course, $structure->sections, $controller, $section);
+        } else {
+            echo $output->format_collapsed($course, $structure->sections, $controller);
         }
-    }
 
-    if (! $sections = get_all_sections($course->id)) {   // No sections found
-        // Double-check to be extra sure
-        if (! $section = $DB->get_record('course_sections', array('course'=>$course->id, 'section'=>0))) {
-            $section->course = $course->id;   // Create a default section.
-            $section->section = 0;
-            $section->visible = 1;
-            $section->summaryformat = FORMAT_HTML;
-            $section->id = $DB->insert_record('course_sections', $section);
-        }
-        if (! $sections = get_all_sections($course->id) ) {      // Try again
-            print_error('cannotcreateorfindstructs', 'error');
-        }
-    }
+        include_course_ajax($course, $structure->modnamesused);
+    } else {
+        debugging('Old Course format style in use', DEBUG_DEVELOPER);
 
-    // Include the actual course format.
-    require($CFG->dirroot .'/course/format/'. $course->format .'/format.php');
-    // Content wrapper end.
+        $modinfo = get_fast_modinfo($COURSE);
+        get_all_mods($course->id, $mods, $modnames, $modnamesplural, $modnamesused);
+        foreach($mods as $modid=>$unused) {
+            if (!isset($modinfo->cms[$modid])) {
+                rebuild_course_cache($course->id);
+                $modinfo = get_fast_modinfo($COURSE);
+                debugging('Rebuilding course cache', DEBUG_DEVELOPER);
+                break;
+            }
+        }
+
+        if (! $sections = get_all_sections($course->id)) {   // No sections found
+            // Double-check to be extra sure
+            if (! $section = $DB->get_record('course_sections', array('course'=>$course->id, 'section'=>0))) {
+                $section->course = $course->id;   // Create a default section.
+                $section->section = 0;
+                $section->visible = 1;
+                $section->summaryformat = FORMAT_HTML;
+                $section->id = $DB->insert_record('course_sections', $section);
+            }
+            if (! $sections = get_all_sections($course->id) ) {      // Try again
+                print_error('cannotcreateorfindstructs', 'error');
+            }
+        }
+        // Include the actual course format.
+        require($CFG->dirroot .'/course/format/'. $course->format .'/format.php');
+        // Content wrapper end.
+        include_course_ajax($course, $modnamesused);
+    }
 
     echo html_writer::end_tag('div');
-
     // Include the command toolbox YUI module
-    include_course_ajax($course, $modnamesused);
-
     echo $OUTPUT->footer();
