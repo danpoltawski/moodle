@@ -34,6 +34,35 @@ function tool_assignmentupgrade_url($script, $params = array()) {
     return new moodle_url('/admin/tool/assignmentupgrade/' . $script . '.php', $params);
 }
 
+/**
+ * Class to encapsulate the continue / cancel for batch operations
+ *
+ * @package    tool_assignmentupgrade
+ * @copyright  2012 NetSpot
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class tool_assignmentupgrade_batchoperationconfirm implements renderable {
+    /* @var string $continuemessage The message to show above the continue cancel buttons */
+    public $continuemessage = '';
+    /* @var string $continueurl The url to load if the user clicks continue */
+    public $continueurl;
+
+    function __construct($data) {
+        if (isset($data->upgradeselected)) {
+            $this->continuemessage = get_string('upgradeselectedcount', 'tool_assignmentupgrade', count(explode(',', $data->selectedassignments)));
+            $this->continueurl = new moodle_url('/admin/tool/assignmentupgrade/batchupgrade.php', array('upgradeselected'=>'1', 'confirm'=>'1', 'sesskey'=>sesskey(), 'selected'=>$data->selectedassignments));
+        } else if (isset($data->upgradeall)) {
+            if (!tool_assignmentupgrade_any_upgradable_assignments()) {
+                $this->continuemessage = get_string('noassignmentstoupgrade', 'tool_assignmentupgrade');
+                $this->continueurl = '';
+            } else {
+                $this->continuemessage = get_string('upgradeallconfirm', 'tool_assignmentupgrade');
+                $this->continueurl = new moodle_url('/admin/tool/assignmentupgrade/batchupgrade.php', array('upgradeall'=>'1', 'confirm'=>'1', 'sesskey'=>sesskey()));
+            }
+        }
+    }
+}
+
 
 /**
  * Class to encapsulate one of the functionalities that this plugin offers.
@@ -80,131 +109,109 @@ class tool_assignmentupgrade_action {
     }
 }
 
+/**
+ * Determine if there are any assignments that can be upgraded
+ * @global moodle_database $DB
+ * @global stdClass $CFG
+ * @return boolean - Are there any assignments that can be upgraded
+ */
+function tool_assignmentupgrade_any_upgradable_assignments() {
+    global $DB, $CFG;
+    require_once($CFG->dirroot . '/mod/assign/locallib.php');
+    // first find all the unique assignment types
+    $types = $DB->get_records_sql('SELECT plugin AS assignmenttype, value AS version FROM {config_plugins} WHERE name = ? AND plugin LIKE ?', array('version', 'assignment_%'));
+
+    $upgradabletypes = array();
+
+    foreach ($types as $assignment) {
+        $shorttype = substr($assignment->assignmenttype, strlen('assignment_'));
+        if (assignment::can_upgrade_assignment($shorttype, $assignment->version)) {
+            $upgradabletypes[] = $shorttype;
+        }
+    }
+    $paramlist = '?';
+    foreach ($upgradabletypes as $index => $upgradabletype) {
+        if ($index > 0) {
+            $paramlist .= ', ?';
+        }
+    }
+
+    $record = $DB->get_record_sql('SELECT COUNT(id) as count from {assignment} where assignmenttype in (' . $paramlist . ')', $upgradabletypes);
+
+    return $record->count > 0;
+}
 
 /**
- * A class to represent a list of assignments with various information about plugins that can be displayed as a table.
- *
- * @package    tool_assignmentupgrade
- * @copyright  2012 NetSpot
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Load a list of all the assignmentids that can be upgraded
+ * @global moodle_database $DB
+ * @global stdClass $CFG
+ * @return array of assignment ids
  */
-class tool_assignmentupgrade_assignment_list {
-    public $title;
-    public $intro;
-    public $sql;
-    public $assignmentlist = null;
-    public $totalassignments = 0;
-    public $totalupgradable = 0;
-    public $totalsubmissions = 0;
+function tool_assignmentupgrade_load_all_upgradable_assignmentids() {
+    global $DB, $CFG;
+    require_once($CFG->dirroot . '/mod/assign/locallib.php');
+    // first find all the unique assignment types
+    $types = $DB->get_records_sql('SELECT plugin AS assignmenttype, value AS version FROM {config_plugins} WHERE name = ? AND plugin LIKE ?', array('version', 'assignment_%'));
 
-    /**
-     * Constructor
-     *
-     * @global moodle_database $DB
-     */
-    public function __construct() {
-        global $DB;
-        $this->title = get_string('notupgradedtitle', 'tool_assignmentupgrade');
-        $this->intro = get_string('notupgradedintro', 'tool_assignmentupgrade');
-        $this->build_sql();
-        $this->assignmentlist = $DB->get_records_sql($this->sql);
-    }
+    $upgradabletypes = array();
 
-    /**
-     * Check to see whether the assignment type is upgradeable.
-     * @param string $type The assignment type to check
-     * @return bool Returns true if the given type can be upgraded.
-     */
-    protected function is_upgradable($type) {
-        global $CFG;
-        $version = get_config('assignment_' . $type, 'version');
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        return assignment::can_upgrade_assignment($type, $version);
-    }
-
-    /**
-     * Sets the SQL used to gather the required information about assignments
-     */
-    protected function build_sql() {
-        $this->sql = 'SELECT a.id, a.name, a.assignmenttype, c.shortname, c.id AS courseid, COUNT(s.id) as submissioncount
-                        FROM {assignment} a
-                        JOIN {course} c ON c.id = a.course
-                   LEFT JOIN {assignment_submissions} s ON a.id = s.assignment
-                    GROUP BY a.id, a.name, a.assignmenttype, c.shortname, c.id
-                    ORDER BY c.shortname, a.name, a.id';
-    }
-
-    /**
-     * Returns an array of strings to use as column headings
-     * @return array
-     */
-    public function get_col_headings() {
-        return array(
-            get_string('assignmentid', 'tool_assignmentupgrade'),
-            get_string('course'),
-            get_string('name'),
-            get_string('assignmenttype', 'tool_assignmentupgrade'),
-            get_string('submissions', 'tool_assignmentupgrade'),
-            get_string('upgradable', 'tool_assignmentupgrade'),
-        );
-    }
-
-    /**
-     * This function converts a row from the database into a row in the table ready for display.
-     *
-     * The columns returned should match the column heading returned by {@see tool_assignmentupgrade_assignment_list::get_col_headings()}
-     * @param stdClass $assignmentinfo
-     * @return array
-     */
-    public function get_row($assignmentinfo) {
-        $this->totalassignments += 1;
-        $upgradable = $this->is_upgradable($assignmentinfo->assignmenttype);
-        if ($upgradable) {
-            $this->totalupgradable += 1;
+    foreach ($types as $assignment) {
+        $shorttype = substr($assignment->assignmenttype, strlen('assignment_'));
+        if (assignment::can_upgrade_assignment($shorttype, $assignment->version)) {
+            $upgradabletypes[] = $shorttype;
         }
-        $this->totalsubmissions += $assignmentinfo->submissioncount;
-        return array(
-            $assignmentinfo->id,
-            html_writer::link(new moodle_url('/course/view.php', array('id' => $assignmentinfo->courseid)), format_string($assignmentinfo->shortname)),
-            html_writer::link(new moodle_url('/mod/assignment/view.php', array('a' => $assignmentinfo->id)), format_string($assignmentinfo->name)),
-            $assignmentinfo->assignmenttype,
-            $assignmentinfo->submissioncount,
-            $upgradable ? 
-            html_writer::link(new moodle_url('/admin/tool/assignmentupgrade/upgradesingleconfirm.php',
-                    array('id' => $assignmentinfo->id)), get_string('supported', 'tool_assignmentupgrade'))
-            : get_string('notsupported', 'tool_assignmentupgrade'));
+    }
+    $paramlist = '?';
+    foreach ($upgradabletypes as $index => $upgradabletype) {
+        if ($index > 0) {
+            $paramlist .= ', ?';
+        }
     }
 
-    /**
-     * Returns a CSS class to apply to the row or null if there are none
-     * @param stdClass|array $assignmentinfo
-     * @return null
-     */
-    public function get_row_class($assignmentinfo) {
-        return null;
+    $records = $DB->get_records_sql('SELECT id from {assignment} where assignmenttype in (' . $paramlist . ')', $upgradabletypes);
+    $ids = array();
+    foreach ($records as $record) {
+        $ids[] = $record->id;
     }
 
-    /**
-     * @return array
-     */
-    public function get_total_row() {
-        return array(
-            '',
-            html_writer::tag('b', get_string('total')),
-            '',
-            html_writer::tag('b', $this->totalassignments),
-            html_writer::tag('b', $this->totalsubmissions),
-            html_writer::tag('b', $this->totalupgradable),
-        );
-    }
+    return $ids;
+}
 
-    /**
-     * Returns true if there are no assignments left to upgrade.
-     * @return bool
-     */
-    public function is_empty() {
-        return empty($this->assignmentlist);
+
+/**
+ * Convert a list of assignments from the old format to the new one.
+ * @param array $assignmentids An array of assignment ids to upgrade
+ * @return array of $entry['assignmentsummary' => (result from tool_assignmentupgrade_get_assignment)
+ *                  $entry['success'] => boolean
+ *                  $entry['log'] => string - upgrade log
+ */
+function tool_assignmentupgrade_upgrade_multiple_assignments($upgradeall, $assignmentids) {
+    global $CFG;
+    require_once($CFG->dirroot . '/mod/assign/locallib.php');
+    require_once($CFG->dirroot . '/mod/assign/upgradelib.php');
+    $upgrades = array();
+
+    if ($upgradeall) {
+        $assignmentids = tool_assignmentupgrade_load_all_upgradable_assignmentids();
     }
+        
+    $assignment_upgrader = new assignment_upgrade_manager();
+    foreach ($assignmentids as $assignmentid) {
+        $info = tool_assignmentupgrade_get_assignment($assignmentid);
+        if ($info) {
+            $log = '';
+            $success = $assignment_upgrader->upgrade_assignment($assignmentid, $log);
+        } else {
+            $success = false;
+            $log = get_string('assignmentnotfound', 'tool_assignmentupgrade', $assignmentid);
+            $info = new stdClass();
+            $info->name = get_string('unknown', 'tool_assignmentupgrade');
+            $info->shortname = get_string('unknown', 'tool_assignmentupgrade');
+        }
+
+        $upgrades[] = array('assignmentsummary'=>$info, 'success'=>$success, 'log'=>$log);
+    }
+    return $upgrades;
 }
 
 /**

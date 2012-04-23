@@ -68,37 +68,115 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
         $output .= $this->footer();
         return $output;
     }
+    
+    /**
+     * Render the confirm batch operation page
+     * @param stdClass $data Submitted form data with list of assignments to upgrade
+     * @return string html to output.
+     */
+    public function confirm_batch_operation_page(stdClass $data) {
+        $output = '';
+        $output .= $this->header();
+
+        $output .= $this->heading(get_string('confirmbatchupgrade', 'tool_assignmentupgrade'));
+        $output .= $this->output->spacer(array(), true);
+
+        $output .= $this->container_start('tool_assignmentupgrade_confirmbatch');
+
+        $output .= $this->render(new tool_assignmentupgrade_batchoperationconfirm($data));
+        $output .= $this->container_end();
+        
+        $output .= $this->back_to_index();
+        $output .= $this->footer();
+        return $output;
+    }
+
+    /**
+     * Render the confirm batch continue / cancel links
+     * @param tool_assignmentupgrade_batchoperationconfirm $confirm Wrapper class to determine the continue message and url
+     * @return string html to output.
+     */
+    public function render_tool_assignmentupgrade_batchoperationconfirm(tool_assignmentupgrade_batchoperationconfirm $confirm) {
+        $output = '';
+
+        if ($confirm->continueurl) {
+            $output .= $this->output->confirm($confirm->continuemessage, $confirm->continueurl, tool_assignmentupgrade_url('listnotupgraded'));
+        } else {
+            $output .= $this->output->box($confirm->continuemessage);
+            $output .= $this->output->continue_button(tool_assignmentupgrade_url('listnotupgraded'));
+        }
+        return $output;
+    }
 
     /**
      * Render the list of assignments that still need to be upgraded page.
-     * @param tool_assignmentupgrade_assignment_list $assignments of data about assignments.
+     * @param tool_assignmentupgrade_assignments_table $assignments of data about assignments.
+     * @param tool_assignmentupgrade_batchoperations_form $form Submitted form with list of assignments to upgrade
      * @return string html to output.
      */
-    public function assignment_list_page(tool_assignmentupgrade_assignment_list $assignments) {
+    public function assignment_list_page(tool_assignmentupgrade_assignments_table $assignments, tool_assignmentupgrade_batchoperations_form $batchform) {
         $output = '';
         $output .= $this->header();
-        $output .= $this->heading($assignments->title);
-        $output .= $this->box($assignments->intro);
+        $this->page->requires->js_init_call('M.tool_assignmentupgrade.init_upgrade_table', array());
 
-        $table = new html_table();
-        $table->head = $assignments->get_col_headings();
 
-        $rowcount = 0;
-        foreach ($assignments->assignmentlist as $assignmentinfo) {
-            $table->data[$rowcount] = $assignments->get_row($assignmentinfo);
-            if ($class = $assignments->get_row_class($assignmentinfo)) {
-                $table->rowclasses[$rowcount] = $class;
-            }
-            $rowcount += 1;
+        $output .= $this->heading(get_string('notupgradedtitle', 'tool_assignmentupgrade'));
+        $output .= $this->box(get_string('notupgradedintro', 'tool_assignmentupgrade'));
+        $output .= $this->output->spacer(array(), true);
+
+        $output .= $this->container_start('tool_assignmentupgrade_upgradetable');
+
+        $output .= $this->flexible_table($assignments, $assignments->get_rows_per_page(), true);
+        $output .= $this->container_end();
+        
+        if ($assignments->anyupgradableassignments) {
+            $output .= $this->container_start('tool_assignmentupgrade_batchform');
+            $output .= $this->moodleform($batchform);
+            $output .= $this->container_end();
         }
-        $table->data[] = $assignments->get_total_row();
-        $output .= html_writer::table($table);
 
         $output .= $this->back_to_index();
         $output .= $this->footer();
         return $output;
     }
     
+    /**
+     * Render the result of an assignment conversion
+     * $param array assignments - An array of arrays with keys $entry['assignmentsummary', 'success', 'log']
+     *                            See convert_assignment_result for more description of these keys.
+     * @return string html to output.
+     */
+    public function convert_multiple_assignments_result($assignments) {
+        $output = '';
+        $output .= $this->header();
+        $output .= $this->heading(get_string('batchupgrade', 'tool_assignmentupgrade'));
+
+        foreach ($assignments as $assignment) {
+            $assignmentsummary = $assignment['assignmentsummary'];
+            $success = $assignment['success'];
+            $log = $assignment['log'];
+        
+            $output .= $this->heading(get_string('upgradeassignmentsummary', 'tool_assignmentupgrade', $assignmentsummary), 5);
+            if ($success) {
+                $output .= $this->container(get_string('upgradeassignmentsuccess', 'tool_assignmentupgrade'));
+                
+            } else {
+                $output .= $this->container(get_string('upgradeassignmentfailed', 'tool_assignmentupgrade', $assignment));
+            }
+            if (isset($assignmentsummary->courseid)) {
+                $output .= html_writer::link(new moodle_url('/course/view.php', array('id'=>$assignmentsummary->courseid)) ,get_string('viewcourse', 'tool_assignmentupgrade'));
+            }
+            
+                
+        }
+
+        $output .= $this->continue_button(tool_assignmentupgrade_url('listnotupgraded'));
+
+
+        $output .= $this->footer();
+        return $output;
+    }
+
     /**
      * Render the result of an assignment conversion
      * @param stdClass $assignmentsummary data about the assignment to upgrade.
@@ -116,6 +194,8 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
         } else {
             $output .= html_writer::link(new moodle_url('/course/view.php', array('id'=>$assignmentsummary->courseid)) ,get_string('viewcourse', 'tool_assignmentupgrade'));
         }
+
+        $output .= $this->continue_button(tool_assignmentupgrade_url('listnotupgraded'));
 
 
         $output .= $this->footer();
@@ -140,6 +220,41 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
         $output .= $this->footer();
         return $output;
     }
+
+    /**
+     * Helper method dealing with the fact we can not just fetch the output of flexible_table
+     *
+     * @param flexible_table $table
+     * @return string HTML
+     */
+    protected function flexible_table(flexible_table $table, $rowsperpage, $displaylinks) {
+
+        $o = '';
+        ob_start();
+        $table->out($rowsperpage, $displaylinks);
+        $o = ob_get_contents();
+        ob_end_clean();
+
+        return $o;
+    }
+
+    /**
+     * Helper method dealing with the fact we can not just fetch the output of moodleforms
+     *
+     * @param moodleform $mform
+     * @return string HTML
+     */
+    protected function moodleform(moodleform $mform) {
+
+        $o = '';
+        ob_start();
+        $mform->display();
+        $o = ob_get_contents();
+        ob_end_clean();
+
+        return $o;
+    }
+
 
     /**
      * Render a link in a div, such as the 'Back to plugin main page' link.

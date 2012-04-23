@@ -24,6 +24,8 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/upgradableassignmentstable.php');
+require_once(dirname(__FILE__) . '/upgradableassignmentsbatchform.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 // admin_externalpage_setup calls require_login and checks moodle/site:config
@@ -32,10 +34,15 @@ $PAGE->navbar->add(get_string('listnotupgraded', 'tool_assignmentupgrade'));
 
 $renderer = $PAGE->get_renderer('tool_assignmentupgrade');
 
-$assignments = new tool_assignmentupgrade_assignment_list();
+$perpage = get_user_preferences('tool_assignmentupgrade_perpage', 5);
+$assignments = new tool_assignmentupgrade_assignments_table($perpage);
 
-if ($assignments->is_empty()) {
-    echo $renderer->simple_message_page(get_string('nothingtoupgrade', 'tool_upgradehelper'));
+$batchform = new tool_assignmentupgrade_batchoperations_form();
+$data = $batchform->get_data();
+if ($data && $data->selectedassignments != '' || $data && isset($data->upgradeall)) {
+    echo $renderer->confirm_batch_operation_page($data);
 } else {
-    echo $renderer->assignment_list_page($assignments);
+    echo $renderer->assignment_list_page($assignments, $batchform);
 }
+
+
