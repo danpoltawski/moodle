@@ -151,5 +151,14 @@ class assignment_submission_comments extends assignment_submission_plugin {
           
         return true;
     }
-    
+
+    /**
+     * The submission comments plugin has no submission component so should not be counted
+     * when determining whether to show the edit submission link.
+     * @return boolean
+     */
+    public function allow_submissions() {
+        return false;
+    }
+
 }
