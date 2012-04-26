@@ -138,6 +138,12 @@ class assignment_upgrade_manager {
                 $DB->update_record('grading_areas', array('id'=>$gradingarea->id, 'contextid'=>$newassignment->get_context()->id, 'component'=>'mod_assign', 'areaname'=>'submissions'));
             }
 
+            // upgrade completion data
+            $DB->set_field('course_modules_completion', 'coursemoduleid', $newcoursemodule->id, array('coursemoduleid'=>$oldcoursemodule->id));
+            $DB->set_field('course_completion_criteria', 'module', 'assign', array('moduleinstance'=>$oldcoursemodule->id));
+            $DB->set_field('course_completion_criteria', 'moduleinstance', $newcoursemodule->id, array('moduleinstance'=>$oldcoursemodule->id));
+            
+
             // copy all the submission data (and get plugins to do their bit)
             $oldsubmissions = $DB->get_records('assignment_submissions', array('assignment'=>$oldassignmentid));
             foreach ($oldsubmissions as $oldsubmission) {
