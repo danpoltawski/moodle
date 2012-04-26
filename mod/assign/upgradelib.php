@@ -48,7 +48,7 @@ class assignment_upgrade_manager {
      * @param string log This string gets appended to during the conversion process
      * @return bool true or false
      */
-    public function upgrade_assignment($oldassignmentid, $log, $delete=true) {
+    public function upgrade_assignment($oldassignmentid, $log) {
         global $DB, $CFG;
         // steps to upgrade an assignment
     
@@ -60,10 +60,12 @@ class assignment_upgrade_manager {
               return false;
         }
 
+
         // get the module details
         $oldmodule = $DB->get_record('modules', array('name'=>'assignment'), '*', MUST_EXIST);
         $oldcoursemodule = $DB->get_record('course_modules', array('module'=>$oldmodule->id, 'instance'=>$oldassignmentid), '*', MUST_EXIST);
-        
+        $oldcontext = context_module::instance($oldcoursemodule->id);
+
         // first insert an assign instance to get the id
         $oldassignment = $DB->get_record('assignment', array('id'=>$oldassignmentid), '*', MUST_EXIST);
 
@@ -89,7 +91,6 @@ class assignment_upgrade_manager {
             return false;
         }
        
-        $oldcontext = context_module::instance($oldcoursemodule->id);
         
         $newmodule = $DB->get_record('modules', array('name'=>'assign'), '*', MUST_EXIST);
         $newcoursemodule = $this->duplicate_course_module($oldcoursemodule, $newmodule->id, $newassignment->get_instance()->id);
@@ -105,7 +106,10 @@ class assignment_upgrade_manager {
         $rollback = false;
         try {
             $newassignment->set_context(context_module::instance($newcoursemodule->id));
+
             // the course module has now been created - time to update the core tables
+
+            // copy intro files
             $newassignment->copy_area_files_for_upgrade($oldcontext->id, 'mod_assignment', 'intro', 0, 
                                             $newassignment->get_context()->id, 'mod_assign', 'intro', 0);
         
@@ -128,7 +132,13 @@ class assignment_upgrade_manager {
                 }
             }
 
+            // see if there is advanced grading upgrades required
+            $gradingarea = $DB->get_record('grading_areas', array('contextid'=>$oldcontext->id, 'areaname'=>'submission'), '*', IGNORE_MISSING);
+            if ($gradingarea) {
+                $DB->update_record('grading_areas', array('id'=>$gradingarea->id, 'contextid'=>$newassignment->get_context()->id, 'component'=>'mod_assign', 'areaname'=>'submissions'));
+            }
 
+            // copy all the submission data (and get plugins to do their bit)
             $oldsubmissions = $DB->get_records('assignment_submissions', array('assignment'=>$oldassignmentid));
             foreach ($oldsubmissions as $oldsubmission) {
                 $submission = new stdClass();
@@ -150,6 +160,7 @@ class assignment_upgrade_manager {
                     }
                 }
                 if ($oldsubmission->timemarked) {
+                    // submission has been graded - create a grade record
                     $grade = new stdClass();
                     $grade->assignment = $newassignment->get_instance()->id;
                     $grade->userid = $oldsubmission->userid;
@@ -163,6 +174,17 @@ class assignment_upgrade_manager {
                     if (!$grade->id) {
                         $log .= get_string('couldnotinsertgrade', 'mod_assign', $grade->userid);
                         $rollback = true;
+                    }
+
+                    // copy any grading instances
+                    if ($gradingarea) {
+    
+                        $definitions = $DB->get_records('grading_definitions', array('areaid'=>$gradingarea->id));
+
+                        foreach ($definitions as $definition) {
+                            $DB->set_field('grading_instances', 'itemid', $grade->id, array('definitionid'=>$definition->id, 'itemid'=>$oldsubmission->id));
+                        }
+                        
                     }
                     foreach ($newassignment->get_feedback_plugins() as $plugin) {
                         if ($plugin->can_upgrade($oldassignment->assignmenttype, $oldversion)) {
@@ -191,12 +213,10 @@ class assignment_upgrade_manager {
             return false;
         }
         // all is well,
-        // delete the old assignment (optional) (use object delete)
-        if ($delete) {
-            $cm = get_coursemodule_from_id('', $oldcoursemodule->id, $oldcoursemodule->course);
-            if ($cm) {
-                $this->delete_course_module($cm);
-            }
+        // delete the old assignment (use object delete)
+        $cm = get_coursemodule_from_id('', $oldcoursemodule->id, $oldcoursemodule->course);
+        if ($cm) {
+            $this->delete_course_module($cm);
         }
         rebuild_course_cache($oldcoursemodule->course);
         return true;
