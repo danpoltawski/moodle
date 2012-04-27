@@ -91,7 +91,7 @@ class assignment_upgrade_manager {
             return false;
         }
        
-        
+        // now create a new coursemodule from the old one
         $newmodule = $DB->get_record('modules', array('name'=>'assign'), '*', MUST_EXIST);
         $newcoursemodule = $this->duplicate_course_module($oldcoursemodule, $newmodule->id, $newassignment->get_instance()->id);
         if (!$newcoursemodule) {
@@ -99,8 +99,13 @@ class assignment_upgrade_manager {
             return false;
         }
 
-        // convert the base database tables (assignment, submission, grade) ignoring the 
-        // unknown fields
+        // convert the base database tables (assignment, submission, grade)
+
+        // these are used to store information in case a rollback is required
+        $gradingarea = null;
+        $gradingdefinitions = null;
+        $gradeidmap = array();
+        $completiondone = false;
 
         // from this point we want to rollback on failure
         $rollback = false;
@@ -136,16 +141,19 @@ class assignment_upgrade_manager {
             $gradingarea = $DB->get_record('grading_areas', array('contextid'=>$oldcontext->id, 'areaname'=>'submission'), '*', IGNORE_MISSING);
             if ($gradingarea) {
                 $DB->update_record('grading_areas', array('id'=>$gradingarea->id, 'contextid'=>$newassignment->get_context()->id, 'component'=>'mod_assign', 'areaname'=>'submissions'));
+                $gradingdefinitions = $DB->get_records('grading_definitions', array('areaid'=>$gradingarea->id));
             }
 
             // upgrade completion data
             $DB->set_field('course_modules_completion', 'coursemoduleid', $newcoursemodule->id, array('coursemoduleid'=>$oldcoursemodule->id));
             $DB->set_field('course_completion_criteria', 'module', 'assign', array('moduleinstance'=>$oldcoursemodule->id));
             $DB->set_field('course_completion_criteria', 'moduleinstance', $newcoursemodule->id, array('moduleinstance'=>$oldcoursemodule->id));
+            $completiondone = true;
             
 
             // copy all the submission data (and get plugins to do their bit)
             $oldsubmissions = $DB->get_records('assignment_submissions', array('assignment'=>$oldassignmentid));
+
             foreach ($oldsubmissions as $oldsubmission) {
                 $submission = new stdClass();
                 $submission->assignment = $newassignment->get_instance()->id;
@@ -185,9 +193,9 @@ class assignment_upgrade_manager {
                     // copy any grading instances
                     if ($gradingarea) {
     
-                        $definitions = $DB->get_records('grading_definitions', array('areaid'=>$gradingarea->id));
+                        $gradeidmap[$grade->id] = $oldsubmission->id;
 
-                        foreach ($definitions as $definition) {
+                        foreach ($gradingdefinitions as $definition) {
                             $DB->set_field('grading_instances', 'itemid', $grade->id, array('definitionid'=>$definition->id, 'itemid'=>$oldsubmission->id));
                         }
                         
@@ -214,6 +222,21 @@ class assignment_upgrade_manager {
         }
     
         if ($rollback) {
+            // roll back the completion changes
+            if ($completiondone) {
+                $DB->set_field('course_modules_completion', 'coursemoduleid', $oldcoursemodule->id, array('coursemoduleid'=>$newcoursemodule->id));
+                $DB->set_field('course_completion_criteria', 'module', 'assignment', array('moduleinstance'=>$newcoursemodule->id));
+                $DB->set_field('course_completion_criteria', 'moduleinstance', $oldcoursemodule->id, array('moduleinstance'=>$newcoursemodule->id));
+            }
+            // roll back the advanced grading update
+            if ($gradingarea) {
+                foreach ($gradeidmap as $newgradeid => $oldsubmissionid) {
+                    foreach ($gradingdefinitions as $definition) {
+                        $DB->set_field('grading_instances', 'itemid', $oldsubmissionid, array('definitionid'=>$definition->id, 'itemid'=>$newgradeid));
+                    }
+                }
+                $DB->update_record('grading_areas', array('id'=>$gradingarea->id, 'contextid'=>$oldcontext->id, 'component'=>'mod_assignment', 'areaname'=>'submission'));
+            }
             $newassignment->delete_instance();
             
             return false;
