@@ -41,12 +41,12 @@ function xmldb_assignsubmission_onlinetext_install() {
 
     $pluginmanager->move_plugin('onlinetext', 'up');
     $pluginmanager->move_plugin('onlinetext', 'up');
-        
+
     // do the upgrades
     return true;
 
 
-   
+
 }
 
 

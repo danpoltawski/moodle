@@ -52,8 +52,8 @@ if ($ADMIN->fulltree) {
                    new lang_string('feedbackplugin', 'mod_assign'), 'feedback_comments', $menu));
     $settings->add(new admin_setting_configcheckbox('assign_showrecentsubmissions',
                    new lang_string('showrecentsubmissions', 'assign'),
-                   new lang_string('configshowrecentsubmissions', 'assign'), 0));       
-            
+                   new lang_string('configshowrecentsubmissions', 'assign'), 0));
+
 
     $settings->add(new admin_setting_heading('assign_defaultplugins',
                    new lang_string('defaultplugins', 'assign'), ''));
@@ -64,7 +64,7 @@ if ($ADMIN->fulltree) {
             $settings->add(new admin_setting_configcheckbox('assignsubmission_' . $type . '_default',
                    new lang_string('enabled', 'assignsubmission_' . $type),
                    new lang_string('enabled_help', 'assignsubmission_' . $type), 0));
-                
+
         }
     }
     foreach (get_plugin_list('assignfeedback') as $type => $notused) {
@@ -73,8 +73,8 @@ if ($ADMIN->fulltree) {
             $settings->add(new admin_setting_configcheckbox('assignfeedback_' . $type . '_default',
                    new lang_string('enabled', 'assignfeedback_' . $type),
                    new lang_string('enabled_help', 'assignfeedback_' . $type), 0));
-                
+
         }
     }
-    
+
 }

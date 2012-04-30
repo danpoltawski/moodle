@@ -16,7 +16,7 @@
 
 /**
  * This file contains the class for restore of this submission plugin
- * 
+ *
  * @package assignsubmission_onlinetext
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,7 +36,7 @@ class restore_assignsubmission_onlinetext_subplugin extends restore_subplugin {
     ////////////////////////////////////////////////////////////////////////////
 
     /**
-     * 
+     *
      * Returns array the paths to be handled by the subplugin at assignment level
      * @return array
      */
@@ -55,11 +55,11 @@ class restore_assignsubmission_onlinetext_subplugin extends restore_subplugin {
     // defined path elements are dispatched to the following methods
     ////////////////////////////////////////////////////////////////////////////
 
-    
-    
+
+
     /**
      * Processes one assignsubmission_onlinetext element
-     * 
+     *
      * @global moodle_database $DB
      * @param mixed $data
      */
@@ -73,7 +73,7 @@ class restore_assignsubmission_onlinetext_subplugin extends restore_subplugin {
         $data->submission = $this->get_mappingid('submission', $data->submission);
 
         $DB->insert_record('assign_submission_onlinetext', $data);
-        
+
         $this->add_related_files('assignsubmission_onlinetext', 'submissions_onlinetext', 'submission', null, $oldsubmissionid);
     }
 

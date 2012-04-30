@@ -42,7 +42,7 @@ $PAGE->set_url($url);
 $context = context_module::instance($cm->id);
 
 require_capability('mod/assign:view', $context);
-   
+
 $assignment = new assignment($context,$cm,$course);
 
 /// Mark as viewed

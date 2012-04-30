@@ -31,19 +31,19 @@ defined('MOODLE_INTERNAL') || die();
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */     
+ */
 class restore_assign_activity_structure_step extends restore_activity_structure_step {
- 
+
     /**
      * Define the structure of the restore workflow
      * @return restore_path_element $structure
      */
     protected function define_structure() {
- 
+
         $paths = array();
         // To know if we are including userinfo
         $userinfo = $this->get_setting_value('userinfo');
- 
+
         // Define each element separated
         $paths[] = new restore_path_element('assign', '/activity/assign');
         if ($userinfo) {
@@ -66,21 +66,21 @@ class restore_assign_activity_structure_step extends restore_activity_structure_
      */
     protected function process_assign($data) {
         global $DB;
-    
+
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
-        
+
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->allowsubmissionsfromdate = $this->apply_date_offset($data->allowsubmissionsfromdate);
         $data->duedate = $this->apply_date_offset($data->duedate);
 
-        
+
         $newitemid = $DB->insert_record('assign', $data);
 
-        $this->apply_activity_instance($newitemid); 
+        $this->apply_activity_instance($newitemid);
     }
-    
+
     /**
      * Process a submission restore
      * @param object $data The data in object form
@@ -88,23 +88,23 @@ class restore_assign_activity_structure_step extends restore_activity_structure_
      */
     protected function process_assign_submission($data) {
         global $DB;
-    
+
         $data = (object)$data;
         $oldid = $data->id;
 
         $data->assignment = $this->get_new_parentid('assign');
-        
+
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->userid = $this->get_mappingid('user', $data->userid);
-        
+
         $newitemid = $DB->insert_record('assign_submission', $data);
 
-        // Note - the old contextid is required in order to be able to restore files stored in 
+        // Note - the old contextid is required in order to be able to restore files stored in
         // sub plugin file areas attached to the submissionid
         $this->set_mapping('submission', $oldid, $newitemid, false, null, $this->task->get_old_contextid());
     }
-    
+
     /**
      * Process a grade restore
      * @param object $data The data in object form
@@ -112,20 +112,20 @@ class restore_assign_activity_structure_step extends restore_activity_structure_
      */
     protected function process_assign_grade($data) {
         global $DB;
-    
+
         $data = (object)$data;
         $oldid = $data->id;
 
         $data->assignment = $this->get_new_parentid('assign');
-        
+
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->userid = $this->get_mappingid('user', $data->userid);
         $data->grader = $this->get_mappingid('user', $data->grader);
-        
+
         $newitemid = $DB->insert_record('assign_grades', $data);
-        
-        // Note - the old contextid is required in order to be able to restore files stored in 
+
+        // Note - the old contextid is required in order to be able to restore files stored in
         // sub plugin file areas attached to the gradeid
         $this->set_mapping('grade', $oldid, $newitemid, false, null, $this->task->get_old_contextid());
     }
@@ -137,12 +137,12 @@ class restore_assign_activity_structure_step extends restore_activity_structure_
      */
     protected function process_assign_plugin_config($data) {
         global $DB;
-    
+
         $data = (object)$data;
         $oldid = $data->id;
 
         $data->assignment = $this->get_new_parentid('assign');
-        
+
         $newitemid = $DB->insert_record('assign_plugin_config', $data);
 
     }

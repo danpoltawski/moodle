@@ -40,8 +40,8 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 class mod_assign_renderer extends plugin_renderer_base {
 
     /**
-     * rendering assignment files 
-     * 
+     * rendering assignment files
+     *
      * @param context $context
      * @param int $userid
      * @param string $filearea
@@ -52,8 +52,8 @@ class mod_assign_renderer extends plugin_renderer_base {
     }
 
     /**
-     * rendering assignment files 
-     * 
+     * rendering assignment files
+     *
      * @param assign_files $tree
      * @return string
      */
@@ -69,11 +69,11 @@ class mod_assign_renderer extends plugin_renderer_base {
         }
         return $html;
     }
-    
+
     /**
      * Utility function to add a row of data to a table with 2 columns. Modified
      * the table param and does not return a value
-     * 
+     *
      * @param html_table $table The table to append the row of data to
      * @param string $first The first column text
      * @param string $second The second column text
@@ -86,7 +86,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         $row->cells = array($cell1, $cell2);
         $table->data[] = $row;
     }
-    
+
     /**
      * Render the generic form
      * @param assign_form $form The form to render
@@ -99,10 +99,10 @@ class mod_assign_renderer extends plugin_renderer_base {
         $o .= $this->output->box_end();
         return $o;
     }
-  
+
     /**
      * Render the user summary
-     * 
+     *
      * @param assign_user_summary $summary The user summary to render
      * @return string
      */
@@ -116,20 +116,20 @@ class mod_assign_renderer extends plugin_renderer_base {
         $o .= $this->output->box_start('boxaligncenter usersummarysection');
         $o .= $this->output->user_picture($summary->user);
         $o .= $this->output->spacer(array('width'=>30));
-        $o .= $this->output->action_link(new moodle_url('/user/view.php', 
-                                                        array('id' => $summary->user->id, 
-                                                              'course'=>$summary->courseid)), 
+        $o .= $this->output->action_link(new moodle_url('/user/view.php',
+                                                        array('id' => $summary->user->id,
+                                                              'course'=>$summary->courseid)),
                                                               fullname($summary->user, $summary->viewfullnames));
         $o .= $this->output->box_end();
         $o .= $this->output->container_end();
-        
+
         return $o;
     }
-    
+
     /**
      * Render the submit for grading page
-     * 
-     * @param assign_submit_for_grading_page $assign_submit_for_grading_page 
+     *
+     * @param assign_submit_for_grading_page $assign_submit_for_grading_page
      * @return string
      */
     public function render_assign_submit_for_grading_page($page) {
@@ -148,7 +148,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             foreach ($page->notifications as $notification) {
                 $o .= $this->output->notification($notification);
             }
-            
+
             $o .= $this->output->continue_button($cancelurl);
         } else {
             // All submission plugins ready - confirm the student really does want to submit for marking
@@ -165,16 +165,16 @@ class mod_assign_renderer extends plugin_renderer_base {
 
     /**
      * Page is done - render the footer
-     * 
+     *
      * @return void
      */
     public function render_footer() {
         return $this->output->footer();
     }
-  
+
     /**
      * render the header
-     * 
+     *
      * @param assign_header $header
      * @return string
      */
@@ -199,10 +199,10 @@ class mod_assign_renderer extends plugin_renderer_base {
 
         return $o;
     }
-    
+
     /**
      * render a table containing the current status of the grading process
-     * 
+     *
      * @param assign_grading_summary $summary
      * @return string
      */
@@ -215,18 +215,18 @@ class mod_assign_renderer extends plugin_renderer_base {
         $t = new html_table();
 
         // status
-        $this->add_table_row_tuple($t, get_string('numberofparticipants', 'assign'), 
+        $this->add_table_row_tuple($t, get_string('numberofparticipants', 'assign'),
                                    $summary->participantcount);
 
         // drafts
         if ($summary->submissiondraftsenabled) {
-            $this->add_table_row_tuple($t, get_string('numberofdraftsubmissions', 'assign'), 
+            $this->add_table_row_tuple($t, get_string('numberofdraftsubmissions', 'assign'),
                                        $summary->submissiondraftscount);
        }
 
         // submitted for grading
         if ($summary->submissionsenabled) {
-            $this->add_table_row_tuple($t, get_string('numberofsubmittedassignments', 'assign'), 
+            $this->add_table_row_tuple($t, get_string('numberofsubmittedassignments', 'assign'),
                                        $summary->submissionssubmittedcount);
         }
 
@@ -235,7 +235,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             // due date
             // submitted for grading
             $duedate = $summary->duedate;
-            $this->add_table_row_tuple($t, get_string('duedate', 'assign'), 
+            $this->add_table_row_tuple($t, get_string('duedate', 'assign'),
                                        userdate($duedate));
 
             // time remaining
@@ -251,12 +251,12 @@ class mod_assign_renderer extends plugin_renderer_base {
         // all done - write the table
         $o .= html_writer::table($t);
         $o .= $this->output->box_end();
-        
+
         // link to the grading page
         $o .= $this->output->single_button(new moodle_url('/mod/assign/view.php',
                                                           array('id' => $summary->coursemoduleid,
-                                                                'action'=>'grading')), 
-                                                          get_string('viewgrading', 'assign'), 
+                                                                'action'=>'grading')),
+                                                          get_string('viewgrading', 'assign'),
                                                           'get');
 
         // close the container and insert a spacer
@@ -264,10 +264,10 @@ class mod_assign_renderer extends plugin_renderer_base {
 
         return $o;
     }
-    
+
     /**
      * render a table containing all the current grades and feedback
-     * 
+     *
      * @global moodle_database $DB
      * @global stdClass $CFG
      * @param assign_feedback_status $status
@@ -281,19 +281,19 @@ class mod_assign_renderer extends plugin_renderer_base {
         $o .= $this->output->heading(get_string('feedback', 'assign'), 3);
         $o .= $this->output->box_start('boxaligncenter feedbacktable');
         $t = new html_table();
-        
+
         $row = new html_table_row();
         $cell1 = new html_table_cell(get_string('grade'));
         $cell2 = new html_table_cell($status->gradefordisplay);
         $row->cells = array($cell1, $cell2);
         $t->data[] = $row;
-        
+
         $row = new html_table_row();
         $cell1 = new html_table_cell(get_string('gradedon', 'assign'));
         $cell2 = new html_table_cell(userdate($status->gradeddate));
         $row->cells = array($cell1, $cell2);
         $t->data[] = $row;
-        
+
         if ($status->grader) {
             $row = new html_table_row();
             $cell1 = new html_table_cell(get_string('gradedby', 'assign'));
@@ -301,7 +301,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
         }
-    
+
         foreach ($status->feedbackplugins as $plugin) {
             if ($plugin->is_enabled() && $plugin->is_visible() && !$plugin->is_empty($status->grade)) {
                 $row = new html_table_row();
@@ -312,18 +312,18 @@ class mod_assign_renderer extends plugin_renderer_base {
                 $t->data[] = $row;
             }
         }
- 
+
 
         $o .= html_writer::table($t);
         $o .= $this->output->box_end();
-        
+
         $o .= $this->output->container_end();
         return $o;
     }
 
     /**
      * render a table containing the current status of the submission
-     * 
+     *
      * @param assign_submission_status $status
      * @return string
      */
@@ -342,7 +342,7 @@ class mod_assign_renderer extends plugin_renderer_base {
                 $o .= get_string('allowsubmissionsanddescriptionfromdatesummary', 'assign', userdate($status->allowsubmissionsfromdate));
             }
             $o .= $this->output->box_end();
-        } 
+        }
         $o .= $this->output->box_start('boxaligncenter submissionsummarytable');
 
         $t = new html_table();
@@ -361,7 +361,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         }
         $row->cells = array($cell1, $cell2);
         $t->data[] = $row;
-        
+
         // status
         if ($status->locked) {
             $row = new html_table_row();
@@ -386,7 +386,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         $row->cells = array($cell1, $cell2);
         $t->data[] = $row;
 
-        
+
         $duedate = $status->duedate;
         if ($duedate >= 1) {
             $row = new html_table_row();
@@ -394,7 +394,7 @@ class mod_assign_renderer extends plugin_renderer_base {
             $cell2 = new html_table_cell(userdate($duedate));
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
-            
+
             // time remaining
             $row = new html_table_row();
             $cell1 = new html_table_cell(get_string('timeremaining', 'assign'));
@@ -420,9 +420,9 @@ class mod_assign_renderer extends plugin_renderer_base {
             }
             $row->cells = array($cell1, $cell2);
             $t->data[] = $row;
-        } 
+        }
 
-        // last modified 
+        // last modified
         if ($status->submission) {
             $row = new html_table_row();
             $cell1 = new html_table_cell(get_string('timemodified', 'assign'));
@@ -442,10 +442,10 @@ class mod_assign_renderer extends plugin_renderer_base {
             }
         }
 
-        
+
         $o .= html_writer::table($t);
         $o .= $this->output->box_end();
-    
+
         // links
         if ($status->canedit) {
             $o .= $this->output->single_button(new moodle_url('/mod/assign/view.php',
@@ -453,21 +453,21 @@ class mod_assign_renderer extends plugin_renderer_base {
         }
 
         if ($status->cansubmit) {
-            // submission.php 
+            // submission.php
             $o .= $this->output->single_button(new moodle_url('/mod/assign/view.php',
                     array('id' => $status->coursemoduleid, 'action'=>'submit')), get_string('submitassignment', 'assign'), 'get');
             $o .= $this->output->box_start('boxaligncenter submithelp');
             $o .= get_string('submitassignment_help', 'assign');
             $o .= $this->output->box_end();
         }
-        
+
         $o .= $this->output->container_end();
         return $o;
     }
-    
+
     /**
      * render a submission plugin submission
-     * 
+     *
      * @param assign_submission_plugin_submission $submissionplugin
      * @return string
      */
@@ -481,18 +481,18 @@ class mod_assign_renderer extends plugin_renderer_base {
             $summary = $submissionplugin->plugin->view_summary($submissionplugin->submission, $showviewlink);
             if ($showviewlink) {
                 $link = $this->output->action_link(
-                                new moodle_url('/mod/assign/view.php', 
-                                               array('id' => $submissionplugin->coursemoduleid, 
-                                                     'sid'=>$submissionplugin->submission->id, 
-                                                     'plugin'=>$submissionplugin->plugin->get_type(), 
-                                                     'action'=>'viewplugin' . $submissionplugin->plugin->get_subtype(), 
-                                                     'returnaction'=>$submissionplugin->returnaction, 
-                                                     'returnparams'=>http_build_query($submissionplugin->returnparams))), 
+                                new moodle_url('/mod/assign/view.php',
+                                               array('id' => $submissionplugin->coursemoduleid,
+                                                     'sid'=>$submissionplugin->submission->id,
+                                                     'plugin'=>$submissionplugin->plugin->get_type(),
+                                                     'action'=>'viewplugin' . $submissionplugin->plugin->get_subtype(),
+                                                     'returnaction'=>$submissionplugin->returnaction,
+                                                     'returnparams'=>http_build_query($submissionplugin->returnparams))),
                                 $icon);
-            
+
                 $link .= $this->output->spacer(array('width'=>15));
             }
-            
+
             $o .= $link . $summary;
         } else if ($submissionplugin->view == assign_submission_plugin_submission::FULL) {
             $o .= $this->output->box_start('boxaligncenter submissionfull');
@@ -502,10 +502,10 @@ class mod_assign_renderer extends plugin_renderer_base {
 
         return $o;
     }
-    
+
     /**
      * render the grading table
-     * 
+     *
      * @param assign_grading_table $table
      * @return string
      */
@@ -527,7 +527,7 @@ class mod_assign_renderer extends plugin_renderer_base {
 
     /**
      * render a feedback plugin feedback
-     * 
+     *
      * @param feedback_plugin_feedback $feedbackplugin
      * @return string
      */
@@ -541,17 +541,17 @@ class mod_assign_renderer extends plugin_renderer_base {
             $summary = $feedbackplugin->plugin->view_summary($feedbackplugin->grade, $showviewlink);
             if ($showviewlink) {
                 $link = $this->output->action_link(
-                                new moodle_url('/mod/assign/view.php', 
-                                               array('id' => $feedbackplugin->coursemoduleid, 
-                                                     'gid'=>$feedbackplugin->grade->id, 
-                                                     'plugin'=>$feedbackplugin->plugin->get_type(), 
-                                                     'action'=>'viewplugin' . $feedbackplugin->plugin->get_subtype(), 
-                                                     'returnaction'=>$feedbackplugin->returnaction, 
-                                                     'returnparams'=>http_build_query($feedbackplugin->returnparams))), 
+                                new moodle_url('/mod/assign/view.php',
+                                               array('id' => $feedbackplugin->coursemoduleid,
+                                                     'gid'=>$feedbackplugin->grade->id,
+                                                     'plugin'=>$feedbackplugin->plugin->get_type(),
+                                                     'action'=>'viewplugin' . $feedbackplugin->plugin->get_subtype(),
+                                                     'returnaction'=>$feedbackplugin->returnaction,
+                                                     'returnparams'=>http_build_query($feedbackplugin->returnparams))),
                                 $icon);
                 $link .= $this->output->spacer(array('width'=>15));
             }
-            
+
             $o .= $link . $summary;
         } else if ($feedbackplugin->view == assign_feedback_plugin_feedback::FULL) {
             $o .= $this->output->box_start('boxaligncenter feedbackfull');
@@ -561,16 +561,16 @@ class mod_assign_renderer extends plugin_renderer_base {
 
         return $o;
     }
-    
 
-        
+
+
     /**
      * Internal function - creates htmls structure suitable for YUI tree.
-     * 
+     *
      * @global stdClass $CFG
      * @param assign_files $tree
      * @param array $dir
-     * @return string 
+     * @return string
      */
     protected function htmllize_tree(assign_files $tree, $dir) {
         global $CFG;
@@ -638,6 +638,6 @@ class mod_assign_renderer extends plugin_renderer_base {
 
         return $o;
     }
-    
+
 }
 

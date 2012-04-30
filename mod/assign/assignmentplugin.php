@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the functions for assignment_plugin abstract class 
+ * This file contains the functions for assignment_plugin abstract class
  *
  *
  * @package   mod_assign
@@ -42,18 +42,18 @@ abstract class assignment_plugin {
     /** @var string error message */
     private $error = '';
 
-        
+
     /**
      * Constructor for the abstract plugin type class
-     * 
+     *
      * @param assignment $assignment
-     * @param string $type 
+     * @param string $type
      */
     public final function __construct(assignment $assignment, $type) {
         $this->assignment = $assignment;
         $this->type = $type;
     }
-    
+
     /**
      * Is this the first plugin in the list?
      *
@@ -84,8 +84,8 @@ abstract class assignment_plugin {
     /**
      * This function should be overridden to provide an array of elements that can be added to a moodle
      * form for display in the settings page for the assignment.
-     * @param MoodleQuickForm $mform The form to add the elements to 
-     * @return $array 
+     * @param MoodleQuickForm $mform The form to add the elements to
+     * @return $array
      */
     public function get_settings(MoodleQuickForm $mform) {
         return;
@@ -102,9 +102,9 @@ abstract class assignment_plugin {
     }
 
     /**
-     * The assignment subtype is responsible for saving it's own settings as the database table for the 
-     * standard type cannot be modified. 
-     * 
+     * The assignment subtype is responsible for saving it's own settings as the database table for the
+     * standard type cannot be modified.
+     *
      * @param stdClass $formdata - the data submitted from the form
      * @return bool - on error the subtype should call set_error and return false.
      */
@@ -114,7 +114,7 @@ abstract class assignment_plugin {
 
     /**
      * Save the error message from the last error
-     * 
+     *
      * @param string $msg - the error description
      */
     protected final function set_error($msg) {
@@ -124,7 +124,7 @@ abstract class assignment_plugin {
     /**
      * What was the last error?
      *
-     * 
+     *
      * @return string
      */
     public final function get_error() {
@@ -132,28 +132,28 @@ abstract class assignment_plugin {
     }
 
     /**
-     * Should return the name of this plugin type. 
-     * 
+     * Should return the name of this plugin type.
+     *
      * @return string - the name
      */
     public abstract function get_name();
-    
+
     /**
-     * Should return the subtype of this plugin. 
-     * 
+     * Should return the subtype of this plugin.
+     *
      * @return string - either 'assignsubmission' or 'feedback'
      */
     public abstract function get_subtype();
-    
+
     /**
-     * Should return the type of this plugin. 
-     * 
+     * Should return the type of this plugin.
+     *
      * @return string - the type
      */
     public final function get_type() {
         return $this->type;
     }
-    
+
     /**
      * Get the installed version of this plugin
      *
@@ -167,7 +167,7 @@ abstract class assignment_plugin {
             return '';
         }
     }
-    
+
     /**
      * Get the required moodle version for this plugin
      *
@@ -184,15 +184,15 @@ abstract class assignment_plugin {
 
     /**
      * Save any custom data for this form submission
-     * 
+     *
      * @param mixed assignment_submission|assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param stdClass $data - the data submitted from the form
      * @return bool - on error the subtype should call set_error and return false.
      */
     public function save(stdClass $submissionorgrade, stdClass $data) {
-        return true;   
+        return true;
     }
-    
+
     /**
      * Set this plugin to enabled
      *
@@ -210,10 +210,10 @@ abstract class assignment_plugin {
     public final function disable() {
         return $this->set_config('enabled', 0);
     }
-    
+
     /**
      * Allows hiding this plugin from the submission/feedback screen if it is not enabled.
-     * 
+     *
      * @return bool - if false - this plugin will not accept submissions / feedback
      */
     public final function is_enabled() {
@@ -222,7 +222,7 @@ abstract class assignment_plugin {
 
     /**
      * Get any additional fields for the submission/grading form for this assignment.
-     * 
+     *
      * @param mixed submission|grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param MoodleQuickForm $mform - This is the form
      * @param stdClass $data - This is the form data that can be modified for example by a filemanager element
@@ -234,7 +234,7 @@ abstract class assignment_plugin {
 
     /**
      * Should not output anything - return the result as a string so it can be consumed by webservices.
-     * 
+     *
      * @param mixed assignment_submission|assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @return string - return a string representation of the submission in full
      */
@@ -261,7 +261,7 @@ abstract class assignment_plugin {
         $disabled = get_config($this->get_subtype() . '_' . $this->get_type(), 'disabled');
         return !$disabled;
     }
-    
+
 
     /**
      * Has this plugin got a custom settings.php file?
@@ -270,10 +270,10 @@ abstract class assignment_plugin {
      */
     public final function has_admin_settings() {
         global $CFG;
-        
-        return file_exists($CFG->dirroot . '/mod/assign/' . substr($this->get_subtype(), strlen('assign')) . '/' . $this->get_type() . '/settings.php');        
+
+        return file_exists($CFG->dirroot . '/mod/assign/' . substr($this->get_subtype(), strlen('assign')) . '/' . $this->get_type() . '/settings.php');
     }
-    
+
     /**
      * Set a configuration value for this plugin
      *
@@ -284,7 +284,7 @@ abstract class assignment_plugin {
      */
     public final function set_config($name, $value) {
         global $DB;
-        
+
         $current = $DB->get_record('assign_plugin_config', array('assignment'=>$this->assignment->get_instance()->id, 'subtype'=>$this->get_subtype(), 'plugin'=>$this->get_type(), 'name'=>$name), '*', IGNORE_MISSING);
 
         if ($current) {
@@ -297,7 +297,7 @@ abstract class assignment_plugin {
             $setting->plugin = $this->get_type();
             $setting->name = $name;
             $setting->value = $value;
-             
+
             return $DB->insert_record('assign_plugin_config', $setting) > 0;
         }
     }
@@ -336,10 +336,10 @@ abstract class assignment_plugin {
         }
         return $config;
     }
-    
+
     /**
      * Should not output anything - return the result as a string so it can be consumed by webservices.
-     * 
+     *
      * @param mixed assignment_submission| assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param bool - modifed to return whether or not to show a link to the full submission/feedback
      * @return string - return a string representation of the submission in full
@@ -347,7 +347,7 @@ abstract class assignment_plugin {
     public function view_summary(stdClass $submissionorgrade, & $showviewlink) {
         return '';
     }
-    
+
     /**
      * Given a field name, should return the text of an editor field that is part of
      * this plugin. This is used when exporting to portfolio.
@@ -362,18 +362,18 @@ abstract class assignment_plugin {
 
     /**
      * Produce a list of files suitable for export that represent this feedback or submission
-     * 
+     *
      * @param mixed assignment_submission| assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @return array - return an array of files indexed by filename
      */
     public function get_files(stdClass $submissionorgrade) {
         return array();
     }
-    
+
      /**
      * Given a field name, should return the format of an editor field that is part of
      * this plugin. This is used when exporting to portfolio.
-     * 
+     *
      * @param string $name Name of the field.
      * @param int $submissionid The id of the submission
      * @return int - The format for the editor field
@@ -385,7 +385,7 @@ abstract class assignment_plugin {
      /**
      * Return true if this plugin can upgrade an old Moodle 2.2 assignment of this type
      * and version.
-     * 
+     *
      * @param string $type The old assignment subtype
      * @param int $version The old assignment version
      * @return bool True if upgrade is possible
@@ -393,10 +393,10 @@ abstract class assignment_plugin {
     public function can_upgrade($type, $version) {
         return false;
     }
-    
+
      /**
      * Upgrade the settings from the old assignment to the new one
-     * 
+     *
      * @param context $oldcontext The context for the old assignment module
      * @param stdClass $oldassignment The data record for the old assignment
      * @param string $log Record upgrade messages in the log
@@ -409,7 +409,7 @@ abstract class assignment_plugin {
 
     /**
      * Upgrade the submission from the old assignment to the new one
-     * 
+     *
      * @param context $oldcontext The data record for the old context
      * @param stdClass $oldassignment The data record for the old assignment
      * @param stdClass $oldsubmissionorgrade The data record for the old submission
@@ -421,11 +421,11 @@ abstract class assignment_plugin {
         $log = $log . ' ' . get_string('upgradenotimplemented', 'mod_assign', array('type'=>$this->type, 'subtype'=>$this->get_subtype()));
         return false;
     }
-    
+
     /**
-     * formatting for log info    
+     * formatting for log info
      * @param assignment_submission|assignment_grade The new submission or grade
-     * 
+     *
      * @return string
      */
     public function format_for_log(stdClass $submissionorgrade) {
@@ -435,7 +435,7 @@ abstract class assignment_plugin {
 
     /**
      * The assignment has been deleted - remove the plugin specific data
-     * 
+     *
      * @return bool
      */
     public function delete_instance() {
@@ -455,7 +455,7 @@ abstract class assignment_plugin {
     public function is_empty(stdClass $submissionorgrade) {
         return true;
     }
-    
+
     /**
      * Get file areas returns a list of areas this plugin stores files
      * @return array - An array of fileareas (keys) and descriptions (values)
@@ -466,9 +466,9 @@ abstract class assignment_plugin {
 
 
     /**
-     * Default implementation of file_get_info for plugins. 
+     * Default implementation of file_get_info for plugins.
      * This is used by the filebrowser to browse a plugins file areas.
-     * 
+     *
      * This implementation should work for most plugins but can be overridden if required.
      * @global stdClass $CFG
      * @global moodle_database $DB
@@ -484,7 +484,7 @@ abstract class assignment_plugin {
         $urlbase = $CFG->wwwroot.'/pluginfile.php';
 
         // permission check on the itemid
-    
+
         if ($this->get_subtype() == 'assignsubmission') {
             if ($itemid) {
                 $record = $DB->get_record('assign_submission', array('id'=>$itemid), 'userid', IGNORE_MISSING);
@@ -503,15 +503,15 @@ abstract class assignment_plugin {
         $fs = get_file_storage();
         $filepath = is_null($filepath) ? '/' : $filepath;
         $filename = is_null($filename) ? '.' : $filename;
-        if (!($storedfile = $fs->get_file($this->assignment->get_context()->id, 
-                                          $this->get_subtype() . '_' . $this->get_type(), 
-                                          $filearea, 
-                                          $itemid, 
-                                          $filepath, 
+        if (!($storedfile = $fs->get_file($this->assignment->get_context()->id,
+                                          $this->get_subtype() . '_' . $this->get_type(),
+                                          $filearea,
+                                          $itemid,
+                                          $filepath,
                                           $filename))) {
             return null;
         }
-        return new file_info_stored($browser, 
+        return new file_info_stored($browser,
                                     $this->assignment->get_context(),
                                     $storedfile,
                                     $urlbase,

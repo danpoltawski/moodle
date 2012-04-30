@@ -44,14 +44,14 @@ M.mod_assign.init_grading_table = function(Y) {
                 checkboxes = Y.all('td.c0 input');
                 checkboxes.each(function(node) {
                     rowelement = node.get('parentNode').get('parentNode');
-                    node.set('checked', true); 
+                    node.set('checked', true);
                     rowelement.setAttribute('class', 'selectedrow');
                 });
             } else {
                 checkboxes = Y.all('td.c0 input');
                 checkboxes.each(function(node) {
                     rowelement = node.get('parentNode').get('parentNode');
-                    node.set('checked', false); 
+                    node.set('checked', false);
                     rowelement.setAttribute('class', 'unselectedrow');
                 });
             }
@@ -94,13 +94,13 @@ M.mod_assign.init_grading_table = function(Y) {
 
                 }, "#" + menu.getAttribute('id'));
 
-                
+
             });
 
-        
+
         });
-        
+
     });
 
-    
+
 };

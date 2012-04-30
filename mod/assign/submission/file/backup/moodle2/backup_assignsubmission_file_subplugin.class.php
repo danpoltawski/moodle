@@ -16,7 +16,7 @@
 
 /**
  * This file contains the class for backup of this submission plugin
- * 
+ *
  * @package assignsubmission_file
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class backup_assignsubmission_file_subplugin extends backup_subplugin {
 
     /**
-     * 
+     *
      * Returns the subplugin information to attach to submission element
      * @return backup_subplugin_element
      */
@@ -57,5 +57,5 @@ class backup_assignsubmission_file_subplugin extends backup_subplugin {
         $subpluginelement->annotate_files('assignsubmission_file', 'submission_files', 'submission');// The parent is the submission
         return $subplugin;
     }
-    
+
 }

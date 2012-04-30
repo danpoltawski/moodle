@@ -16,7 +16,7 @@
 
 /**
  * This file contains the definition for the library class for file feedback plugin
- * 
+ *
  *
  * @package   assignfeedback_file
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -33,33 +33,33 @@ define('ASSIGN_FEEDBACK_FILE_MAX_SUMMARY_FILES', 5);
 
 /**
  * library class for file feedback plugin extending feedback plugin base class
- * 
+ *
  * @package   asignfeedback_file
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assignment_feedback_file extends assignment_feedback_plugin {
-    
+
     /**
      * Get the name of the file feedback plugin
-     * @return string 
+     * @return string
      */
     public function get_name() {
         return get_string('file', 'assignfeedback_file');
     }
-    
+
     /**
      * Get file feedback information from the database
-     *  
+     *
      * @global moodle_database $DB
      * @param int $gradeid
-     * @return mixed 
+     * @return mixed
      */
     public function get_file_feedback($gradeid) {
         global $DB;
         return $DB->get_record('assign_feedback_file', array('grade'=>$gradeid));
     }
-    
+
     /**
      * File format options
      * @global stdClass $COURSE
@@ -74,10 +74,10 @@ class assignment_feedback_file extends assignment_feedback_plugin {
                                 'return_types'=>FILE_INTERNAL);
         return $fileoptions;
     }
-   
+
     /**
      * Get form elements for grading form
-     * 
+     *
      * @param stdClass | null $grade
      * @param MoodleQuickForm $mform
      * @param stdClass $data
@@ -98,11 +98,11 @@ class assignment_feedback_file extends assignment_feedback_plugin {
 
     /**
      * Count the number of files
-     * 
+     *
      * @global object $USER
      * @param int $gradeid
      * @param string $area
-     * @return int 
+     * @return int
      */
     private function count_files($gradeid, $area) {
         global $USER;
@@ -115,22 +115,22 @@ class assignment_feedback_file extends assignment_feedback_plugin {
 
     /**
      * Save the feedback files
-     * 
+     *
      * @global moodle_database $DB
      * @param stdClass $grade
      * @param stdClass $data
-     * @return bool 
+     * @return bool
      */
     public function save(stdClass $grade, stdClass $data) {
 
         global $DB;
 
         $fileoptions = $this->get_file_options();
-        
+
 
         $data = file_postupdate_standard_filemanager($data, 'files', $fileoptions, $this->assignment->get_context(), 'assignfeedback_file', ASSIGN_FILEAREA_FEEDBACK_FILES, $grade->id);
 
-        
+
         $filefeedback = $this->get_file_feedback($grade->id);
         if ($filefeedback) {
             $filefeedback->numfiles = $this->count_files($grade->id, ASSIGN_FILEAREA_FEEDBACK_FILES);
@@ -143,7 +143,7 @@ class assignment_feedback_file extends assignment_feedback_plugin {
             return $DB->insert_record('assign_feedback_file', $filefeedback) > 0;
         }
     }
-    
+
     /**
      * Display the list of files  in the feedback status table
      *
@@ -161,19 +161,19 @@ class assignment_feedback_file extends assignment_feedback_plugin {
             return get_string('countfiles', 'assignfeedback_file', $count);
         }
     }
-    
+
     /**
      * Display the list of files  in the feedback status table
      * @param stdClass $grade
-     * @return string 
+     * @return string
      */
     public function view(stdClass $grade) {
         return $this->assignment->render_area_files('assignfeedback_file', ASSIGN_FILEAREA_FEEDBACK_FILES, $grade->id);
     }
-    
+
     /**
      * The assignment has been deleted - cleanup
-     * 
+     *
      * @global moodle_database $DB
      * @return bool
      */
@@ -181,10 +181,10 @@ class assignment_feedback_file extends assignment_feedback_plugin {
         global $DB;
         // will throw exception on failure
         $DB->delete_records('assign_feedback_file', array('assignment'=>$this->assignment->get_instance()->id));
-        
+
         return true;
     }
-    
+
     /**
      * Return true if there are no feedback files
      */

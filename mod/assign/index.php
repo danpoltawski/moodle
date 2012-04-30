@@ -61,7 +61,7 @@ foreach ($assignments as $assignment) {
     $submissions = $DB->count_records('assign_submission', array('assignment'=>$cm->instance));
     $row = array($link, $date, $submissions);
     $table->data[] = $row;
-    
+
 }
 echo html_writer::table($table);
 echo $OUTPUT->footer();

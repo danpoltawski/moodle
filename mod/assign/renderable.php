@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -26,13 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 /*
- * 
+ *
  */
 class assign_submit_for_grading_page implements renderable {
     /** @var array $notifications is a list of notification messages returned from the plugins*/
     var $notifications = array();
     var $coursemoduleid = 0;
-    
+
     /*
      * Constructor
      * @param moodleform $form
@@ -41,7 +41,7 @@ class assign_submit_for_grading_page implements renderable {
         $this->notifications = $notifications;
         $this->coursemoduleid = $coursemoduleid;
     }
-    
+
 }
 
 /*
@@ -52,7 +52,7 @@ class assign_form implements renderable {
     var $form = null;
     /** @var string $classname is the name of the class to assign to the container */
     var $classname = '';
-    
+
     /*
      * Constructor
      * @param moodleform $form
@@ -61,7 +61,7 @@ class assign_form implements renderable {
         $this->classname = $classname;
         $this->form = $form;
     }
-    
+
 }
 
 /*
@@ -74,7 +74,7 @@ class assign_user_summary implements renderable {
     public $courseid;
     /** @var bool $viewfullnames */
     public $viewfullnames = false;
-    
+
     /**
      * Constructor
      * @param stdClass $user
@@ -107,7 +107,7 @@ class assign_feedback_plugin_feedback implements renderable {
     var $returnaction = '';
     /** @var array returnparams The params to take you back to the current page */
     var $returnparams = array();
-    
+
     /**
      * feedback for a single plugin
      *
@@ -124,7 +124,7 @@ class assign_feedback_plugin_feedback implements renderable {
         $this->returnaction = $returnaction;
         $this->returnparams = $returnparams;
     }
-    
+
 }
 
 /*
@@ -146,9 +146,9 @@ class assign_submission_plugin_submission implements renderable {
     var $returnaction = '';
     /** @var array returnparams The params to take you back to the current page */
     var $returnparams = array();
-    
 
-    
+
+
     /**
      * Constructor
      * @param assignment_submission_plugin $plugin
@@ -172,7 +172,7 @@ class assign_submission_plugin_submission implements renderable {
  * Renderable feedback status
  */
 class assign_feedback_status implements renderable {
-    
+
     /** @var stding $gradefordisplay the student grade rendered into a format suitable for display */
     var $gradefordisplay = '';
     /** @var mixed the graded date (may be null) */
@@ -208,7 +208,7 @@ class assign_feedback_status implements renderable {
         $this->returnaction = $returnaction;
         $this->returnparams = $returnparams;
     }
-    
+
 }
 
 /**
@@ -217,7 +217,7 @@ class assign_feedback_status implements renderable {
 class assign_submission_status implements renderable {
     const STUDENT_VIEW     = 10;
     const GRADER_VIEW      = 20;
-    
+
     /** @var int allowsubmissionsfromdate */
     var $allowsubmissionsfromdate = 0;
     /** @var bool alwaysshowdescription */
@@ -259,7 +259,7 @@ class assign_submission_status implements renderable {
      * @param bool $cansubmit
      */
     public function __construct($allowsubmissionsfromdate, $alwaysshowdescription, $submission, $submissionsenabled,
-                                $locked, $graded, $duedate, $submissionplugins, $returnaction, $returnparams, 
+                                $locked, $graded, $duedate, $submissionplugins, $returnaction, $returnparams,
                                 $coursemoduleid, $view, $canedit, $cansubmit) {
         $this->allowsubmissionsfromdate = $allowsubmissionsfromdate;
         $this->alwaysshowdescription = $alwaysshowdescription;
@@ -276,7 +276,7 @@ class assign_submission_status implements renderable {
         $this->canedit = $canedit;
         $this->cansubmit = $cansubmit;
     }
-    
+
 }
 
 /**
@@ -293,10 +293,10 @@ class assign_header implements renderable {
     var $coursemoduleid = 0;
     /** @var string $subpage optional subpage (extra level in the breadcrumbs) */
     var $subpage = '';
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param stdClass $assignment  - the assign database record
      * @param mixed context|null $context the course module context (or the course context if the coursemodule has not been created yet)
      * @param bool $showintro  - show or hide the intro
@@ -330,7 +330,7 @@ class assign_grading_summary implements renderable {
     var $duedate = 0;
     /** @var int coursemoduleid - The assignment course module id */
     var $coursemoduleid = 0;
-    
+
     /**
      * constructor
      *
@@ -346,7 +346,7 @@ class assign_grading_summary implements renderable {
         $this->coursemoduleid = $coursemoduleid;
     }
 
-    
+
 }
 
 /**
@@ -368,15 +368,15 @@ class assign_files implements renderable {
     public $cm;
     /** @var stdClass $course */
     public $course;
-    
-    
+
+
     /**
-     * The constructor 
-     * 
+     * The constructor
+     *
      * @global stdClass $CFG
      * @param context $context
      * @param int $sid
-     * @param string $filearea 
+     * @param string $filearea
      */
     public function __construct(context $context, $sid, $filearea, $component) {
         global $CFG;
@@ -386,9 +386,9 @@ class assign_files implements renderable {
         $this->course = $course;
         $fs = get_file_storage();
         $this->dir = $fs->get_area_tree($this->context->id, $component, $filearea, $sid);
-        
+
         $files = $fs->get_area_files($this->context->id, $component, $filearea, $sid, "timemodified", false);
-        
+
         if (!empty($CFG->enableportfolios)) {
             require_once($CFG->libdir . '/portfoliolib.php');
             if (count($files) >= 1 && has_capability('mod/assign:exportownsubmission', $this->context)) {
@@ -397,14 +397,14 @@ class assign_files implements renderable {
                 $button->reset_formats();
                 $this->portfolioform = $button->to_html(PORTFOLIO_ADD_TEXT_LINK);
             }
-           
+
         }
-        
+
          // plagiarism check if it is enabled
-        $output = '';        
+        $output = '';
         if (!empty($CFG->enableplagiarism)) {
             require_once($CFG->libdir . '/plagiarismlib.php');
-            
+
             // for plagiarism_get_links
             $assignment = new assignment($this->context, null, null);
             foreach ($files as $file) {
@@ -414,20 +414,20 @@ class assign_files implements renderable {
                    'cmid' => $this->cm->id,
                    'course' => $this->course,
                    'assignment' => $assignment->get_instance()));
-                
+
                $output .= '<br />';
             }
         }
-        
+
        $this->preprocess($this->dir, $filearea, $component);
     }
-    
+
     /**
      * preprocessing the file list to add the portfolio links if required
-     * 
+     *
      * @global stdClass $CFG
      * @param array $dir
-     * @param string $filearea 
+     * @param string $filearea
      * @return void
      */
     public function preprocess($dir, $filearea, $component) {

@@ -24,11 +24,6 @@
  */
 
 
-$capabilities = array(
-
-
-    
-
-);
+$capabilities = array();
 
 

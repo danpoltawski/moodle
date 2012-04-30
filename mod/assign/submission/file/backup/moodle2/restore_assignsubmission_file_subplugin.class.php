@@ -16,7 +16,7 @@
 
 /**
  * This file contains the class for restore of this submission plugin
- * 
+ *
  * @package assignsubmission_file
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -70,7 +70,7 @@ class restore_assignsubmission_file_subplugin extends restore_subplugin {
         $data->submission = $this->get_mappingid('submission', $data->submission);
 
         $DB->insert_record('assign_submission_file', $data);
-        
+
         $this->add_related_files('assignsubmission_file', 'submission_files', 'submission', null, $oldsubmissionid);
     }
 

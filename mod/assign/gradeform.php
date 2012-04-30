@@ -40,12 +40,12 @@ require_once('HTML/QuickForm/input.php');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_assign_grade_form extends moodleform {         
+class mod_assign_grade_form extends moodleform {
     private $assignment;
 
     function definition() {
         $mform = $this->_form;
-        
+
         list($assignment, $data, $params) = $this->_customdata;
         // visible elements
         $this->assignment = $assignment;
@@ -68,7 +68,7 @@ class mod_assign_grade_form extends moodleform {
             return $errors;
         }
 
-        if ($this->assignment->get_instance()->grade > 0) {         
+        if ($this->assignment->get_instance()->grade > 0) {
             if (!is_numeric($data['grade']) and (!empty($data['grade']))) {
                 $errors['grade'] = get_string('invalidfloatforgrade', 'assign', $data['grade']);
             } else if ($data['grade'] > $this->assignment->get_instance()->grade) {
@@ -87,5 +87,5 @@ class mod_assign_grade_form extends moodleform {
         }
         return $errors;
     }
-          
+
 }

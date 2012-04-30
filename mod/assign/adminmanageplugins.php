@@ -33,5 +33,5 @@ $pluginmanager = new assignment_plugin_manager(required_param('subtype', PARAM_P
 
 $PAGE->set_context(get_system_context());
 
-// execute the controller 
+// execute the controller
 $pluginmanager->execute(optional_param('action', null, PARAM_PLUGIN), optional_param('plugin', null, PARAM_PLUGIN));

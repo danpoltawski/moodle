@@ -37,7 +37,7 @@ function xmldb_assignfeedback_comments_install() {
     // set the correct initial order for the plugins
     $pluginmanager = new assignment_plugin_manager('assignfeedback');
     $pluginmanager->move_plugin('comments', 'up');
-        
+
     // do the upgrades
     return true;
 }

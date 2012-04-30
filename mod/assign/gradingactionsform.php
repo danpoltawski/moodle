@@ -39,17 +39,17 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_assign_grading_actions_form extends moodleform {
-    function definition() {   
+    function definition() {
         $mform = $this->_form;
         $data = $this->_customdata;
         $links = $data['links'];
         $cm = $data['cm'];
         $mform->addElement('header', 'general', get_string('gradingactions', 'assign'));
         // visible elements
-        $autosubmit = array('onchange'=>'form.submit();');  
+        $autosubmit = array('onchange'=>'form.submit();');
         $mform->addElement('select', 'url', '', $links, $autosubmit);
-    	
-        // hidden params               
+
+        // hidden params
         $mform->addElement('hidden', 'id', $cm);
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'action', 'redirect');

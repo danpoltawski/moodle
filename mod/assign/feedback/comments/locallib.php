@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the definition for the library class for comment feedback plugin 
- * 
+ * This file contains the definition for the library class for comment feedback plugin
+ *
  *
  * @package   assignfeedback_comments
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
+
  defined('MOODLE_INTERNAL') || die();
- 
+
 /**
  * library class for comment feedback plugin extending feedback plugin base class
- * 
+ *
  * @package   assignfeedback_comments
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,15 +36,15 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
 
    /**
     * Get the name of the online comment feedback plugin
-    * @return string 
-    */  
+    * @return string
+    */
     public function get_name() {
         return get_string('pluginname', 'assignfeedback_comments');
     }
-    
+
     /**
      * Get the feedback comment from the database
-     *  
+     *
      * @global moodle_database $DB
      * @param int $gradeid
      * @return stdClass|false The feedback comments for the given grade if it exists. False if it doesn't.
@@ -53,10 +53,10 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
         global $DB;
         return $DB->get_record('assign_feedback_comments', array('grade'=>$gradeid));
     }
-    
+
     /**
      * Get form elements for the grading page
-     * 
+     *
      * @param stdClass|null $grade
      * @param MoodleQuickForm $mform
      * @param stdClass $data
@@ -77,7 +77,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
 
     /**
      * Saving the comment content into dtabase
-     * 
+     *
      * @global moodle_database $DB
      * @param stdClass $grade
      * @param stdClass $data
@@ -102,9 +102,9 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
 
     /**
      * display the comment in the feedback table
-     *  
+     *
      * @param stdClass $grade
-     * @return string 
+     * @return string
      */
     public function view_summary(stdClass $grade, & $showviewlink) {
         $feedbackcomments = $this->get_feedback_comments($grade->id);
@@ -118,10 +118,10 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
         }
         return '';
     }
-    
+
     /**
      * display the comment in the feedback table
-     * 
+     *
      * @param stdClass $grade
      * @return string
      */
@@ -129,7 +129,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
         $feedbackcomments = $this->get_feedback_comments($grade->id);
         if ($feedbackcomments) {
             return format_text($feedbackcomments->commenttext, $feedbackcomments->commentformat, array('context' => $this->assignment->get_context()));
-        } 
+        }
         return '';
     }
 
@@ -150,7 +150,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
         }
         return FORMAT_MOODLE;
     }
-    
+
     /**
      * If this plugin adds to the gradebook comments field, it must format the text
      * of the comment
@@ -171,7 +171,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
 
     /**
      * The assignment has been deleted - cleanup
-     * 
+     *
      * @global moodle_database $DB
      * @return bool
      */
@@ -181,7 +181,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
         $DB->delete_records('assign_feedback_comments', array('assignment'=>$this->assignment->get_instance()->id));
         return true;
     }
-    
+
     /**
      * Returns true if there are no feedback comments for the given grade
      *

@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Code run after the module database tables have been created.
- * Moves the comments plugin to the bottom 
+ * Moves the comments plugin to the bottom
  * @global stdClass $CFG
  * @return bool
  */
@@ -43,7 +43,7 @@ function xmldb_assignsubmission_comments_install() {
 
     $pluginmanager->move_plugin('comments', 'down');
     $pluginmanager->move_plugin('comments', 'down');
-        
+
     // do the upgrades
     return true;
 

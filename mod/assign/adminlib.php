@@ -31,7 +31,7 @@
 
 
 /**
- * This file contains the classes for the admin settings of the assign 
+ * This file contains the classes for the admin settings of the assign
  * module.
  *
  * This class provides an interface for enabling and configuring
@@ -63,9 +63,9 @@ class admin_page_manage_assignment_plugins extends admin_externalpage {
     private $subtype = '';
 
     /**
-     *  the constructor 
-     * 
-     * @param string $subtype 
+     *  the constructor
+     *
+     * @param string $subtype
      */
     public function __construct($subtype) {
         $this->subtype = $subtype;
@@ -84,7 +84,7 @@ class admin_page_manage_assignment_plugins extends admin_externalpage {
             return $result;
         }
 
-        $found = false;     
+        $found = false;
         $textlib = new textlib();
 
         foreach (get_plugin_list($this->subtype) as $name => $notused) {
@@ -117,9 +117,9 @@ class admin_page_manage_assignment_plugins extends admin_externalpage {
 class assignment_plugin_manager {
 
     /** @var object the url of the manage submission plugin page */
-    private $pageurl; 
+    private $pageurl;
     /** @var string any error from the current action */
-    private $error = ''; 
+    private $error = '';
     /** @var string either submission or feedback */
     private $subtype = '';
 
@@ -133,9 +133,9 @@ class assignment_plugin_manager {
     }
 
 
-    /** 
+    /**
      * Return a list of plugins sorted by the order defined in the admin interface
-     * 
+     *
      * @return array The list of plugins
      */
     public function get_sorted_plugins_list() {
@@ -152,14 +152,14 @@ class assignment_plugin_manager {
             $result[$idx] = $name;
         }
         ksort($result);
-            
+
         return $result;
     }
-    
 
-    /** 
+
+    /**
      * Util function for writing an action icon link
-     * 
+     *
      * @global renderer_base $OUTPUT For writing to the page
      * @param string $action URL parameter to include in the link
      * @param string $plugintype URL parameter to include in the link
@@ -176,9 +176,9 @@ class assignment_plugin_manager {
                 null, array('title' => $alt)) . ' ';
     }
 
-    /** 
+    /**
      * Write the HTML for the submission plugins table.
-     * 
+     *
      * @global renderer_base $OUTPUT For writing to the page
      * @global stdClass $CFG Used to get the dirroot
      * @return None
@@ -191,7 +191,7 @@ class assignment_plugin_manager {
         $table->define_baseurl($this->pageurl);
         $table->define_columns(array('pluginname', 'version', 'hideshow', 'order',
                 'delete', 'settings'));
-        $table->define_headers(array(get_string($this->subtype . 'pluginname', 'assign'), 
+        $table->define_headers(array(get_string($this->subtype . 'pluginname', 'assign'),
                 get_string('version'), get_string('hideshow', 'assign'),
                 get_string('order'), get_string('delete'), get_string('settings')));
         $table->set_attribute('id', $this->subtype . 'plugins');
@@ -203,7 +203,7 @@ class assignment_plugin_manager {
 
         foreach ($plugins as $idx => $plugin) {
             $row = array();
-            
+
             $row[] = get_string('pluginname', $this->subtype . '_' . $plugin);
             $row[] = get_config($this->subtype . '_' . $plugin, 'version');
 
@@ -230,7 +230,7 @@ class assignment_plugin_manager {
                 $row[] = $this->format_icon_link('delete', $plugin, 't/delete', get_string('delete'));
             } else {
                 $row[] = '&nbsp;';
-            }   
+            }
             if ($row[1] != '' && file_exists($CFG->dirroot . '/mod/assign/' . $this->subtype . '/' . $plugin . '/settings.php')) {
                 $row[] = html_writer::link(new moodle_url('/admin/settings.php',
                         array('section' => $this->subtype . '_' . $plugin)), get_string('settings'));
@@ -240,14 +240,14 @@ class assignment_plugin_manager {
             $table->add_data($row);
         }
 
-    
+
         $table->finish_output();
         $this->view_footer();
     }
 
-    /** 
+    /**
      * Write the page header
-     * 
+     *
      * @global renderer_base $OUTPUT For writing to the page
      * @return None
      */
@@ -258,10 +258,10 @@ class assignment_plugin_manager {
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('manage' . $this->subtype . 'plugins', 'assign'));
     }
-    
-    /** 
+
+    /**
      * Write the page footer
-     * 
+     *
      * @global renderer_base $OUTPUT For writing to the page
      * @return None
      */
@@ -270,9 +270,9 @@ class assignment_plugin_manager {
         echo $OUTPUT->footer();
     }
 
-    /** 
+    /**
      * Check this user has permission to edit the list of installed plugins
-     * 
+     *
      * @return None
      */
     private function check_permissions() {
@@ -281,10 +281,10 @@ class assignment_plugin_manager {
         $systemcontext = context_system::instance();
         require_capability('moodle/site:config', $systemcontext);
     }
-    
-    /** 
+
+    /**
      * Delete the database and files associated with this plugin.
-     * 
+     *
      * @global stdClass $CFG global config
      * @global moodle_database $DB database connection
      * @param string $plugin - The type of the plugin to delete
@@ -300,7 +300,7 @@ class assignment_plugin_manager {
                 $this->error = $OUTPUT->notification(get_string('errordeletingconfig', 'admin', $this->subtype . '_' . $plugin));
             }
 
-    
+
             // Should be covered by the previous function - but just in case
             unset_config('disabled', $this->subtype . '_' . $plugin);
             unset_config('sortorder', $this->subtype . '_' . $plugin);
@@ -320,12 +320,12 @@ class assignment_plugin_manager {
             // the page to display
             return 'confirmdelete';
         }
-        
+
     }
-    
-    /** 
+
+    /**
      * Show the page that gives the details of the plugin that was just deleted
-     * 
+     *
      * @global renderer_base $OUTPUT For writing to the page
      * @param string $plugin - The plugin that was just deleted
      * @return None
@@ -340,9 +340,9 @@ class assignment_plugin_manager {
         $this->view_footer();
     }
 
-    /** 
+    /**
      * Show the page that asks the user to confirm they want to delete a plugin
-     * 
+     *
      * @global renderer_base $OUTPUT For writing to the page
      * @param string $plugin - The plugin that will be deleted
      * @return None
@@ -357,11 +357,11 @@ class assignment_plugin_manager {
         $this->view_footer();
     }
 
-        
 
-    /** 
+
+    /**
      * Hide this plugin
-     * 
+     *
      * @param string $plugin - The plugin to hide
      * @return string The next page to display
      */
@@ -369,10 +369,10 @@ class assignment_plugin_manager {
         set_config('disabled', 1, $this->subtype . '_' . $plugin);
         return 'view';
     }
-    
-    /** 
+
+    /**
      * Change the order of this plugin
-     * 
+     *
      * @param string $plugin - The plugin to move
      * @param string $dir - up or down
      * @return string The next page to display
@@ -410,17 +410,17 @@ class assignment_plugin_manager {
             }
         }
 
-        // save the new normal order 
+        // save the new normal order
         foreach ($plugins as $key => $plugin) {
             set_config('sortorder', $key, $this->subtype . '_' . $plugin);
         }
         return 'view';
     }
-            
-    
-    /** 
+
+
+    /**
      * Show this plugin
-     * 
+     *
      * @param string $plugin - The plugin to show
      * @return string The next page to display
      */
@@ -428,11 +428,11 @@ class assignment_plugin_manager {
         set_config('disabled', 0, $this->subtype . '_' . $plugin);
         return 'view';
     }
-    
 
-    /** 
+
+    /**
      * This is the entry point for this controller class
-     * 
+     *
      * @param string $action - The action to perform
      * @param string $plugintype - Optional name of a plugin type to perform the action on
      * @return None
@@ -468,9 +468,9 @@ class assignment_plugin_manager {
         }
     }
 
-    /** 
+    /**
      * This function adds plugin pages to the navigation menu
-     * 
+     *
      * @static
      * @param string $subtype - The type of plugin (submission or feedback)
      * @param part_of_admin_tree $admin - The handle to the admin menu
@@ -500,12 +500,12 @@ class assignment_plugin_manager {
                 $shortsubtype = substr($subtype, strlen('assign'));
                 include($CFG->dirroot . "/mod/assign/$shortsubtype/$pluginname/settings.php");
             }
-                
+
             $admin->add($subtype . 'plugins', $settings);
         }
 
         // Reset settings to the original point in the tree
         $settings = $tempsettings;
-    
+
     }
 }

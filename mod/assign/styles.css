@@ -46,8 +46,8 @@ div.submissionsummarytable table tbody tr td.c0 {
 .jsenabled .gradingoptionsform .hidden {display: none;}
 .jsenabled .gradingtable .c1 select {display: none;}
 
-td.submissionstatus, 
-div.submissionstatus, 
+td.submissionstatus,
+div.submissionstatus,
 a:link.submissionstatus {
     color: black;
     background-color: #efefef;
@@ -110,7 +110,7 @@ div.earlysubmission {
 .gradingtable .c0 div.selectall {margin-left: 7px;}
 
 .gradingtable .yui3-menu ul {
-    margin: 0px; 
+    margin: 0px;
 }
 
 .gradingtable .yui3-menu-label {

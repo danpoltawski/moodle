@@ -57,9 +57,9 @@ class mod_assign_grading_batch_operations_form extends moodleform {
         $mform->addElement('hidden', 'id', $instance['cm']);
         $mform->addElement('hidden', 'selectedusers', '', array('class'=>'selectedusers'));
         $mform->addElement('hidden', 'returnaction', 'grading');
-        
+
         $mform->addElement('submit', 'submit', get_string('submit'));
     }
-    
+
 }
 

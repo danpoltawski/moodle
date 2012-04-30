@@ -17,7 +17,7 @@
 /**
  * restore subplugin class that provides the necessary information
  * needed to restore one assign_submission subplugin.
- * 
+ *
  * @package   assignfeedback_comments
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

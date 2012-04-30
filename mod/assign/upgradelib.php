@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -39,7 +39,7 @@ require_once($CFG->libdir.'/accesslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assignment_upgrade_manager {
-    
+
     /**
      * This function converts all of the base settings for an instance of
      * the old assignment to the new format. Then it calls each of the plugins
@@ -51,11 +51,11 @@ class assignment_upgrade_manager {
     public function upgrade_assignment($oldassignmentid, $log) {
         global $DB, $CFG;
         // steps to upgrade an assignment
-    
+
         global $DB, $CFG, $USER;
         // steps to upgrade an assignment
-          
-        // is the user the admin? admin check goes here 
+
+        // is the user the admin? admin check goes here
         if (!is_siteadmin($USER->id)) {
               return false;
         }
@@ -75,7 +75,7 @@ class assignment_upgrade_manager {
         $data->course = $oldassignment->course;
         $data->name = $oldassignment->name;
         $data->intro = $oldassignment->intro;
-        $data->introformat = $oldassignment->introformat;        
+        $data->introformat = $oldassignment->introformat;
         $data->alwaysshowdescription = 1;
         $data->sendnotifications = $oldassignment->emailteachers;
         $data->duedate = $oldassignment->timedue;
@@ -85,12 +85,12 @@ class assignment_upgrade_manager {
         $data->preventlatesubmissions = $oldassignment->preventlate;
 
         $newassignment = new assignment(null, null, null);
-        
+
         if (!$newassignment->add_instance($data, false)) {
             $log = get_string('couldnotcreatenewassignmentinstance', 'mod_assign');
             return false;
         }
-       
+
         // now create a new coursemodule from the old one
         $newmodule = $DB->get_record('modules', array('name'=>'assign'), '*', MUST_EXIST);
         $newcoursemodule = $this->duplicate_course_module($oldcoursemodule, $newmodule->id, $newassignment->get_instance()->id);
@@ -115,9 +115,9 @@ class assignment_upgrade_manager {
             // the course module has now been created - time to update the core tables
 
             // copy intro files
-            $newassignment->copy_area_files_for_upgrade($oldcontext->id, 'mod_assignment', 'intro', 0, 
+            $newassignment->copy_area_files_for_upgrade($oldcontext->id, 'mod_assignment', 'intro', 0,
                                             $newassignment->get_context()->id, 'mod_assign', 'intro', 0);
-        
+
 
             // get the plugins to do their bit
             foreach ($newassignment->get_submission_plugins() as $plugin) {
@@ -149,7 +149,7 @@ class assignment_upgrade_manager {
             $DB->set_field('course_completion_criteria', 'module', 'assign', array('moduleinstance'=>$oldcoursemodule->id));
             $DB->set_field('course_completion_criteria', 'moduleinstance', $newcoursemodule->id, array('moduleinstance'=>$oldcoursemodule->id));
             $completiondone = true;
-            
+
 
             // copy all the submission data (and get plugins to do their bit)
             $oldsubmissions = $DB->get_records('assignment_submissions', array('assignment'=>$oldassignmentid));
@@ -192,13 +192,13 @@ class assignment_upgrade_manager {
 
                     // copy any grading instances
                     if ($gradingarea) {
-    
+
                         $gradeidmap[$grade->id] = $oldsubmission->id;
 
                         foreach ($gradingdefinitions as $definition) {
                             $DB->set_field('grading_instances', 'itemid', $grade->id, array('definitionid'=>$definition->id, 'itemid'=>$oldsubmission->id));
                         }
-                        
+
                     }
                     foreach ($newassignment->get_feedback_plugins() as $plugin) {
                         if ($plugin->can_upgrade($oldassignment->assignmenttype, $oldversion)) {
@@ -212,7 +212,7 @@ class assignment_upgrade_manager {
 
             $newassignment->update_calendar($newcoursemodule->id);
             $newassignment->update_gradebook(false,$newcoursemodule->id);
-            
+
             // copy the grades from the old assignment to the new one
             $this->copy_grades_for_upgrade($oldassignment, $newassignment);
 
@@ -220,7 +220,7 @@ class assignment_upgrade_manager {
             $rollback = true;
             $log .= get_string('conversionexception', 'mod_assign', $exception->getMessage());
         }
-    
+
         if ($rollback) {
             // roll back the completion changes
             if ($completiondone) {
@@ -238,7 +238,7 @@ class assignment_upgrade_manager {
                 $DB->update_record('grading_areas', array('id'=>$gradingarea->id, 'contextid'=>$oldcontext->id, 'component'=>'mod_assignment', 'areaname'=>'submission'));
             }
             $newassignment->delete_instance();
-            
+
             return false;
         }
         // all is well,
@@ -251,11 +251,11 @@ class assignment_upgrade_manager {
         return true;
     }
 
-    
+
     /**
      * Create a duplicate course module record so we can create the upgraded
      * assign module alongside the old assignment module.
-     * 
+     *
      * @global stdClass $CFG
      * @global moodle_database $DB
      * @param stdClass $cm The old course module record
@@ -314,7 +314,7 @@ class assignment_upgrade_manager {
     /**
      * This function deletes the old assignment course module after
      * it has been upgraded. This code is adapted from "course/mod.php".
-     * 
+     *
      * @global stdClass $CFG
      * @global stdClass $USER
      * @global moodle_database $DB
@@ -408,5 +408,5 @@ class assignment_upgrade_manager {
         }
         return true;
     }
-    
+
 }

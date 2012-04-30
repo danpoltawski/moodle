@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Code run after the assignfeedback_file module database tables have been created.
  * Moves the feedback file plugin down
- * 
+ *
  * @global stdClass $CFG
  * @return bool
  */
@@ -43,12 +43,9 @@ function xmldb_assignfeedback_file_install() {
     $pluginmanager = new assignment_plugin_manager('assignfeedback');
 
     $pluginmanager->move_plugin('file', 'down');
-        
+
     // do the upgrades
     return true;
-
-
-    
 }
 
 

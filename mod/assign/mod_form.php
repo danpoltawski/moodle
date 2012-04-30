@@ -32,7 +32,7 @@ require_once ($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 /*
- * Assignment settings form. 
+ * Assignment settings form.
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -56,7 +56,7 @@ class mod_assign_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
 
         $this->add_intro_editor(true, get_string('description', 'assign'));
-          
+
         $ctx = null;
         if ($this->current && $this->current->coursemodule) {
             $cm = get_coursemodule_from_instance('assign', $this->current->id, 0, false, MUST_EXIST);
@@ -69,7 +69,7 @@ class mod_assign_mod_form extends moodleform_mod {
             }
             $assignment->set_course($DB->get_record('course', array('id'=>$this->current->course), '*', MUST_EXIST));
         }
-        
+
         $mform->addElement('header', 'general', get_string('settings', 'assign'));
         $mform->addElement('date_time_selector', 'allowsubmissionsfromdate', get_string('allowsubmissionsfromdate', 'assign'), array('optional'=>true));
         $mform->addHelpButton('allowsubmissionsfromdate', 'allowsubmissionsfromdate', 'assign');
@@ -89,7 +89,7 @@ class mod_assign_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'sendnotifications', get_string('sendnotifications', 'assign'));
         $mform->addHelpButton('sendnotifications', 'sendnotifications', 'assign');
         $mform->setDefault('sendnotifications', 1);
-        
+
         // plagiarism enabling form
         if (!empty($CFG->enableplagiarism)) {
             /** Include plagiarismlib.php */
@@ -103,7 +103,7 @@ class mod_assign_mod_form extends moodleform_mod {
 
         $this->add_action_buttons();
     }
-    
+
     /**
      * Perform minimal validation on the settings form
      * @param array $data

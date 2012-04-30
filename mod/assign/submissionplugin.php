@@ -37,10 +37,10 @@ require_once($CFG->dirroot . '/mod/assign/assignmentplugin.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class assignment_submission_plugin extends assignment_plugin {
-    
+
     /**
      * return subtype name of the plugin
-     * 
+     *
      * @return string
      */
     public final function get_subtype() {
@@ -49,14 +49,14 @@ abstract class assignment_submission_plugin extends assignment_plugin {
 
     /**
      * This plugin accepts submissions from a student
-     * The comments plugin has no submission component so should not be counted 
+     * The comments plugin has no submission component so should not be counted
      * when determining whether to show the edit submission link.
      * @return boolean
      */
     public function allow_submissions() {
         return true;
     }
-     
+
 
     /**
      * Check if the submission plugin has all the required data to allow the work
@@ -74,5 +74,5 @@ abstract class assignment_submission_plugin extends assignment_plugin {
      */
     public function submit_for_grading() {
     }
-    
+
 }

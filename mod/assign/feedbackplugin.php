@@ -41,7 +41,7 @@ abstract class assignment_feedback_plugin extends assignment_plugin {
 
     /**
      * return subtype name of the plugin
-     * 
+     *
      * @return string
      */
     public function get_subtype() {
@@ -68,7 +68,7 @@ abstract class assignment_feedback_plugin extends assignment_plugin {
     public function format_for_gradebook(stdClass $grade) {
         return FORMAT_MOODLE;
     }
-    
+
     /**
      * If this plugin adds to the gradebook comments field, it must format the text
      * of the comment
@@ -82,5 +82,5 @@ abstract class assignment_feedback_plugin extends assignment_plugin {
     public function text_for_gradebook(stdClass $grade) {
         return '';
     }
-    
+
 }

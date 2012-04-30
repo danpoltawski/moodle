@@ -38,7 +38,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 function assignfeedback_file_pluginfile($course, $cm, context $context, $filearea, $args, $forcedownload) {
     global $USER, $DB;
-    
+
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
@@ -48,7 +48,7 @@ function assignfeedback_file_pluginfile($course, $cm, context $context, $fileare
     $record = $DB->get_record('assign_grades', array('id'=>$itemid), 'userid,assignment', MUST_EXIST);
     $userid = $record->userid;
 
-    
+
     if (!$assign = $DB->get_record('assign', array('id'=>$cm->instance))) {
         return false;
     }

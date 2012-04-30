@@ -63,7 +63,7 @@ class restore_assignfeedback_file_subplugin extends restore_subplugin {
      */
     public function process_assignfeedback_file_grade($data) {
         global $DB;
-    
+
         $data = (object)$data;
         $data->assignment = $this->get_new_parentid('assign');
         $oldgradeid = $data->grade;
@@ -71,8 +71,8 @@ class restore_assignfeedback_file_subplugin extends restore_subplugin {
         $data->grade = $this->get_mappingid('grade', $data->grade);
 
         $DB->insert_record('assign_feedback_file', $data);
-        
+
         $this->add_related_files('assignfeedback_file', 'feedback_files', 'grade', null, $oldgradeid);
     }
-    
+
 }
