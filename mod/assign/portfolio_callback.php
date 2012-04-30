@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -33,7 +32,7 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 /** Include portfolio caller.php */
 require_once($CFG->libdir . '/portfolio/caller.php');
 
-/*
+/**
  * portfolio caller class for mod_assign.
  *
  * @package   mod_assign
@@ -198,7 +197,6 @@ class assign_portfolio_caller extends portfolio_module_caller_base {
 
     /**
      * fetch the plugin by its type
-     * @global stdClass $CFG
      *
      * @return assignment_submission_plugin
      */

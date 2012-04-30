@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 define('ASSIGN_FILEAREA_SUBMISSION_ONLINETEXT', 'submissions_onlinetext');
 
-/*
+/**
  * library class for onlinetext submission plugin extending submission plugin base class
  *
  * @package assignsubmission_onlinetext
@@ -51,7 +51,6 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
    /**
     * Get onlinetext submission information from the database
     *
-    * @global moodle_database $DB
     * @param  int $submissionid
     * @return mixed
     */
@@ -64,7 +63,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     /**
      * Add form elements for settings
      *
-     * @param mixed $submission|null
+     * @param mixed $submission can be null
      * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @return true if elements were added to the form
@@ -115,9 +114,8 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
      /**
       * Save data to the database
       *
-      * @global moodle_database $DB
-      * @param object $submission
-      * @param object $data
+      * @param stdClass $submission
+      * @param stdClass $data
       * @return bool
       */
      public function save(stdClass $submission, stdClass $data) {
@@ -191,6 +189,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
       * Display onlinetext word count in the submission status table
       *
       * @param stdClass $submission
+      * @param bool $showviewlink - If the summary has been truncated set this to true
       * @return string
       */
     public function view_summary(stdClass $submission, & $showviewlink) {
@@ -214,7 +213,6 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     /**
      * Produce a list of files suitable for export that represent this submission
      *
-     * @global moodle_database $DB
      * @param stdClass $submission - For this is the submission data
      * @return array - return an array of files indexed by filename
      */
@@ -268,8 +266,8 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
      /**
      * Return true if this plugin can upgrade an old Moodle 2.2 assignment of this type and version.
      *
-     * @param string old assignment subtype
-     * @param int old assignment version
+     * @param string $type old assignment subtype
+     * @param int $version old assignment version
      * @return bool True if upgrade is possible
      */
     public function can_upgrade($type, $version) {
@@ -285,7 +283,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
      *
      * @param context $oldcontext - the database for the old assignment context
      * @param stdClass $oldassignment - the database for the old assignment instance
-     * @param string log record log events here
+     * @param string $log record log events here
      * @return bool Was it a success?
      */
     public function upgrade_settings(context $oldcontext, stdClass $oldassignment, $log) {
@@ -296,7 +294,6 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     /**
      * Upgrade the submission from the old assignment to the new one
      *
-     * @global moodle_database $DB
      * @param context $oldcontext - the database for the old assignment context
      * @param stdClass $oldassignment The data record for the old assignment
      * @param stdClass $oldsubmission The data record for the old submission
@@ -352,7 +349,6 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     /**
      * The assignment has been deleted - cleanup
      *
-     * @global moodle_database $DB
      * @return bool
      */
     public function delete_instance() {
@@ -366,6 +362,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     /**
      * No text is set for this plugin
      *
+     * @param stdClass $submission
      * @return bool
      */
     public function is_empty(stdClass $submission) {

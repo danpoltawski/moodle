@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Script to show all the assignments that have not been upgraded
- * after the main upgrade.
+ * Script to show all the assignments that have not been upgraded after the main upgrade.
  *
  * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot

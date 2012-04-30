@@ -45,7 +45,6 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
     /**
      * Get the feedback comment from the database
      *
-     * @global moodle_database $DB
      * @param int $gradeid
      * @return stdClass|false The feedback comments for the given grade if it exists. False if it doesn't.
      */
@@ -78,7 +77,6 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
     /**
      * Saving the comment content into dtabase
      *
-     * @global moodle_database $DB
      * @param stdClass $grade
      * @param stdClass $data
      * @return bool
@@ -104,6 +102,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
      * display the comment in the feedback table
      *
      * @param stdClass $grade
+     * @param bool $showviewlink Set to true to show a link to view the full feedback
      * @return string
      */
     public function view_summary(stdClass $grade, & $showviewlink) {
@@ -172,7 +171,6 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
     /**
      * The assignment has been deleted - cleanup
      *
-     * @global moodle_database $DB
      * @return bool
      */
     public function delete_instance() {

@@ -31,10 +31,6 @@
  */
 class restore_assignsubmission_file_subplugin extends restore_subplugin {
 
-    ////////////////////////////////////////////////////////////////////////////
-    // mappings of XML paths to the processable methods
-    ////////////////////////////////////////////////////////////////////////////
-
     /**
      * Returns the paths to be handled by the subplugin at workshop level
      * @return array
@@ -50,13 +46,8 @@ class restore_assignsubmission_file_subplugin extends restore_subplugin {
         return $paths; // And we return the interesting paths
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // defined path elements are dispatched to the following methods
-    ////////////////////////////////////////////////////////////////////////////
-
     /**
      * Processes one submission_file element
-     * @global moodle_database $DB
      * @param mixed $data
      * @return void
      */

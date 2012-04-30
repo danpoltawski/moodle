@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,7 +28,7 @@ require_once($CFG->libdir.'/tablelib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/mod/assign/locallib.php');
 
-/*
+/**
  * Extends table_sql to provide a table of assignment submissions
  *
  * @package   mod_assign
@@ -47,15 +46,16 @@ class assign_grading_table extends table_sql implements renderable {
     private $output = null;
     /** @var stdClass gradinginfo */
     private $gradinginfo = null;
+    /** @var int $tablemaxrows */
+    private $tablemaxrows = 10000;
 
     /**
      * overridden constructor keeps a reference to the assignment class that is displaying this table
      *
-     * @global stdClass $CFG
-     * @global moodle_page $PAGE
      * @param assignment $assignment The assignment class
      * @param int $perpage how many per page
      * @param string $filter The current filter
+     * @param int $rowoffset For showing a subsequent page of results
      */
     function __construct(assignment $assignment, $perpage, $filter, $rowoffset=0) {
         global $CFG, $PAGE;
@@ -185,6 +185,7 @@ class assign_grading_table extends table_sql implements renderable {
     /**
      * Add the userid to the row class so it can be updated via ajax
      *
+     * @param stdClass $row The row of data
      * @return string The row class
      */
     function get_row_class($row) {
@@ -536,13 +537,13 @@ class assign_grading_table extends table_sql implements renderable {
     /**
      * Using the current filtering and sorting - load all rows and return a single column from them
      *
-     * @param string $colname The name of the raw column data
+     * @param string $columnname The name of the raw column data
      * @return array of data
      */
     function get_column_data($columnname) {
         $this->setup();
         $this->currpage = 0;
-        $this->query_db(1000);
+        $this->query_db($this->tablemaxrows);
         $result = array();
         foreach ($this->rawdata as $row) {
             $result[] = $row->$columnname;
@@ -552,11 +553,12 @@ class assign_grading_table extends table_sql implements renderable {
     /**
      * Using the current filtering and sorting - load a single row and return a single column from it
      *
-     * @param int $rownum The rownumber to load
-     * @param string $colname The name of the raw column data
+     * @param int $rownumber The rownumber to load
+     * @param string $columnname The name of the raw column data
+     * @param bool $lastrow Set to true if this is the last row in the table
      * @return mixed string or false
      */
-    function get_cell_data($rownumber, $columnname, &$lastrow) {
+    function get_cell_data($rownumber, $columnname, $lastrow) {
         $this->setup();
         $this->currpage = $rownumber;
         $this->query_db(1);

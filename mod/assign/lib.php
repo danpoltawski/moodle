@@ -1,5 +1,4 @@
 <?PHP
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the moodle hooks for the assign module.
- * It delegates most functions to the assignment class.
+ * This file contains the moodle hooks for the assign module. It delegates most functions to the assignment class.
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -29,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
  * Adds an assignment instance
  *
  * This is done by calling the add_instance() method of the assignment type class
- * @global stdClass CFG
  * @param stdClass $data
  * @param mod_assign_mod_form $form
  * @return int The instance id of the new assignment
@@ -44,7 +41,6 @@ function assign_add_instance(stdClass $data, mod_assign_mod_form $form) {
 
 /**
  * delete an assignment instance
- * @global stdClass CFG
  * @param int $id
  * @return bool
  */
@@ -62,7 +58,6 @@ function assign_delete_instance($id) {
  * Update an assignment instance
  *
  * This is done by calling the update_instance() method of the assignment type class
- * @global stdClass CFG
  * @param stdClass $data
  * @param mod_assign_mod_form $form
  * @return object
@@ -76,6 +71,8 @@ function assign_update_instance(stdClass $data, mod_assign_mod_form $form) {
 }
 
 /**
+ * Return the list if Moodle features this module supports
+ *
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, null if doesn't know
  */
@@ -109,7 +106,6 @@ function assign_grading_areas_list() {
 /**
  * extend an assigment navigation settings
  *
- * @global moodle_page $PAGE
  * @param settings_navigation $settings
  * @param navigation_node $navref
  * @return void
@@ -156,7 +152,7 @@ function assign_extend_settings_navigation(settings_navigation $settings, naviga
  * Given a course_module object, this function returns any "extra" information that may be needed
  * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
  *
- * @param $coursemodule object The coursemodule object (record).
+ * @param stdClass $coursemodule The coursemodule object (record).
  * @return cached_cm_info An object on information that the courses will know about (most noticeably, an icon).
  */
 function assign_get_coursemodule_info($coursemodule) {
@@ -197,6 +193,8 @@ function assign_page_type_list($pagetype, $parentcontext, $currentcontext) {
  * Print an overview of all assignments
  * for the courses.
  *
+ * @param mixed $courses The list of courses to print the overview for
+ * @param array $htmlarray The array of html to return
  */
 function assign_print_overview($courses, &$htmlarray) {
     global $USER, $CFG, $DB;
@@ -325,6 +323,9 @@ function assign_print_overview($courses, &$htmlarray) {
  * Print recent activity from all assignments in a given course
  *
  * This is used by the recent activity block
+ * @param mixed $course the course to print activity for
+ * @param bool $viewfullnames boolean to determine whether to show full names or not
+ * @param int $timestart the time the rendering started 
  */
 function assign_print_recent_activity($course, $viewfullnames, $timestart) {
     global $CFG, $USER, $DB, $OUTPUT;
@@ -417,7 +418,16 @@ function assign_print_recent_activity($course, $viewfullnames, $timestart) {
 }
 
 /**
- * Returns all assignments since a given time in specified forum.
+ * Returns all assignments since a given time
+ * 
+ * @param array $activities The activity information is returned in this array
+ * @param int $index The current index in the activities array
+ * @param int $timestart The earliest activity to show
+ * @param int $courseid Limit the search to this course
+ * @param int $cmid The course module id
+ * @param int $userid Optional user id
+ * @param int $groupid Optional group id
+ * @return void
  */
 function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0)  {
     global $CFG, $COURSE, $USER, $DB;
@@ -560,6 +570,10 @@ function assign_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
  * Print recent activity from all assignments in a given course
  *
  * This is used by course/recent.php
+ * @param stdClass $activity
+ * @param int $courseid
+ * @param bool $detail
+ * @param array $modnames
  */
 function assign_print_recent_mod_activity($activity, $courseid, $detail, $modnames)  {
     global $CFG, $OUTPUT;
@@ -598,8 +612,8 @@ function assign_print_recent_mod_activity($activity, $courseid, $detail, $modnam
  * Checks if a scale is being used by an assignment
  *
  * This is used by the backup code to decide whether to back up a scale
- * @param $assignmentid int
- * @param $scaleid int
+ * @param int $assignmentid 
+ * @param int $scaleid
  * @return boolean True if the scale is used by the assignment
  */
 function assign_scale_used($assignmentid, $scaleid) {
@@ -619,7 +633,7 @@ function assign_scale_used($assignmentid, $scaleid) {
  * Checks if scale is being used by any instance of assignment
  *
  * This is used to find out if scale used anywhere
- * @param $scaleid int
+ * @param int $scaleid 
  * @return boolean True if the scale is used by any assignment
  */
 function assign_scale_used_anywhere($scaleid) {
@@ -691,8 +705,8 @@ function assign_get_extra_capabilities() {
 /**
  * Create grade item for given assignment
  *
- * @param object $assign record with extra cmidnumber
- * @param mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
+ * @param stdClass $assign record with extra cmidnumber
+ * @param array $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
  */
 function assign_grade_item_update($assign, $grades=NULL) {
@@ -745,7 +759,6 @@ function assign_get_user_grades($assign, $userid=0) {
 /**
  * Update activity grades
  *
- * @global stdClass $CFG
  * @param stdClass $assign database record
  * @param int $userid specific user only, 0 means all
  * @param bool $nullifnone - not used
@@ -773,7 +786,6 @@ function assign_update_grades($assign, $userid=0, $nullifnone=true) {
 /**
  * List the file areas that can be browsed
  *
- * @global stdClass $CFG
  * @param stdClass $course
  * @param stdClass $cm
  * @param stdClass $context
@@ -810,7 +822,6 @@ function mod_assign_get_file_areas($course, $cm, $context) {
 /**
  * File browsing support for assign module.
  *
- * @global stdClass $CFG
  * @param file_browser $browser
  * @param object $areas
  * @param object $course
@@ -871,7 +882,6 @@ function mod_assign_get_file_info($browser, $areas, $course, $cm, $context, $fil
 /**
  * Prints the complete info about a user's interaction with an assignment
  *
- * @global stdClass $CFG
  * @param stdClass $course
  * @param stdClass $user
  * @param stdClass $coursemodule
@@ -891,6 +901,11 @@ function assign_user_complete($course, $user, $coursemodule, $assign) {
 
 /**
  * Print the grade information for the assignment for this user
+ * 
+ * @param stdClass $course
+ * @param stdClass $user
+ * @param stdClass $coursemodule
+ * @param stdClass $assignment
  */
 function assign_user_outline($course, $user, $coursemodule, $assignment) {
     global $CFG;

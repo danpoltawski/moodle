@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Code run after the assignsubmission_onlinetext module database tables have been created.
  * Moves the plugin to the top of the list (of 3)
- * @global stdClass $CFG
  * @return bool
  */
 function xmldb_assignsubmission_onlinetext_install() {

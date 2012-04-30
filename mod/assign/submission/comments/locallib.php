@@ -29,7 +29,7 @@
  /** Include submissionplugin.php */
  require_once($CFG->dirroot . '/mod/assign/submissionplugin.php');
 
-/*
+/**
  * library class for comment submission plugin extending submission plugin base class
  *
  * @package assignsubmission_comments
@@ -50,6 +50,7 @@ class assignment_submission_comments extends assignment_submission_plugin {
     * display AJAX based comment in the submission status table
     *
     * @param stdClass $submission
+    * @param bool $showviewlink - If the comments are long this is set to true so they can be shown in a separate page
     * @return string
     */
    public function view_summary(stdClass $submission, & $showviewlink) {
@@ -78,6 +79,7 @@ class assignment_submission_comments extends assignment_submission_plugin {
 
     /**
      * Always return false because at a minimum there is the comments control
+     * @param stdClass $submission
      * @return bool
      */
     public function is_empty(stdClass $submission) {
@@ -88,8 +90,8 @@ class assignment_submission_comments extends assignment_submission_plugin {
      * Return true if this plugin can upgrade an old Moodle 2.2 assignment of this type
      * and version.
      *
-     * @param string old assignment subtype
-     * @param int old assignment version
+     * @param string $type old assignment subtype
+     * @param int $version old assignment version
      * @return bool True if upgrade is possible
      */
     public function can_upgrade($type, $version) {
@@ -106,7 +108,7 @@ class assignment_submission_comments extends assignment_submission_plugin {
      *
      * @param context $oldcontext - the context for the old assignment
      * @param stdClass $oldassignment - the data for the old assignment
-     * @param string log - can be appended to by the upgrade
+     * @param string $log - can be appended to by the upgrade
      * @return bool was it a success? (false will trigger a rollback)
      */
     public function upgrade_settings(context $oldcontext, stdClass $oldassignment, $log) {
@@ -120,6 +122,7 @@ class assignment_submission_comments extends assignment_submission_plugin {
      * @param context $oldcontext The context for the old assignment
      * @param stdClass $oldassignment The data record for the old assignment
      * @param stdClass $oldsubmission The data record for the old submission
+     * @param stdClass $submission The new submission record
      * @param string $log Record upgrade messages in the log
      * @return bool true or false - false will trigger a rollback
      */

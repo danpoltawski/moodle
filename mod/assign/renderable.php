@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -25,17 +24,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
- *
+/**
+ * This class wraps the submit for grading confirmation page
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_submit_for_grading_page implements renderable {
     /** @var array $notifications is a list of notification messages returned from the plugins*/
     var $notifications = array();
+    /** @var int $coursemoduleid */
     var $coursemoduleid = 0;
 
-    /*
+    /**
      * Constructor
-     * @param moodleform $form
+     * @param string $notifications - Any mesages to display
+     * @param int $coursemoduleid 
      */
     public function __construct($notifications, $coursemoduleid) {
         $this->notifications = $notifications;
@@ -44,8 +48,11 @@ class assign_submit_for_grading_page implements renderable {
 
 }
 
-/*
+/**
  * Implements a renderable grading options form
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_form implements renderable {
     /** @var moodleform $form is the edit submission form */
@@ -53,8 +60,9 @@ class assign_form implements renderable {
     /** @var string $classname is the name of the class to assign to the container */
     var $classname = '';
 
-    /*
+    /**
      * Constructor
+     * @param string $classname
      * @param moodleform $form
      */
     public function __construct($classname, moodleform $form) {
@@ -64,8 +72,11 @@ class assign_form implements renderable {
 
 }
 
-/*
+/**
  * Implements a renderable user summary
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_user_summary implements renderable {
     /** @var stdClass $user suitable for rendering with user_picture and fullname(). Must contain firstname, lastname, id and picture fields */
@@ -88,11 +99,16 @@ class assign_user_summary implements renderable {
     }
 }
 
-/*
+/**
  * Implements a renderable feedback plugin feedback
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_feedback_plugin_feedback implements renderable {
+    /** @var int SUMMARY */
     const SUMMARY                = 10;
+    /** @var int FULL */
     const FULL                   = 20;
 
     /** @var assignment_submission_plugin $plugin */
@@ -111,10 +127,12 @@ class assign_feedback_plugin_feedback implements renderable {
     /**
      * feedback for a single plugin
      *
-     * @param assignment $assignment
      * @param assignment_feedback_plugin $plugin
      * @param stdClass $grade
-     * @param string view one of feedback_plugin::SUMMARY or feedback_plugin::FULL
+     * @param string $view one of feedback_plugin::SUMMARY or feedback_plugin::FULL
+     * @param int $coursemoduleid
+     * @param string $returnaction The action required to return to this page
+     * @param array $returnparams The params required to return to this page
      */
     public function __construct(assignment_feedback_plugin $plugin, stdClass $grade, $view, $coursemoduleid, $returnaction, $returnparams) {
         $this->plugin = $plugin;
@@ -127,11 +145,16 @@ class assign_feedback_plugin_feedback implements renderable {
 
 }
 
-/*
+/**
  * Implements a renderable submission plugin submission
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_submission_plugin_submission implements renderable {
+    /** @var int SUMMARY */
     const SUMMARY                = 10;
+    /** @var int FULL */
     const FULL                   = 20;
 
     /** @var assignment_submission_plugin $plugin */
@@ -170,6 +193,9 @@ class assign_submission_plugin_submission implements renderable {
 
 /**
  * Renderable feedback status
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_feedback_status implements renderable {
 
@@ -197,6 +223,9 @@ class assign_feedback_status implements renderable {
      * @param mixed $grader
      * @param array $feedbackplugins
      * @param mixed $grade
+     * @param int $coursemoduleid
+     * @param string $returnaction The action required to return to this page
+     * @param array $returnparams The list of params required to return to this page
      */
     public function __construct($gradefordisplay, $gradeddate, $grader, $feedbackplugins, $grade, $coursemoduleid, $returnaction, $returnparams) {
         $this->gradefordisplay = $gradefordisplay;
@@ -213,9 +242,14 @@ class assign_feedback_status implements renderable {
 
 /**
  * Renderable submission status
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_submission_status implements renderable {
+    /** @var int STUDENT_VIEW */
     const STUDENT_VIEW     = 10;
+    /** @var int GRADER_VIEW */
     const GRADER_VIEW      = 20;
 
     /** @var int allowsubmissionsfromdate */
@@ -250,11 +284,18 @@ class assign_submission_status implements renderable {
     /**
      * constructor
      *
-     * @param assignment $assignment
-     * @param mixed stdClass|null $submission
+     * @param int $allowsubmissionsfromdate
+     * @param bool $alwaysshowdescription
+     * @param stdClass $submission
+     * @param bool $submissionsenabled
      * @param bool $locked
      * @param bool $graded
-     * @param int $view
+     * @param int $duedate
+     * @param array $submissionplugins
+     * @param string $returnaction
+     * @param array $returnparams
+     * @param int $coursemoduleid
+     * @param string $view
      * @param bool $canedit
      * @param bool $cansubmit
      */
@@ -281,6 +322,9 @@ class assign_submission_status implements renderable {
 
 /**
  * Renderable header
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_header implements renderable {
     /** @var stdClass the assign record  */
@@ -297,13 +341,13 @@ class assign_header implements renderable {
     /**
      * Constructor
      *
-     * @param stdClass $assignment  - the assign database record
-     * @param mixed context|null $context the course module context (or the course context if the coursemodule has not been created yet)
+     * @param stdClass $assign  - the assign database record
+     * @param mixed $context context|null the course module context (or the course context if the coursemodule has not been created yet)
      * @param bool $showintro  - show or hide the intro
      * @param int $coursemoduleid  - the course module id
      * @param string $subpage  - an optional sub page in the navigation
      */
-    public function __construct(stdClass $assign,$context ,$showintro, $coursemoduleid, $subpage='') {
+    public function __construct(stdClass $assign, $context, $showintro, $coursemoduleid, $subpage='') {
         $this->assign = $assign;
         $this->context = $context;
         $this->showintro = $showintro;
@@ -314,6 +358,9 @@ class assign_header implements renderable {
 
 /**
  * Renderable grading summary
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_grading_summary implements renderable {
     /** @var int participantcount - The number of users who can submit to this assignment */
@@ -334,7 +381,13 @@ class assign_grading_summary implements renderable {
     /**
      * constructor
      *
-     * @param assignment $assignment
+     * @param int $participantcount
+     * @param bool $submissiondraftsenabled
+     * @param int $submissiondraftscount
+     * @param bool $submissionsenabled
+     * @param int $submissionssubmittedcount
+     * @param int $duedate
+     * @param int $coursemoduleid
      */
     public function __construct($participantcount, $submissiondraftsenabled, $submissiondraftscount, $submissionsenabled, $submissionssubmittedcount, $duedate, $coursemoduleid) {
         $this->participantcount = $participantcount;
@@ -350,13 +403,12 @@ class assign_grading_summary implements renderable {
 }
 
 /**
- * An assign file class that extends rendererable class and
- * is used by the assign module.
+ * An assign file class that extends rendererable class and is used by the assign module.
  *
- * @package mod-assign
- * @copyright
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
+ */
 class assign_files implements renderable {
     /** @var context $context */
     public $context;
@@ -373,10 +425,10 @@ class assign_files implements renderable {
     /**
      * The constructor
      *
-     * @global stdClass $CFG
      * @param context $context
      * @param int $sid
      * @param string $filearea
+     * @param string $component
      */
     public function __construct(context $context, $sid, $filearea, $component) {
         global $CFG;
@@ -425,9 +477,9 @@ class assign_files implements renderable {
     /**
      * preprocessing the file list to add the portfolio links if required
      *
-     * @global stdClass $CFG
      * @param array $dir
      * @param string $filearea
+     * @param string $component
      * @return void
      */
     public function preprocess($dir, $filearea, $component) {

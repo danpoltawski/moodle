@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -31,7 +30,7 @@ require_once ($CFG->dirroot.'/course/moodleform_mod.php');
 /** Include locallib.php */
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
-/*
+/**
  * Assignment settings form.
  *
  * @package   mod_assign
@@ -40,11 +39,15 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
  */
 class mod_assign_mod_form extends moodleform_mod {
 
+    /**
+     * Called to define this moodle form
+     *
+     * @return void
+     */
     function definition() {
         global $CFG, $DB;
         $mform = $this->_form;
 
-        //-------------------------------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('assignmentname', 'assign'), array('size'=>'64'));

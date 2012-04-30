@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -25,18 +24,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * restore subplugin class that provides the necessary information
- * needed to restore one assign_feedback subplugin.
+ * restore subplugin class that provides the necessary information needed to restore one assign_feedback subplugin.
  *
  * @package   assignfeedback_file
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_assignfeedback_file_subplugin extends restore_subplugin {
-
-    ////////////////////////////////////////////////////////////////////////////
-    // mappings of XML paths to the processable methods
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns the paths to be handled by the subplugin at assignment level
@@ -52,10 +46,6 @@ class restore_assignfeedback_file_subplugin extends restore_subplugin {
 
         return $paths; // And we return the interesting paths
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // defined path elements are dispatched to the following methods
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Processes one feedback_file element

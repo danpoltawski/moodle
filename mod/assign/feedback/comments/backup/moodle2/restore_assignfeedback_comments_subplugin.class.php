@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * restore subplugin class that provides the necessary information
- * needed to restore one assign_submission subplugin.
+ * restore subplugin class that provides the necessary information needed to restore one assign_submission subplugin.
  *
  * @package   assignfeedback_comments
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -26,18 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * restore subplugin class that provides the necessary information
- * needed to restore one assign_feedback subplugin.
+ * restore subplugin class that provides the necessary information needed to restore one assign_feedback subplugin.
  *
  * @package   assignfeedback_comments
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_assignfeedback_comments_subplugin extends restore_subplugin {
-
-    ////////////////////////////////////////////////////////////////////////////
-    // mappings of XML paths to the processable methods
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns the paths to be handled by the subplugin at workshop level
@@ -53,10 +47,6 @@ class restore_assignfeedback_comments_subplugin extends restore_subplugin {
 
         return $paths; // And we return the interesting paths
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // defined path elements are dispatched to the following methods
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Processes one feedback_comments element

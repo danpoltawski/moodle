@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,9 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 /** Include assignmentplugin.php */
 require_once($CFG->dirroot.'/mod/assign/assignmentplugin.php');
 
-/*
- * Abstract class for feedback_plugin inherited from assignment_plugin
- * abstract class.
+/**
+ * Abstract class for feedback_plugin inherited from assignment_plugin abstract class.
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}

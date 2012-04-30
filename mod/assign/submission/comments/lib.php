@@ -1,5 +1,4 @@
 <?PHP
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -51,7 +50,6 @@ function assignsubmission_comments_comment_permissions(stdClass $options) {
  * Callback to force the userid for all comments to be the userid of the submission and NOT the global $USER->id. This
  * is required by the upgrade code. Note the comment area is used to identify upgrades.
  *
- * @global moodle_database $DB
  * @param stdClass $comment
  * @param stdClass $param
  */

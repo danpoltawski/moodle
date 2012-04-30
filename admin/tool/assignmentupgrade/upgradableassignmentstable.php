@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,10 +28,10 @@ require_once($CFG->libdir.'/tablelib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once($CFG->dirroot.'/mod/assign/locallib.php');
 
-/*
+/**
  * Extends table_sql to provide a table of assignment submissions
  *
- * @package   mod_assign
+ * @package   tool_assignmentupgrade
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -49,8 +48,6 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
     /**
      * This table loads a list of the old assignment instances and tests them to see if they can be upgraded
      *
-     * @global stdClass $CFG
-     * @global moodle_page $PAGE
      * @param int $perpage How many per page
      * @param int $rowoffset The starting row for pagination
      */
@@ -117,7 +114,6 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
     /**
      * Format a link to the assignment instance
      *
-     * @global stdClass $CFG
      * @param stdClass $row
      * @return string
      */
@@ -145,7 +141,6 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
     /**
      * Insert a checkbox for selecting the current row for batch operations
      *
-     * @global stdClass $CFG
      * @param stdClass $row
      * @return string
      */

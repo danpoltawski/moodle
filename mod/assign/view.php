@@ -45,7 +45,7 @@ require_capability('mod/assign:view', $context);
 
 $assignment = new assignment($context,$cm,$course);
 
-/// Mark as viewed
+// Mark as viewed
 $completion=new completion_info($course);
 $completion->set_module_viewed($cm);
 

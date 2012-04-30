@@ -31,10 +31,6 @@
  */
 class restore_assignsubmission_onlinetext_subplugin extends restore_subplugin {
 
-    ////////////////////////////////////////////////////////////////////////////
-    // mappings of XML paths to the processable methods
-    ////////////////////////////////////////////////////////////////////////////
-
     /**
      *
      * Returns array the paths to be handled by the subplugin at assignment level
@@ -51,16 +47,9 @@ class restore_assignsubmission_onlinetext_subplugin extends restore_subplugin {
         return $paths; // And we return the interesting paths
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // defined path elements are dispatched to the following methods
-    ////////////////////////////////////////////////////////////////////////////
-
-
-
     /**
      * Processes one assignsubmission_onlinetext element
      *
-     * @global moodle_database $DB
      * @param mixed $data
      */
     public function process_assignsubmission_onlinetext_submission($data) {

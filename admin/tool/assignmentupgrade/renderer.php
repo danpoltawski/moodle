@@ -111,7 +111,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
     /**
      * Render the list of assignments that still need to be upgraded page.
      * @param tool_assignmentupgrade_assignments_table $assignments of data about assignments.
-     * @param tool_assignmentupgrade_batchoperations_form $form Submitted form with list of assignments to upgrade
+     * @param tool_assignmentupgrade_batchoperations_form $batchform Submitted form with list of assignments to upgrade
      * @return string html to output.
      */
     public function assignment_list_page(tool_assignmentupgrade_assignments_table $assignments, tool_assignmentupgrade_batchoperations_form $batchform) {
@@ -142,7 +142,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
 
     /**
      * Render the result of an assignment conversion
-     * $param array assignments - An array of arrays with keys $entry['assignmentsummary', 'success', 'log']
+     * @param array $assignments - An array of arrays with keys $entry['assignmentsummary', 'success', 'log']
      *                            See convert_assignment_result for more description of these keys.
      * @return string html to output.
      */
@@ -225,6 +225,8 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
      * Helper method dealing with the fact we can not just fetch the output of flexible_table
      *
      * @param flexible_table $table
+     * @param int $rowsperpage
+     * @param bool $displaylinks Show links in the table
      * @return string HTML
      */
     protected function flexible_table(flexible_table $table, $rowsperpage, $displaylinks) {

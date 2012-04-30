@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -31,7 +30,7 @@ require_once($CFG->dirroot.'/mod/assign/locallib.php');
 require_once($CFG->libdir.'/accesslib.php');
 
 
-/*
+/**
  * Class to manage upgrades from mod_assignment to mod_assign
  *
  * @package   mod_assign
@@ -44,8 +43,8 @@ class assignment_upgrade_manager {
      * This function converts all of the base settings for an instance of
      * the old assignment to the new format. Then it calls each of the plugins
      * to see if they can help upgrade this assignment.
-     * @param int old assignment id (don't rely on the old assignment type even being installed)
-     * @param string log This string gets appended to during the conversion process
+     * @param int $oldassignmentid (don't rely on the old assignment type even being installed)
+     * @param string $log This string gets appended to during the conversion process
      * @return bool true or false
      */
     public function upgrade_assignment($oldassignmentid, $log) {
@@ -256,10 +255,9 @@ class assignment_upgrade_manager {
      * Create a duplicate course module record so we can create the upgraded
      * assign module alongside the old assignment module.
      *
-     * @global stdClass $CFG
-     * @global moodle_database $DB
      * @param stdClass $cm The old course module record
      * @param int $moduleid The id of the new assign module
+     * @param int $newinstanceid The id of the new instance of the assign module
      * @return mixed stdClass|bool The new course module record or FALSE
      */
     private function duplicate_course_module(stdClass $cm, $moduleid, $newinstanceid) {
@@ -315,9 +313,6 @@ class assignment_upgrade_manager {
      * This function deletes the old assignment course module after
      * it has been upgraded. This code is adapted from "course/mod.php".
      *
-     * @global stdClass $CFG
-     * @global stdClass $USER
-     * @global moodle_database $DB
      * @param stdClass $cm The course module to delete.
      * @return bool
      */
@@ -371,7 +366,6 @@ class assignment_upgrade_manager {
     /**
      * This function copies the grades from the old assignment module to this one.
      *
-     * @global object CFG
      * @param stdClass $oldassignment old assignment data record
      * @param assignment $newassignment the new assignment class
      * @return bool true or false

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
+/**
  * Abstract class for assignment_plugin (submission/feedback).
  *
  * @package   mod_assign
@@ -185,7 +184,8 @@ abstract class assignment_plugin {
     /**
      * Save any custom data for this form submission
      *
-     * @param mixed assignment_submission|assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
+     * @param stdClass $submissionorgrade - assignment_submission or assignment_grade
+     *              For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param stdClass $data - the data submitted from the form
      * @return bool - on error the subtype should call set_error and return false.
      */
@@ -223,7 +223,7 @@ abstract class assignment_plugin {
     /**
      * Get any additional fields for the submission/grading form for this assignment.
      *
-     * @param mixed submission|grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
+     * @param mixed $submissionorgrade submission|grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param MoodleQuickForm $mform - This is the form
      * @param stdClass $data - This is the form data that can be modified for example by a filemanager element
      * @return boolean - true if we added anything to the form
@@ -235,7 +235,8 @@ abstract class assignment_plugin {
     /**
      * Should not output anything - return the result as a string so it can be consumed by webservices.
      *
-     * @param mixed assignment_submission|assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
+     * @param stdClass $submissionorgrade assignment_submission or assignment_grade 
+     *                 For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @return string - return a string representation of the submission in full
      */
     public function view(stdClass $submissionorgrade) {
@@ -277,7 +278,6 @@ abstract class assignment_plugin {
     /**
      * Set a configuration value for this plugin
      *
-     * @global moodle_database $DB
      * @param string $name The config key
      * @param string $value The config value
      * @return bool
@@ -305,8 +305,7 @@ abstract class assignment_plugin {
     /**
      * Get a configuration value for this plugin
      *
-     * @global moodle_database $DB
-     * @param string $name The config key
+     * @param mixed $setting The config key (string) or null
      * @return mixed string | false
      */
     public final function get_config($setting = null) {
@@ -340,11 +339,12 @@ abstract class assignment_plugin {
     /**
      * Should not output anything - return the result as a string so it can be consumed by webservices.
      *
-     * @param mixed assignment_submission| assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
-     * @param bool - modifed to return whether or not to show a link to the full submission/feedback
+     * @param stdClass $submissionorgrade assignment_submission or assignment_grade 
+     *                 For submission plugins this is the submission data, for feedback plugins it is the grade data
+     * @param bool $showviewlink Modifed to return whether or not to show a link to the full submission/feedback
      * @return string - return a string representation of the submission in full
      */
-    public function view_summary(stdClass $submissionorgrade, & $showviewlink) {
+    public function view_summary(stdClass $submissionorgrade, $showviewlink) {
         return '';
     }
 
@@ -363,7 +363,8 @@ abstract class assignment_plugin {
     /**
      * Produce a list of files suitable for export that represent this feedback or submission
      *
-     * @param mixed assignment_submission| assignment_grade - For submission plugins this is the submission data, for feedback plugins it is the grade data
+     * @param stdClass $submissionorgrade assignment_submission or assignment_grade 
+     *                 For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @return array - return an array of files indexed by filename
      */
     public function get_files(stdClass $submissionorgrade) {
@@ -413,7 +414,7 @@ abstract class assignment_plugin {
      * @param context $oldcontext The data record for the old context
      * @param stdClass $oldassignment The data record for the old assignment
      * @param stdClass $oldsubmissionorgrade The data record for the old submission
-     * @param mixed assignment_submission| assignment_grade The new submission or grade
+     * @param stdClass $submissionorgrade assignment_submission or assignment_grade The new submission or grade
      * @param string $log Record upgrade messages in the log
      * @return boolean true or false - false will trigger a rollback
      */
@@ -423,9 +424,9 @@ abstract class assignment_plugin {
     }
 
     /**
-     * formatting for log info
-     * @param assignment_submission|assignment_grade The new submission or grade
-     *
+     * Formatting for log info
+     * 
+     * @param stdClass $submissionorgrade assignment_submission or assignment_grade The new submission or grade
      * @return string
      */
     public function format_for_log(stdClass $submissionorgrade) {
@@ -450,6 +451,7 @@ abstract class assignment_plugin {
 
     /**
      * Is this assignment plugin empty? (ie no submission or feedback)
+     * @param stdClass $submissionorgrade assignment_submission or assignment_grade
      * @return bool
      */
     public function is_empty(stdClass $submissionorgrade) {
@@ -470,13 +472,11 @@ abstract class assignment_plugin {
      * This is used by the filebrowser to browse a plugins file areas.
      *
      * This implementation should work for most plugins but can be overridden if required.
-     * @global stdClass $CFG
-     * @global moodle_database $DB
      * @param file_browser $browser
-     * @param string filearea
-     * @param int itemid
-     * @param string filepath
-     * @param string filename
+     * @param string $filearea
+     * @param int $itemid
+     * @param string $filepath
+     * @param string $filename
      * @return file_info_stored
      */
     public function get_file_info($browser, $filearea, $itemid, $filepath, $filename) {

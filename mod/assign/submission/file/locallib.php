@@ -35,7 +35,7 @@ define('ASSIGN_MAX_SUBMISSION_FILES', 20);
 define('ASSIGN_SUBMISSION_FILE_MAX_SUMMARY_FILES', 5);
 define('ASSIGN_FILEAREA_SUBMISSION_FILES', 'submission_files');
 
-/*
+/**
  * library class for file submission plugin extending submission plugin base class
  *
  * @package   assignsubmission_file
@@ -55,7 +55,6 @@ class assignment_submission_file extends assignment_submission_plugin {
     /**
      * Get file submission information from the database
      *
-     * @global moodle_database $DB
      * @param int $submissionid
      * @return mixed
      */
@@ -67,8 +66,6 @@ class assignment_submission_file extends assignment_submission_plugin {
     /**
      * Get the default setting for file submission plugin
      *
-     * @global stdClass $CFG
-     * @global stdClass $COURSE
      * @param MoodleQuickForm $mform The form to add elements to
      * @return void
      */
@@ -136,8 +133,8 @@ class assignment_submission_file extends assignment_submission_plugin {
     /**
      * Add elements to submission form
      *
-     * @param mixed stdClass|null $submission
-     * @param MoodleQuickForm $submission
+     * @param mixed $submission stdClass|null
+     * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @return bool
      */
@@ -174,8 +171,6 @@ class assignment_submission_file extends assignment_submission_plugin {
     /**
      * Save the files and trigger plagiarism plugin, if enabled, to scan the uploaded files via events trigger
      *
-     * @global stdClass $USER
-     * @global moodle_database $DB
      * @param stdClass $submission
      * @param stdClass $data
      * @return bool
@@ -245,6 +240,7 @@ class assignment_submission_file extends assignment_submission_plugin {
      * Display the list of files  in the submission status table
      *
      * @param stdClass $submission
+     * @param bool $showviewlink Set this to true if the list of files is long
      * @return string
      */
     public function view_summary(stdClass $submission, & $showviewlink) {
@@ -297,7 +293,7 @@ class assignment_submission_file extends assignment_submission_plugin {
      *
      * @param context $oldcontext - the old assignment context
      * @param stdClass $oldassignment - the old assignment data record
-     * @param string log record log events here
+     * @param string $log record log events here
      * @return bool Was it a success? (false will trigger rollback)
      */
     public function upgrade_settings(context $oldcontext,stdClass $oldassignment, $log) {
@@ -319,7 +315,6 @@ class assignment_submission_file extends assignment_submission_plugin {
     /**
      * Upgrade the submission from the old assignment to the new one
      *
-     * @global moodle_database $DB
      * @param context $oldcontext The context of the old assignment
      * @param stdClass $oldassignment The data record for the old oldassignment
      * @param stdClass $oldsubmission The data record for the old submission
@@ -365,7 +360,6 @@ class assignment_submission_file extends assignment_submission_plugin {
     /**
      * The assignment has been deleted - cleanup
      *
-     * @global moodle_database $DB
      * @return bool
      */
     public function delete_instance() {
@@ -394,6 +388,7 @@ class assignment_submission_file extends assignment_submission_plugin {
 
     /**
      * Return true if there are no submission files
+     * @param stdClass $submission
      */
     public function is_empty(stdClass $submission) {
         return $this->count_files($submission->id, ASSIGN_FILEAREA_SUBMISSION_FILES) == 0;

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -30,13 +29,12 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 
 /**
- * A custom renderer class that extends the plugin_renderer_base and
- * is used by the assign module.
+ * A custom renderer class that extends the plugin_renderer_base and is used by the assign module.
  *
  * @package mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
+ */
 class mod_assign_renderer extends plugin_renderer_base {
 
     /**
@@ -45,6 +43,7 @@ class mod_assign_renderer extends plugin_renderer_base {
      * @param context $context
      * @param int $userid
      * @param string $filearea
+     * @param string $component
      * @return string
      */
     public function assign_files(context $context, $userid, $filearea, $component) {
@@ -129,7 +128,7 @@ class mod_assign_renderer extends plugin_renderer_base {
     /**
      * Render the submit for grading page
      *
-     * @param assign_submit_for_grading_page $assign_submit_for_grading_page
+     * @param assign_submit_for_grading_page $page
      * @return string
      */
     public function render_assign_submit_for_grading_page($page) {
@@ -268,8 +267,6 @@ class mod_assign_renderer extends plugin_renderer_base {
     /**
      * render a table containing all the current grades and feedback
      *
-     * @global moodle_database $DB
-     * @global stdClass $CFG
      * @param assign_feedback_status $status
      * @return string
      */
@@ -526,9 +523,9 @@ class mod_assign_renderer extends plugin_renderer_base {
    }
 
     /**
-     * render a feedback plugin feedback
+     * Render a feedback plugin feedback
      *
-     * @param feedback_plugin_feedback $feedbackplugin
+     * @param assign_feedback_plugin_feedback $feedbackplugin
      * @return string
      */
     public function render_assign_feedback_plugin_feedback(assign_feedback_plugin_feedback $feedbackplugin) {
@@ -567,7 +564,6 @@ class mod_assign_renderer extends plugin_renderer_base {
     /**
      * Internal function - creates htmls structure suitable for YUI tree.
      *
-     * @global stdClass $CFG
      * @param assign_files $tree
      * @param array $dir
      * @return string
@@ -608,7 +604,9 @@ class mod_assign_renderer extends plugin_renderer_base {
     /**
      * Helper method dealing with the fact we can not just fetch the output of flexible_table
      *
-     * @param flexible_table $table
+     * @param flexible_table $table The table to render
+     * @param int $rowsperpage How many assignments to render in a page
+     * @param bool $displaylinks - Whether to render links in the table (e.g. downloads would not enable this)
      * @return string HTML
      */
     protected function flexible_table(flexible_table $table, $rowsperpage, $displaylinks) {

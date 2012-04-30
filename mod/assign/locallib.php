@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,10 +40,6 @@ define('ASSIGN_FILTER_SINGLE_USER', 'singleuser');
 define('ASSIGN_FILTER_REQUIRE_GRADING', 'require_grading');
 
 /**
- * File areas for the assignment
- */
-
-/**
  * File areas for assignment portfolio if enabled
  */
 define('ASSIGN_FILEAREA_PORTFOLIO_FILES', 'portfolio_files');
@@ -76,7 +71,7 @@ require_once($CFG->dirroot.'/mod/assign/gradingtable.php');
 require_once($CFG->libdir.'/eventslib.php');
 
 
-/*
+/**
  * Standard base class for mod_assign (assignment types).
  *
  * @package   mod_assign
@@ -127,9 +122,9 @@ class assignment {
     /**
      * Constructor for the base assign class
      *
-     * @param mixed context|null $context the course module context (or the course context if the coursemodule has not been created yet)
-     * @param mixed stdClass|null $coursemodule the current course module if it was already loaded - otherwise this class will load one from the context as required
-     * @param mixed stdClass|null $course the current course  if it was already loaded - otherwise this class will load one from the context as required
+     * @param mixed $coursemodulecontext context|null the course module context (or the course context if the coursemodule has not been created yet)
+     * @param mixed $coursemodule the current course module if it was already loaded - otherwise this class will load one from the context as required
+     * @param mixed $course the current course  if it was already loaded - otherwise this class will load one from the context as required
      */
     public function __construct($coursemodulecontext, $coursemodule, $course) {
         global $PAGE;
@@ -186,26 +181,26 @@ class assignment {
 
     /**
      * Set the submitted form data
-     * @param stdClass data The form data (instance)
+     * @param stdClass $data The form data (instance)
      */
     public function set_instance(stdClass $data) {
-        return $this->instance = $data;
+        $this->instance = $data;
     }
 
     /**
      * Set the context
-     * @param context context The new context
+     * @param context $context The new context
      */
     public function set_context(context $context) {
-        return $this->context = $context;
+        $this->context = $context;
     }
 
     /**
      * Set the course data
-     * @param stdClass course The course data
+     * @param stdClass $course The course data
      */
     public function set_course(stdClass $course) {
-        return $this->course = $course;
+        $this->course = $course;
     }
 
     /**
@@ -227,6 +222,7 @@ class assignment {
 
     /**
      * get a specific submission plugin by its type
+     * @param string $subtype assignsubmission | assignfeedback
      * @param string $type
      * @return mixed assignment_plugin|null
      */
@@ -262,7 +258,7 @@ class assignment {
 
     /**
      * Load the plugins from the sub folders under subtype
-     * @param string subtype - either submission or feedback
+     * @param string $subtype - either submission or feedback
      * @return array - The sorted list of plugins
      */
     private function load_plugins($subtype) {
@@ -390,10 +386,9 @@ class assignment {
     /**
      * Add this instance to the database
      *
-     * @global DB
-     * @param stdClass formdata The data submitted from the form
-     * @param bool callplugins This is used to skip the plugin code
-     * when upgrading an old assignment to a new one (the plugins get called manually)
+     * @param stdClass $formdata The data submitted from the form
+     * @param bool $callplugins This is used to skip the plugin code
+     *             when upgrading an old assignment to a new one (the plugins get called manually)
      * @return mixed false if an error occurs or the int id of the new instance
      */
     public function add_instance(stdClass $formdata, $callplugins) {
@@ -456,7 +451,6 @@ class assignment {
     /**
      * Delete all grades from the gradebook for this assignment
      *
-     * @global stdClass CFG
      * @return bool
      */
     private function delete_grades() {
@@ -468,7 +462,6 @@ class assignment {
     /**
      * Delete this instance from the database
      *
-     * @global moodle_database DB
      * @return bool false if an error occurs
      */
     public function delete_instance() {
@@ -514,7 +507,6 @@ class assignment {
     /**
      * Update the settings for a single plugin
      *
-     * @global DB
      * @param assignment_plugin $plugin The plugin to update
      * @param stdClass $formdata The form data
      * @return bool false if an error occurs
@@ -538,9 +530,8 @@ class assignment {
     /**
      * Update the gradebook information for this assignment
      *
-     * @global stdClass $CFG
      * @param bool $reset If true, will reset all grades in the gradbook for this assignment
-     * @param int coursemoduleid This is required because it might not exist in the database yet
+     * @param int $coursemoduleid This is required because it might not exist in the database yet
      * @return bool
      */
     public function update_gradebook($reset, $coursemoduleid) {
@@ -561,9 +552,7 @@ class assignment {
     /**
      * Update the calendar entries for this assignment
      *
-     * @global moodle_database $DB
-     * @global stdClass $CFG
-     * @param int coursemoduleid - Required to pass this in because it might not exist in the database yet
+     * @param int $coursemoduleid - Required to pass this in because it might not exist in the database yet
      * @return bool
      */
     public function update_calendar($coursemoduleid) {
@@ -608,8 +597,7 @@ class assignment {
     /**
      * Update this instance in the database
      *
-     * @global moodle_database DB
-     * @param stdClass formdata - the data submitted from the form
+     * @param stdClass $formdata - the data submitted from the form
      * @return bool false if an error occurs
      */
     public function update_instance($formdata) {
@@ -673,7 +661,7 @@ class assignment {
     /**
      * add elements in grading plugin form
      *
-     * @param mixed stdClass|null $grade
+     * @param mixed $grade stdClass|null
      * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @return void
@@ -785,6 +773,11 @@ class assignment {
         return self::$modulenameplural;
     }
 
+    /**
+     * Has this assignment been constructed from an instance?
+     *
+     * @return bool
+     */
     public function has_instance() {
         return $this->instance || $this->get_course_module();
     }
@@ -792,7 +785,6 @@ class assignment {
     /**
      * Get the settings for the current instance of this assignment
      *
-     * @global moodle_database $DB
      * @return stdClass The settings
      */
     public function get_instance() {
@@ -856,7 +848,6 @@ class assignment {
 
     /**
      * Get the current course
-     * @global moodle_database $DB
      * @return mixed stdClass|null The course
      */
     public function get_course() {
@@ -873,10 +864,9 @@ class assignment {
     }
 
     /**
-     *  Return a grade in user-friendly form, whether it's a scale or not
+     * Return a grade in user-friendly form, whether it's a scale or not
      *
-     * @global object $DB
-     * @param mixed int|null $grade
+     * @param mixed $grade int|null 
      * @return string User-friendly representation of grade
      */
     public function display_grade($grade) {
@@ -913,6 +903,7 @@ class assignment {
      * Load a list of users enrolled in the current course with the specified permission and group (0 for no group)
      *
      * @param int $currentgroup
+     * @param bool $idsonly
      * @return array List of user records
      */
     public function list_participants($currentgroup, $idsonly) {
@@ -926,7 +917,6 @@ class assignment {
     /**
      * Load a count of users enrolled in the current course with the specified permission and group (0 for no group)
      *
-     * @param string $permission
      * @param int $currentgroup
      * @return int number of matching users
      */
@@ -937,7 +927,6 @@ class assignment {
     /**
      * Load a count of users enrolled in the current course with the specified permission and group (optional)
      *
-     * @global moodle_database $DB
      * @param string $status The submission status - should match one of the constants
      * @return int number of matching submissions
      */
@@ -970,9 +959,10 @@ class assignment {
      * This takes into account any active filters on the table.
      *
      * @param int $num The row number of the user
+     * @param bool $last This is set to true if this is the last user in the table
      * @return mixed The user id of the matching user or false if there was an error
      */
-    private function get_userid_for_row($num, &$last){
+    private function get_userid_for_row($num, $last){
         if (!array_key_exists('userid_for_row', $this->cache)) {
             $this->cache['userid_for_row'] = array();
         }
@@ -993,10 +983,8 @@ class assignment {
     /**
      * Return all assignment submissions by ENROLLED students (even empty)
      *
-     * @global stdClass $CFG;
-     * @global moodle_database $DB;
-     * @param $sort string optional field names for the ORDER BY in the sql query
-     * @param $dir string optional specifying the sort direction, defaults to DESC
+     * @param string $sort optional field names for the ORDER BY in the sql query
+     * @param string $dir optional specifying the sort direction, defaults to DESC
      * @return array The submission objects indexed by id
      */
     private function get_all_submissions( $sort="", $dir="DESC") {
@@ -1021,7 +1009,6 @@ class assignment {
     /**
      * Generate zip file from array of given files
      *
-     * @global stdClass $CFG
      * @param array $filesforzipping - array of files to pass into archive_to_pathname - this array is indexed by the final file name and each element in the array is an instance of a stored_file object
      * @return path of temp file - note this returned file does not have a .zip extension - it is a temp file.
      */
@@ -1042,9 +1029,6 @@ class assignment {
      *  Cron function to be run periodically according to the moodle cron
      *  Finds all assignment notifications that have yet to be mailed out, and mails them
      *
-     * @global stdClass $CFG
-     * @global stdClass $USER
-     * @global stdClass $DB
      * @return bool
      */
     static function cron() {
@@ -1057,7 +1041,6 @@ class assignment {
     /**
      * Update a grade in the grade table for the assignment and in the gradebook
      *
-     * @global moodle_database $DB
      * @param stdClass $grade a grade record keyed on id
      * @return bool true for success
      */
@@ -1096,9 +1079,7 @@ class assignment {
     /**
      * display the submission that is used by a plugin
      * Uses url parameters 'sid', 'gid' and 'plugin'
-     * @global stdClass $CFG
-     * @global stdClass $USER
-     * @param string $plugintype
+     * @param string $pluginsubtype
      * @return string
      */
     private function view_plugin_content($pluginsubtype) {
@@ -1168,11 +1149,11 @@ class assignment {
     /**
      * render the content in editor that is often used by plugin
      *
-     * @global stdClass $CFG
      * @param string $filearea
      * @param int  $submissionid
      * @param string $plugintype
      * @param string $editor
+     * @param string $component
      * @return string
      */
     public function render_editor_content($filearea, $submissionid, $plugintype, $editor, $component) {
@@ -1234,8 +1215,6 @@ class assignment {
     /**
      * Download a zip file of all assignment submissions
      *
-     * @global stdClass $CFG
-     * @global moodle_database $DB
      * @return void
      */
     private function download_submissions() {
@@ -1299,7 +1278,6 @@ class assignment {
     /**
      * Util function to add a message to the log
      *
-     * @global stdClass $USER
      * @param string $action The current action
      * @param string $info A detailed description of the change. But no more than 255 characters.
      * @param string $url The url to the assign module instance.
@@ -1319,10 +1297,8 @@ class assignment {
     /**
      * Load the submission object for a particular user, optionally creating it if required
      *
-     * @global moodle_database $DB
-     * @global stdClass $USER
      * @param int $userid The id of the user whose submission we want or 0 in which case USER->id is used
-     * @param bool $createnew optional Defaults to false. If set to true a new submission object will be created in the database
+     * @param bool $create optional Defaults to false. If set to true a new submission object will be created in the database
      * @return stdClass The submission
      */
     private function get_user_submission($userid, $create) {
@@ -1359,8 +1335,6 @@ class assignment {
     /**
      * Load the submission object from it's id
      *
-     * @global moodle_database $DB
-     * @global stdClass $USER
      * @param int $submissionid The id of the submission we want
      * @return stdClass The submission
      */
@@ -1373,8 +1347,6 @@ class assignment {
     /**
      * This will retrieve a grade object from the db, optionally creating it if required
      *
-     * @global moodle_database $DB
-     * @global stdClass $USER
      * @param int $userid The user we are grading
      * @param bool $create If true the grade will be created if it does not exist
      * @return stdClass The grade record
@@ -1411,7 +1383,6 @@ class assignment {
     /**
      * This will retrieve a grade object from the db
      *
-     * @global moodle_database $DB
      * @param int $gradeid The id of the grade
      * @return stdClass The grade record
      */
@@ -1424,7 +1395,8 @@ class assignment {
     /**
      * Print the grading page for a single user submission
      *
-     * @global moodle_database $DB
+     * @param moodleform $mform
+     * @param int $offset
      * @return string
      */
     private function view_single_grade_page($mform, $offset=0) {
@@ -1529,8 +1501,6 @@ class assignment {
     /**
      * View the grading table of all submissions for this assignment
      *
-     * @global stdClass $USER
-     * @global stdClass $CFG
      * @return string
      */
     private function view_grading_table() {
@@ -1609,8 +1579,6 @@ class assignment {
     /**
      * View entire grading page.
      *
-     * @global stdClass $CFG
-     * @global stdClass $USER
      * @return string
      */
     private function view_grading_page() {
@@ -1685,7 +1653,6 @@ class assignment {
     /**
      * View edit submissions page.
      *
-     * @global stdClass $CFG
      * @param moodleform $mform
      * @return void
      */
@@ -1726,7 +1693,7 @@ class assignment {
     /**
      * See if this assignment has a grade yet
      *
-     * @param int userid
+     * @param int $userid
      * @return bool
      */
     private function is_graded($userid) {
@@ -1741,8 +1708,7 @@ class assignment {
     /**
      * Perform an access check to see if the current $USER can view this users submission
      *
-     * @global object $USER
-     * @param int userid
+     * @param int $userid
      * @return bool
      */
     public function can_view_submission($userid) {
@@ -1796,7 +1762,6 @@ class assignment {
 
     /**
      * Ask the user to confirm they want to submit their work for grading
-     * @global stdClass $USER
      * @return string
      */
     private function check_submit_for_grading() {
@@ -1825,9 +1790,8 @@ class assignment {
      * Print 2 tables of information with no action links -
      * the submission summary and the grading summary
      *
-     * @global stdClass $CFG
-     * @global moodle_database $DB
      * @param stdClass $user the user to print the report for
+     * @param bool $showlinks - Return plain text or links to the profile
      * @return string - the html summary
      */
     public function view_student_summary($user, $showlinks) {
@@ -1920,10 +1884,6 @@ class assignment {
     /**
      * View submissions page (contains details of current submission).
      *
-     * @global stdClass $CFG
-     * @global stdClass $DB
-     * @global stdClass $USER
-     * @global stdClass $PAGE
      * @return string
      */
     private function view_submission_page() {
@@ -2004,8 +1964,8 @@ class assignment {
     /**
      * update grades in the gradebook
      *
-     * @param mixed stdClass|null $submission
-     * @param mixed stdClass|null $grade
+     * @param mixed $submission stdClass|null
+     * @param mixed $grade stdClass|null
      * @return bool
      */
     private function gradebook_item_update($submission=NULL, $grade=NULL) {
@@ -2029,7 +1989,6 @@ class assignment {
     /**
      * update grades in the gradebook based on submission time
      *
-     * @global moodle_database $DB
      * @param stdClass $submission
      * @param bool $updatetime
      * @return bool
@@ -2055,7 +2014,6 @@ class assignment {
      * has this person already submitted,
      * is the assignment locked?
      *
-     * @global stdClass $USER
      * @return bool
      */
     private function submissions_open() {
@@ -2098,7 +2056,7 @@ class assignment {
 
     /**
      * render the files in file area
-     * @global stdClass $USER
+     * @param string $component
      * @param string $area
      * @param int $submissionid
      * @return string
@@ -2205,8 +2163,6 @@ class assignment {
     /**
      * email graders upon student submissions
      *
-     * @global stdClass $CFG
-     * @global moodle_database $DB
      * @param stdClass $submission
      * @return void
      */
@@ -2260,7 +2216,6 @@ class assignment {
     /**
      * assignment submission is processed before grading
      *
-     * @global stdClass $USER
      * @return void
      */
     private function process_submit_assignment_for_grading() {
@@ -2288,8 +2243,6 @@ class assignment {
     /**
      * save grading options
      *
-     * @global stdClass $USER
-     * @global stdClass $CFG
      * @return void
      */
     private function process_save_grading_options() {
@@ -2316,7 +2269,6 @@ class assignment {
     * The size limit for the log file is 255 characters, so be careful not
     * to include too much information.
     *
-    * @global moodle_database $DB
     * @param stdClass $grade
     * @return string
     */
@@ -2365,8 +2317,6 @@ class assignment {
     /**
      * save assignment submission
      *
-     * @global stdClass $USER
-     * @global stdClass $CFG
      * @param  moodleform $mform
      * @return bool
      */
@@ -2418,7 +2368,6 @@ class assignment {
     /**
      * count the number of files in the file area
      *
-     * @global stdClass $USER
      * @param int $userid
      * @param string $area
      * @return int
@@ -2439,7 +2388,6 @@ class assignment {
     /**
      * Determine if this users grade is locked or overridden
      *
-     * @global stdClass $CFG
      * @param int $userid - The student userid
      * @return bool $gradingdisabled
      */
@@ -2463,8 +2411,6 @@ class assignment {
      * Get an instance of a grading form if advanced grading is enabled
      * This is specific to the assignment, marker and student
      *
-     * @global stdClass $CFG
-     * @global stdClass $USER
      * @param int $userid - The student userid
      * @param bool $gradingdisabled
      * @return mixed gradingform_instance|null $gradinginstance
@@ -2504,8 +2450,6 @@ class assignment {
     /**
      * add elements to grade form
      *
-     * @global stdClass $USER
-     * @global stdClass $CFG
      * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @param array $params
@@ -2589,7 +2533,7 @@ class assignment {
     /**
      * add elements in submission plugin form
      *
-     * @param mixed stdClass|null $submission
+     * @param mixed $submission stdClass|null
      * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @return void
@@ -2647,7 +2591,6 @@ class assignment {
 
     /**
      * add elements to submission form
-     * @global stdClass $USER
      * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @return void
@@ -2674,8 +2617,8 @@ class assignment {
     /**
      * revert to draft
      * Uses url parameter userid
-     * @global stdClass $USER
-     * @global moodle_database $DB
+     * 
+     * @param int $userid
      * @return void
      */
     private function process_revert_to_draft($userid = 0) {
@@ -2709,8 +2652,7 @@ class assignment {
     /**
      * lock  the process
      * Uses url parameter userid
-     * @global stdClass $USER
-     * @global moodle_database $DB
+     * @param int $userid
      * @return void
      */
     private function process_lock($userid = 0) {
@@ -2737,8 +2679,7 @@ class assignment {
     /**
      * unlock the process
      *
-     * @global stdClass $USER
-     * @global moodle_database $DB
+     * @param int $userid
      * @return void
      */
     private function process_unlock($userid = 0) {
@@ -2765,9 +2706,6 @@ class assignment {
     /**
      * save grade
      *
-     * @global stdClass $USER
-     * @global moodle_database $DB
-     * @global stdClass $CFG
      * @param  moodleform $mform
      * @return bool - was the grade saved
      */
@@ -2910,9 +2848,7 @@ class assignment {
     /**
      * Get an upto date list of user grades and feedback for the gradebook
      *
-     * @global stdClass $CFG
-     * @global moodle_database $DB
-     * @param int userid int or 0 for all users
+     * @param int $userid int or 0 for all users
      * @return array of grade data formated for the gradebook api
      *         The data required by the gradebook api is userid,
      *                                                   rawgrade,

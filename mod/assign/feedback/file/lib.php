@@ -1,5 +1,4 @@
 <?PHP
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Serves assignment feedback and other files.
  *
- * @global stdClass USER
  * @param mixed $course course or id of the course
  * @param mixed $cm course module or id of the course module
  * @param context $context

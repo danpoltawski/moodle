@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -29,7 +28,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 /** Include formslib.php */
 require_once ($CFG->libdir.'/formslib.php');
 
-/*
+/**
  * Assignment upgrade batch operations form
  *
  * @package   tool_assignmentupgrade
@@ -37,6 +36,9 @@ require_once ($CFG->libdir.'/formslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_assignmentupgrade_batchoperations_form extends moodleform {
+    /**
+     * Define this form - is called from parent constructor
+     */
     function definition() {
         $mform = $this->_form;
         $instance = $this->_customdata;

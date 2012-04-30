@@ -51,7 +51,6 @@ class assignment_feedback_file extends assignment_feedback_plugin {
     /**
      * Get file feedback information from the database
      *
-     * @global moodle_database $DB
      * @param int $gradeid
      * @return mixed
      */
@@ -62,7 +61,6 @@ class assignment_feedback_file extends assignment_feedback_plugin {
 
     /**
      * File format options
-     * @global stdClass $COURSE
      * @return array
      */
     private function get_file_options() {
@@ -78,7 +76,7 @@ class assignment_feedback_file extends assignment_feedback_plugin {
     /**
      * Get form elements for grading form
      *
-     * @param stdClass | null $grade
+     * @param stdClass $grade 
      * @param MoodleQuickForm $mform
      * @param stdClass $data
      * @return bool true if elements were added to the form
@@ -99,7 +97,6 @@ class assignment_feedback_file extends assignment_feedback_plugin {
     /**
      * Count the number of files
      *
-     * @global object $USER
      * @param int $gradeid
      * @param string $area
      * @return int
@@ -116,7 +113,6 @@ class assignment_feedback_file extends assignment_feedback_plugin {
     /**
      * Save the feedback files
      *
-     * @global moodle_database $DB
      * @param stdClass $grade
      * @param stdClass $data
      * @return bool
@@ -148,6 +144,7 @@ class assignment_feedback_file extends assignment_feedback_plugin {
      * Display the list of files  in the feedback status table
      *
      * @param stdClass $grade
+     * @param bool $showviewlink - Set to true to show a link to see the full list of files
      * @return string
      */
     public function view_summary(stdClass $grade, & $showviewlink) {
@@ -174,7 +171,6 @@ class assignment_feedback_file extends assignment_feedback_plugin {
     /**
      * The assignment has been deleted - cleanup
      *
-     * @global moodle_database $DB
      * @return bool
      */
     public function delete_instance() {
@@ -187,6 +183,7 @@ class assignment_feedback_file extends assignment_feedback_plugin {
 
     /**
      * Return true if there are no feedback files
+     * @param stdClass $grade
      */
     public function is_empty(stdClass $grade) {
         return $this->count_files($grade->id, ASSIGN_FILEAREA_FEEDBACK_FILES) == 0;

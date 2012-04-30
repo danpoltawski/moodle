@@ -24,7 +24,7 @@
 
 /**
  * Stub for upgrade code
- * @param int version
+ * @param int $oldversion
  * @return bool
  */
 function xmldb_submission_comments_upgrade($oldversion) {

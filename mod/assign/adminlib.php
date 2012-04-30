@@ -14,44 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-
 /**
- * This file contains the classes for the admin settings of the assign
- * module.
- *
- * This class provides an interface for enabling and configuring
- * submission plugins.
+ * This file contains the classes for the admin settings of the assign module.
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 /** Include adminlib.php */
 require_once($CFG->libdir . '/adminlib.php');
 /** Include tablelib.php */
 require_once($CFG->libdir . '/tablelib.php');
 
-defined('MOODLE_INTERNAL') || die();
-
-/*
- * Admin external page that displays a list of the installed submission
- * plugins.
+/**
+ * Admin external page that displays a list of the installed submission plugins.
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -63,7 +42,7 @@ class admin_page_manage_assignment_plugins extends admin_externalpage {
     private $subtype = '';
 
     /**
-     *  the constructor
+     * The constructor - calls parent constructor
      *
      * @param string $subtype
      */
@@ -106,11 +85,10 @@ class admin_page_manage_assignment_plugins extends admin_externalpage {
 }
 
 
-/*
- * Class that handles the display and configuration of the list of submission
- * plugins.
+/**
+ * Class that handles the display and configuration of the list of submission plugins.
  *
- * @package   mod-assign
+ * @package   mod_assign
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -160,7 +138,6 @@ class assignment_plugin_manager {
     /**
      * Util function for writing an action icon link
      *
-     * @global renderer_base $OUTPUT For writing to the page
      * @param string $action URL parameter to include in the link
      * @param string $plugintype URL parameter to include in the link
      * @param string $icon The key to the icon to use (e.g. 't/up')
@@ -179,8 +156,6 @@ class assignment_plugin_manager {
     /**
      * Write the HTML for the submission plugins table.
      *
-     * @global renderer_base $OUTPUT For writing to the page
-     * @global stdClass $CFG Used to get the dirroot
      * @return None
      */
     private function view_plugins_table() {
@@ -248,7 +223,6 @@ class assignment_plugin_manager {
     /**
      * Write the page header
      *
-     * @global renderer_base $OUTPUT For writing to the page
      * @return None
      */
     private function view_header() {
@@ -262,7 +236,6 @@ class assignment_plugin_manager {
     /**
      * Write the page footer
      *
-     * @global renderer_base $OUTPUT For writing to the page
      * @return None
      */
     private function view_footer() {
@@ -285,8 +258,6 @@ class assignment_plugin_manager {
     /**
      * Delete the database and files associated with this plugin.
      *
-     * @global stdClass $CFG global config
-     * @global moodle_database $DB database connection
      * @param string $plugin - The type of the plugin to delete
      * @return string the name of the next page to display
      */
@@ -326,7 +297,6 @@ class assignment_plugin_manager {
     /**
      * Show the page that gives the details of the plugin that was just deleted
      *
-     * @global renderer_base $OUTPUT For writing to the page
      * @param string $plugin - The plugin that was just deleted
      * @return None
      */
@@ -343,7 +313,6 @@ class assignment_plugin_manager {
     /**
      * Show the page that asks the user to confirm they want to delete a plugin
      *
-     * @global renderer_base $OUTPUT For writing to the page
      * @param string $plugin - The plugin that will be deleted
      * @return None
      */
@@ -373,7 +342,7 @@ class assignment_plugin_manager {
     /**
      * Change the order of this plugin
      *
-     * @param string $plugin - The plugin to move
+     * @param string $plugintomove - The plugin to move
      * @param string $dir - up or down
      * @return string The next page to display
      */
@@ -434,7 +403,7 @@ class assignment_plugin_manager {
      * This is the entry point for this controller class
      *
      * @param string $action - The action to perform
-     * @param string $plugintype - Optional name of a plugin type to perform the action on
+     * @param string $plugin - Optional name of a plugin type to perform the action on
      * @return None
      */
     public function execute($action, $plugin) {

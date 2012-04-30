@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lib functions (cron) to automatically complete the assignment module upgrade
- * if it was not done all at once during the main upgrade.
+ * Lib functions (cron) to automatically complete the assignment module upgrade if it was not done all at once during the main upgrade.
  *
  * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot
@@ -46,6 +45,8 @@ function tool_assignmentupgrade_cron() {
 
 /**
  * This function does the cron process within the time range according to settings.
+ * This is not implemented yet
+ * @param stdClass $settings - not used
  */
 function tool_assignmentupgrade_process($settings) {
     global $CFG;

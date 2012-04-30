@@ -42,11 +42,15 @@ function tool_assignmentupgrade_url($script, $params = array()) {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_assignmentupgrade_batchoperationconfirm implements renderable {
-    /* @var string $continuemessage The message to show above the continue cancel buttons */
+    /** @var string $continuemessage The message to show above the continue cancel buttons */
     public $continuemessage = '';
-    /* @var string $continueurl The url to load if the user clicks continue */
+    /** @var string $continueurl The url to load if the user clicks continue */
     public $continueurl;
 
+    /**
+     * Constructor for this class
+     * @param stdClass $data - The data from the previous batch form
+     */
     function __construct($data) {
         if (isset($data->upgradeselected)) {
             $this->continuemessage = get_string('upgradeselectedcount', 'tool_assignmentupgrade', count(explode(',', $data->selectedassignments)));
@@ -111,8 +115,6 @@ class tool_assignmentupgrade_action {
 
 /**
  * Determine if there are any assignments that can be upgraded
- * @global moodle_database $DB
- * @global stdClass $CFG
  * @return boolean - Are there any assignments that can be upgraded
  */
 function tool_assignmentupgrade_any_upgradable_assignments() {
@@ -143,8 +145,6 @@ function tool_assignmentupgrade_any_upgradable_assignments() {
 
 /**
  * Load a list of all the assignmentids that can be upgraded
- * @global moodle_database $DB
- * @global stdClass $CFG
  * @return array of assignment ids
  */
 function tool_assignmentupgrade_load_all_upgradable_assignmentids() {
@@ -180,6 +180,7 @@ function tool_assignmentupgrade_load_all_upgradable_assignmentids() {
 
 /**
  * Convert a list of assignments from the old format to the new one.
+ * @param bool $upgradeall - Upgrade all possible assignments
  * @param array $assignmentids An array of assignment ids to upgrade
  * @return array of $entry['assignmentsummary' => (result from tool_assignmentupgrade_get_assignment)
  *                  $entry['success'] => boolean
@@ -231,7 +232,7 @@ function tool_assignmentupgrade_upgrade_assignment($assignmentinfo, &$log) {
 /**
  * Get the information about a assignment to be upgraded.
  * @param int $assignmentid the assignment id.
- * @return stdClass the information about that assignment, as for {@see tool_assignmentupgrade_get_upgradable_assignments()}.
+ * @return stdClass the information about that assignment.
  */
 function tool_assignmentupgrade_get_assignment($assignmentid) {
     global $DB;

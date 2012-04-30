@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -28,8 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/assign/backup/moodle2/restore_assign_stepslib.php');
 
 /**
- * assign restore task that provides all the settings and steps to perform one
- * complete restore of the activity
+ * assign restore task that provides all the settings and steps to perform one complete restore of the activity
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
