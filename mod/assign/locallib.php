@@ -1522,7 +1522,7 @@ class assignment {
         parse_str($returnparams, $params);
         $params = array_merge( array('id' => $this->get_course_module()->id, 'action' => $returnaction), $params);
            
-        return $this->output->single_button(new moodle_url('/mod/assign/view.php', $params), get_string('back', 'assign'), 'get');
+        return $this->output->single_button(new moodle_url('/mod/assign/view.php', $params), get_string('back'), 'get');
         
     }
    
@@ -2327,7 +2327,7 @@ class assignment {
         
         $info = get_string('gradestudent', 'assign', array('id'=>$user->id, 'fullname'=>fullname($user)));
         if ($grade->grade != '') {
-            $info .= get_string('grade', 'assign') . ': ' . $this->display_grade($grade->grade) . '. ';
+            $info .= get_string('grade') . ': ' . $this->display_grade($grade->grade) . '. ';
         } else {
             $info .= get_string('nograde', 'assign');
         }
@@ -2570,7 +2570,7 @@ class assignment {
         if (!$last){
             $buttonarray[] = $mform->createElement('submit', 'saveandshownext', get_string('savenext','assign'));
         }
-        $buttonarray[] = $mform->createElement('cancel', 'cancelbutton', get_string('cancel','assign'));
+        $buttonarray[] = $mform->createElement('cancel', 'cancelbutton', get_string('cancel'));
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');            
         $buttonarray=array();

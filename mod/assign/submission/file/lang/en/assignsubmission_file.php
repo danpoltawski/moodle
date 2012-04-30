@@ -23,7 +23,6 @@
  */
 
 
-$string['allowfilesubmissions'] = 'Enabled';
 $string['configmaxbytes'] = 'Maximum file size';
 $string['enabled'] = 'File submissions';
 $string['enabled_help'] = 'If enabled, students are able to upload one or more files as their submission.';

@@ -283,7 +283,7 @@ class mod_assign_renderer extends plugin_renderer_base {
         $t = new html_table();
         
         $row = new html_table_row();
-        $cell1 = new html_table_cell(get_string('grade', 'assign'));
+        $cell1 = new html_table_cell(get_string('grade'));
         $cell2 = new html_table_cell($status->gradefordisplay);
         $row->cells = array($cell1, $cell2);
         $t->data[] = $row;

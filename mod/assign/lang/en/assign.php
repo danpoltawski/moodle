@@ -33,14 +33,28 @@ $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Allow submissions from" date.';
 $string['assign:exportownsubmission'] = 'Export own submission';
 $string['assign:grade'] = 'Grade assignment';
+$string['assign:submit'] = 'Submit assignment';
+$string['assign:view'] = 'View assignment';
+$string['assignfeedback'] = 'Feedback plugin';
+$string['assignfeedbackpluginname'] = 'Feedback plugin';
 $string['assignmentisdue'] = 'Assignment is due';
+$string['assignmentmail'] = '{$a->grader} has posted some feedback on your
+assignment submission for \'{$a->assignment}\'
+
+You can see it appended to your assignment submission:
+
+    {$a->url}';
+$string['assignmentmailhtml'] = '{$a->grader} has posted some feedback on your
+assignment submission for \'<i>{$a->assignment}</i>\'<br /><br />
+You can see it appended to your <a href="{$a->url}">assignment submission</a>.';
+$string['assignmentmailsmall'] = '{$a->grader} has posted some feedback on your
+assignment submission for \'{$a->assignment}\' You can see it appended to your submission';
 $string['assignmentname'] = 'Assignment name';
 $string['assignmentplugins'] = 'Assignment plugins';
 $string['assignmentsperpage'] = 'Assignments per page';
-$string['assign:submit'] = 'Submit assignment';
-$string['assign:view'] = 'View assignment';
+$string['assignsubmission'] = 'Submission plugin';
+$string['assignsubmissionpluginname'] = 'Submission plugin';
 $string['availability'] = 'Availability';
-$string['back'] = 'Back';
 $string['backtoassignment'] = 'Back to assignment';
 $string['batchoperations'] = 'Batch operations';
 $string['batchoperationsdescription'] = 'Perform action on selected row(s)';
@@ -51,7 +65,6 @@ $string['batchoperationconfirmreverttodraft'] = 'Revert selected submissions to 
 $string['batchoperationlock'] = 'lock submissions';
 $string['batchoperationunlock'] = 'unlock submissions';
 $string['batchoperationreverttodraft'] = 'revert submissions to draft';
-$string['cancel'] = 'Cancel';
 $string['comment'] = 'Comment';
 $string['conversionexception'] = 'Could not convert assignment. Exception was: {$a}.';
 $string['configshowrecentsubmissions'] = 'Everyone can see notifications of submissions in recent activity reports.';
@@ -68,7 +81,6 @@ $string['deletepluginareyousure'] = 'Delete assignment plugin {$a}: are you sure
 $string['deletepluginareyousuremessage'] = 'You are about to completely delete the assignment plugin {$a}. This will completely delete everything in the database associated with this assignment plugin. Are you SURE you want to continue?';
 $string['deletingplugin'] = 'Deleting plugin {$a}.';
 $string['description'] = 'Description';
-$string['descriptionmaxfiles'] = 'You can upload up to {$a} file(s).';
 $string['downloadall'] = 'Download all submissions';
 $string['download all submissions'] = 'Download all submissions in a zip file.';
 $string['duedate'] = 'Due date';
@@ -89,18 +101,12 @@ for <i>\'{$a->assignment}\'  at {$a->timeupdated}</i><br /><br />
 It is <a href="{$a->url}">available on the web site</a>.';
 $string['enabled'] = 'Enabled';
 $string['errornosubmissions'] = 'There are no submissions to download';
-$string['feedbackcomments'] = 'Feedback Comments';
+$string['feedbackcomments'] = 'Feedback comments';
 $string['feedback'] = 'Feedback';
-$string['feedback'] = 'Feedback';
-$string['feedbackfiles'] = 'Feedback files';
-$string['assignfeedback'] = 'Feedback plugin';
-$string['assignsubmission'] = 'Submission plugin';
-$string['assignfeedbackpluginname'] = 'Feedback plugin';
 $string['feedbackplugins'] = 'Feedback plugins';
 $string['feedbackpluginforgradebook'] = 'Feedback plugin that will push comments to the gradebook';
 $string['feedbackplugin'] = 'Feedback plugin';
 $string['feedbacksettings'] = 'Feedback settings';
-$string['feedbacktextnumwords'] = 'Number of words in feedback text: {$a}. ';
 $string['filesubmissions'] = 'File submissions';
 $string['filter'] = 'Filter';
 $string['filternone'] = 'No filter';
@@ -109,7 +115,6 @@ $string['filtersubmitted'] = 'Submitted';
 $string['gradedby'] = 'Graded by';
 $string['graded'] = 'Graded';
 $string['gradedon'] = 'Graded on';
-$string['grade'] = 'Grade';
 $string['gradebelowzero'] = 'Grade must be greater than or equal to zero.';
 $string['gradeabovemaximum'] = 'Grade must be less than or equal to {$a}.';
 $string['gradeoutof'] = 'Grade out of {$a}';
@@ -132,22 +137,16 @@ $string['locksubmissionforstudent'] = 'Prevent any more submissions for student:
 $string['locksubmissions'] = 'Lock submissions';
 $string['manageassignfeedbackplugins'] = 'Manage assignment feedback plugins';
 $string['manageassignsubmissionplugins'] = 'Manage assignment submission plugins';
-$string['maximumsize'] = 'Max';
 $string['messageprovider:assign_updates'] = 'Assignment notifications';
-$string['minfilessubmission'] = 'Minimum number of uploaded files';
 $string['modulename'] = 'Assignment';
 $string['modulename_help'] = 'Assignments enable the teacher to specify a task either on or offline which can then be graded.';
 $string['modulenameplural'] = 'Assignments';
 $string['mysubmission'] = 'My submission: ';
 $string['newsubmissions'] = 'Assignments submitted';
-$string['nofeedbackfiles'] = 'No feedback files. ';
-$string['nofeedbacktext'] = 'No feedback text. ';
 $string['nofiles'] = 'No files. ';
 $string['nograde'] = 'No grade. ';
 $string['noonlinesubmissions'] = 'This assignment does not require you to submit anything online';
-$string['noonlinetext'] = 'No online text. ';
 $string['nosavebutnext'] = 'Next';
-$string['nosubmissioncomment'] = 'No submission comment. ';
 $string['nosubmission'] = 'Nothing has been submitted for this assignment';
 $string['notgraded'] = 'Not graded';
 $string['notgradedyet'] = 'Not graded yet';
@@ -174,22 +173,14 @@ $string['reverttodraft'] = 'Revert the submission to draft status.';
 $string['reverttodraftshort'] = 'Revert the submission to draft';
 $string['reviewed'] = 'Reviewed';
 $string['savechanges'] = 'Save changes';
-$string['savecomments'] = 'Save submission comments';
-$string['savefiles'] = 'Save files';
 $string['savenext'] = 'Save and show next';
-$string['saveonlinetext'] = 'Save changes';
 $string['sendnotifications'] = 'Send notifications to graders';
 $string['sendnotifications_help'] = 'If enabled, graders (usually teachers) receive a message whenever a student submits an assignment, early, on time and late. Message methods are configurable.';
 $string['selectlink'] = 'Select...';
 $string['settings'] = 'Assignment settings';
 $string['showrecentsubmissions'] = 'Show recent submissions';
-$string['submissioncommentnumwords'] = 'Number of words in submission comment: {$a}. ';
-$string['submissioncomments'] = 'Enable submission comments';
-$string['submissioncomment'] = 'Submission comments';
 $string['submissiondrafts'] = 'Require students click submit button';
 $string['submissiondrafts_help'] = 'If enabled, students will have to click a Submit button to declare their submission as final. This allows students to keep a draft version of the submission on the system.';
-$string['submissionfiles'] = 'Submission files';
-$string['assignsubmissionpluginname'] = 'Submission plugin';
 $string['submissionnotready'] = 'This assignment is not ready to submit:';
 $string['submissionplugins'] = 'Submission plugins';
 $string['submissionreceipts'] = 'Send submission receipts';
@@ -222,7 +213,6 @@ $string['unlocksubmissions'] = 'Unlock submissions';
 $string['updategrade'] = 'Update grade';
 $string['updatetable'] = 'Save and update table';
 $string['upgradenotimplemented'] = 'Upgrade not implemented in plugin ({$a->type} {$a->subtype})';
-$string['uploadfiles'] = 'Upload files';
 $string['viewfeedback'] = 'View feedback';
 $string['viewfeedbackforuser'] = 'View feedback for user: {$a}';
 $string['viewfullgradingpage'] = 'Open the full grading page to provide feedback';
@@ -234,16 +224,3 @@ $string['viewownsubmissionstatus'] = 'View own submission status page.';
 $string['viewsubmissionforuser'] = 'View submission for user: {$a}';
 $string['viewsubmission'] = 'View submission';
 $string['viewsubmissiongradingtable'] = 'View submission grading table.';
-
-
-$string['assignmentmail'] = '{$a->grader} has posted some feedback on your
-assignment submission for \'{$a->assignment}\'
-
-You can see it appended to your assignment submission:
-
-    {$a->url}';
-$string['assignmentmailhtml'] = '{$a->grader} has posted some feedback on your
-assignment submission for \'<i>{$a->assignment}</i>\'<br /><br />
-You can see it appended to your <a href="{$a->url}">assignment submission</a>.';
-$string['assignmentmailsmall'] = '{$a->grader} has posted some feedback on your
-assignment submission for \'{$a->assignment}\' You can see it appended to your submission';

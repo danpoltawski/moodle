@@ -23,7 +23,6 @@
  */
 
 $string['allowonlinetextsubmissions'] = 'Enabled';
-$string['back'] = 'Back';
 $string['enabled'] = 'Online text';
 $string['enabled_help'] = 'If enabled, students are able to type rich text directly into an editor field for their submission.';
 $string['nosubmission'] = 'Nothing has been submitted for this assignment';
