@@ -16,7 +16,7 @@
 
 /**
  * Script to show all the assignments that have not been upgraded
- * after the main upgrade. 
+ * after the main upgrade.
  *
  * @package    tool_assignmentupgrade
  * @copyright  2012 NetSpot

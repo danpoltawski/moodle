@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // This file is part of Moodle - http://moodle.org/
 //
@@ -48,7 +48,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
 
     /**
      * This table loads a list of the old assignment instances and tests them to see if they can be upgraded
-     * 
+     *
      * @global stdClass $CFG
      * @global moodle_page $PAGE
      * @param int $perpage How many per page
@@ -73,7 +73,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
         $from = '{assignment} a JOIN {course} c ON a.course = c.id ' .
                         ' LEFT JOIN {assignment_submissions} s ON a.id = s.assignment';
 
-    
+
         $where = '1 = 1';
         $where .= ' GROUP BY a.id, a.name, a.assignmenttype, c.shortname, c.id ';
 
@@ -97,7 +97,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
         $headers[] = get_string('assignmenttype', 'tool_assignmentupgrade');
         $columns[] = 'submissioncount';
         $headers[] = get_string('submissions', 'tool_assignmentupgrade');
-        
+
         // set the columns
         $this->define_columns($columns);
         $this->define_headers($headers);
@@ -107,7 +107,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
 
     /**
      * Return the number of rows to display on a single page
-     * 
+     *
      * @return int The number of rows per page
      */
     function get_rows_per_page() {
@@ -116,7 +116,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
 
     /**
      * Format a link to the assignment instance
-     * 
+     *
      * @global stdClass $CFG
      * @param stdClass $row
      * @return string
@@ -125,11 +125,11 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
         return html_writer::link(new moodle_url('/mod/assignment/view.php',
                 array('a' => $row->id)), $row->name);
     }
-    
+
 
     /**
      * Format a link to the upgrade single tool
-     * 
+     *
      * @param stdClass $row (contains cached result from previous upgradable check)
      * @return string
      */
@@ -141,10 +141,10 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
             return get_string('notsupported', 'tool_assignmentupgrade');
         }
     }
-    
+
     /**
      * Insert a checkbox for selecting the current row for batch operations
-     * 
+     *
      * @global stdClass $CFG
      * @param stdClass $row
      * @return string
@@ -154,16 +154,16 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
         $version = get_config('assignment_' . $row->type, 'version');
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
         if (assignment::can_upgrade_assignment($row->type, $version)) {
-            $row->upgradable = true; 
+            $row->upgradable = true;
             return '<input type="checkbox" name="selectedassignment" value="' . $row->id . '"/>';
         }
-        $row->upgradable = false; 
+        $row->upgradable = false;
         return '';
     }
 
     /**
      * Override the table show_hide_link to not show for select column
-     * 
+     *
      * @param string $column the column name, index into various names.
      * @param int $index numerical index of the column.
      * @return string HTML fragment.

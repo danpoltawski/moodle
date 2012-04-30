@@ -68,7 +68,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
         $output .= $this->footer();
         return $output;
     }
-    
+
     /**
      * Render the confirm batch operation page
      * @param stdClass $data Submitted form data with list of assignments to upgrade
@@ -85,7 +85,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
 
         $output .= $this->render(new tool_assignmentupgrade_batchoperationconfirm($data));
         $output .= $this->container_end();
-        
+
         $output .= $this->back_to_index();
         $output .= $this->footer();
         return $output;
@@ -128,7 +128,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
 
         $output .= $this->flexible_table($assignments, $assignments->get_rows_per_page(), true);
         $output .= $this->container_end();
-        
+
         if ($assignments->anyupgradableassignments) {
             $output .= $this->container_start('tool_assignmentupgrade_batchform');
             $output .= $this->moodleform($batchform);
@@ -139,7 +139,7 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
         $output .= $this->footer();
         return $output;
     }
-    
+
     /**
      * Render the result of an assignment conversion
      * $param array assignments - An array of arrays with keys $entry['assignmentsummary', 'success', 'log']
@@ -155,19 +155,19 @@ class tool_assignmentupgrade_renderer extends plugin_renderer_base {
             $assignmentsummary = $assignment['assignmentsummary'];
             $success = $assignment['success'];
             $log = $assignment['log'];
-        
+
             $output .= $this->heading(get_string('upgradeassignmentsummary', 'tool_assignmentupgrade', $assignmentsummary), 5);
             if ($success) {
                 $output .= $this->container(get_string('upgradeassignmentsuccess', 'tool_assignmentupgrade'));
-                
+
             } else {
                 $output .= $this->container(get_string('upgradeassignmentfailed', 'tool_assignmentupgrade', $assignment));
             }
             if (isset($assignmentsummary->courseid)) {
                 $output .= html_writer::link(new moodle_url('/course/view.php', array('id'=>$assignmentsummary->courseid)) ,get_string('viewcourse', 'tool_assignmentupgrade'));
             }
-            
-                
+
+
         }
 
         $output .= $this->continue_button(tool_assignmentupgrade_url('listnotupgraded'));

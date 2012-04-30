@@ -61,6 +61,6 @@ M.tool_assignmentupgrade = {
             }
         });
 
-        
+
     }
 }

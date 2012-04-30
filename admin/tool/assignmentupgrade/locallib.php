@@ -194,7 +194,7 @@ function tool_assignmentupgrade_upgrade_multiple_assignments($upgradeall, $assig
     if ($upgradeall) {
         $assignmentids = tool_assignmentupgrade_load_all_upgradable_assignmentids();
     }
-        
+
     $assignment_upgrader = new assignment_upgrade_manager();
     foreach ($assignmentids as $assignmentid) {
         $info = tool_assignmentupgrade_get_assignment($assignmentid);
