@@ -354,9 +354,12 @@ class assign_grading_table extends table_sql implements renderable {
         $o = '';
 
         if ($this->assignment->is_any_submission_plugin_enabled()) {
-
-            $o .= $this->output->container(get_string('submissionstatus_' . $row->status, 'assign'), array('class'=>'submissionstatus' .$row->status));
-
+                   
+            if (!$row->grade) {
+                $o .= $this->output->container(get_string('submissionstatus_' . $row->status, 'assign'), array('class'=>'submissionstatus' .$row->status));
+            }else{
+                $o .= $this->output->container(get_string('graded', 'assign'));
+            }
             if ($this->assignment->get_instance()->duedate && $row->timesubmitted > $this->assignment->get_instance()->duedate) {
                 $o .= $this->output->container(get_string('submittedlateshort', 'assign', format_time($row->timesubmitted - $this->assignment->get_instance()->duedate)), 'latesubmission');
             }
@@ -387,7 +390,11 @@ class assign_grading_table extends table_sql implements renderable {
         $url = new moodle_url('/mod/assign/view.php',
                                             array('id' => $this->assignment->get_course_module()->id,
                                                   'rownum'=>$this->rownum,'action'=>'grade'));
-        $description = get_string('grade');
+        if (!$row->grade) {
+           $description = get_string('grade');
+        }else{
+           $description = get_string('update','assign');
+        }
         $actions[$url->out(false)] = $description;
 
         if (!$row->status || $row->status == ASSIGN_SUBMISSION_STATUS_DRAFT || !$this->assignment->get_instance()->submissiondrafts) {

@@ -219,6 +219,7 @@ $string['timemodified'] = 'Last modified';
 $string['timeremaining'] = 'Time remaining';
 $string['unlocksubmissionforstudent'] = 'Allow submissions for student: (id={$a->id}, fullname={$a->fullname}).';
 $string['unlocksubmissions'] = 'Unlock submissions';
+$string['update'] = 'Update grade';
 $string['updatetable'] = 'Save and update table';
 $string['upgradenotimplemented'] = 'Upgrade not implemented in plugin ({$a->type} {$a->subtype})';
 $string['uploadfiles'] = 'Upload files';
