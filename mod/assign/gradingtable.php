@@ -355,16 +355,15 @@ class assign_grading_table extends table_sql implements renderable {
 
         if ($this->assignment->is_any_submission_plugin_enabled()) {
                    
-            if (!$row->grade) {
-                $o .= $this->output->container(get_string('submissionstatus_' . $row->status, 'assign'), array('class'=>'submissionstatus' .$row->status));
-            }else{
-                $o .= $this->output->container(get_string('graded', 'assign'));
-            }
+            $o .= $this->output->container(get_string('submissionstatus_' . $row->status, 'assign'), array('class'=>'submissionstatus' .$row->status));
             if ($this->assignment->get_instance()->duedate && $row->timesubmitted > $this->assignment->get_instance()->duedate) {
                 $o .= $this->output->container(get_string('submittedlateshort', 'assign', format_time($row->timesubmitted - $this->assignment->get_instance()->duedate)), 'latesubmission');
             }
             if ($row->locked) {
                 $o .= $this->output->container(get_string('submissionslockedshort', 'assign'), 'lockedsubmission');
+            }
+            if ($row->grade) {
+                $o .= $this->output->container(get_string('graded', 'assign'), 'submissiongraded');
             }
         }
 
@@ -393,7 +392,7 @@ class assign_grading_table extends table_sql implements renderable {
         if (!$row->grade) {
            $description = get_string('grade');
         }else{
-           $description = get_string('update','assign');
+           $description = get_string('updategrade','assign');
         }
         $actions[$url->out(false)] = $description;
 
