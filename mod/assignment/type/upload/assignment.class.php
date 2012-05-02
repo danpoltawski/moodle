@@ -419,11 +419,11 @@ class assignment_upload extends assignment_base {
             $query = " AND s.numfiles > 0";
         }
         return $DB->count_records_sql("SELECT COUNT('x')
-                                             FROM {assignment_submissions} s
-                                        LEFT JOIN {assignment} a ON a.id = s.assignment
-                                       INNER JOIN ($enroledsql) u ON u.id = s.userid
-                                            WHERE s.assignment = :assignmentid" .
-                                                  $query, $params);
+                                         FROM {assignment_submissions} s
+                                    LEFT JOIN {assignment} a ON a.id = s.assignment
+                                   INNER JOIN ($enroledsql) u ON u.id = s.userid
+                                        WHERE s.assignment = :assignmentid" .
+                                              $query, $params);
     }
 
     function print_responsefiles($userid, $return=false) {
