@@ -39,13 +39,13 @@ $ADMIN->add('assignfeedbackplugins', new assign_admin_page_manage_assign_plugins
 assign_plugin_manager::add_admin_assign_plugin_settings('assignsubmission', $ADMIN, $settings, $module);
 assign_plugin_manager::add_admin_assign_plugin_settings('assignfeedback', $ADMIN, $settings, $module);
 
-foreach (get_plugin_list('assignfeedback') as $type => $notused) {
-    $visible = !get_config('assignfeedback_' . $type, 'disabled');
-    if ($visible) {
-        $menu['assignfeedback_' . $type] = new lang_string('pluginname', 'assignfeedback_' . $type);
-    }
-}
 if ($ADMIN->fulltree) {
+    foreach (get_plugin_list('assignfeedback') as $type => $notused) {
+        $visible = !get_config('assignfeedback_' . $type, 'disabled');
+        if ($visible) {
+            $menu['assignfeedback_' . $type] = new lang_string('pluginname', 'assignfeedback_' . $type);
+        }
+    }
     $settings->add(new admin_setting_configselect('assign_feedback_plugin_for_gradebook',
                    new lang_string('feedbackpluginforgradebook', 'mod_assign'),
                    new lang_string('feedbackplugin', 'mod_assign'), 'feedback_comments', $menu));

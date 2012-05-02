@@ -26,8 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 /** Include adminlib.php */
 require_once($CFG->libdir . '/adminlib.php');
-/** Include tablelib.php */
-require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * Admin external page that displays a list of the installed submission plugins.
@@ -160,6 +158,9 @@ class assign_plugin_manager {
      */
     private function view_plugins_table() {
         global $OUTPUT, $CFG;
+        /** Include tablelib.php */
+        require_once($CFG->libdir . '/tablelib.php');
+
         // Set up the table.
         $this->view_header();
         $table = new flexible_table($this->subtype . 'pluginsadminttable');
@@ -175,6 +176,7 @@ class assign_plugin_manager {
 
 
         $plugins = $this->get_sorted_plugins_list();
+        $shortsubtype = substr($this->subtype, strlen('assign'));
 
         foreach ($plugins as $idx => $plugin) {
             $row = array();
@@ -206,7 +208,7 @@ class assign_plugin_manager {
             } else {
                 $row[] = '&nbsp;';
             }
-            if ($row[1] != '' && file_exists($CFG->dirroot . '/mod/assign/' . $this->subtype . '/' . $plugin . '/settings.php')) {
+            if ($row[1] != '' && file_exists($CFG->dirroot . '/mod/assign/' . $shortsubtype . '/' . $plugin . '/settings.php')) {
                 $row[] = html_writer::link(new moodle_url('/admin/settings.php',
                         array('section' => $this->subtype . '_' . $plugin)), get_string('settings'));
             } else {
@@ -461,13 +463,11 @@ class assign_plugin_manager {
         // We need to reset settings after the loop
         $tempsettings = $settings;
         foreach ($pluginsbyname as $pluginname => $plugin) {
-            $pluginname = $plugin;
-
-            $settings = new admin_settingpage($subtype . '_'.$pluginname,
+            $settings = new admin_settingpage($subtype . '_'.$plugin,
                     $pluginname, 'moodle/site:config', !$module->visible);
             if ($admin->fulltree) {
                 $shortsubtype = substr($subtype, strlen('assign'));
-                include($CFG->dirroot . "/mod/assign/$shortsubtype/$pluginname/settings.php");
+                include($CFG->dirroot . "/mod/assign/$shortsubtype/$plugin/settings.php");
             }
 
             $admin->add($subtype . 'plugins', $settings);
