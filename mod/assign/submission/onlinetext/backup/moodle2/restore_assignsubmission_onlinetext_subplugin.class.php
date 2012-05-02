@@ -61,7 +61,7 @@ class restore_assignsubmission_onlinetext_subplugin extends restore_subplugin {
         // the mapping is set in the restore for the core assign activity. When a submission node is processed
         $data->submission = $this->get_mappingid('submission', $data->submission);
 
-        $DB->insert_record('assign_submission_onlinetext', $data);
+        $DB->insert_record('assignsubmission_onlinetext_submission', $data);
 
         $this->add_related_files('assignsubmission_onlinetext', 'submissions_onlinetext', 'submission', null, $oldsubmissionid);
     }

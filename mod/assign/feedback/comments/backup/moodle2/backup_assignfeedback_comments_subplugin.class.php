@@ -51,7 +51,7 @@ class backup_assignfeedback_comments_subplugin extends backup_subplugin {
         $subpluginwrapper->add_child($subpluginelement);
 
         // set source to populate the data
-        $subpluginelement->set_source_table('assign_feedback_comments', array('grade' => backup::VAR_PARENTID));
+        $subpluginelement->set_source_table('assignfeedback_comments_feedback', array('grade' => backup::VAR_PARENTID));
 
         return $subplugin;
     }

@@ -56,7 +56,7 @@ class assignment_feedback_file extends assignment_feedback_plugin {
      */
     public function get_file_feedback($gradeid) {
         global $DB;
-        return $DB->get_record('assign_feedback_file', array('grade'=>$gradeid));
+        return $DB->get_record('assignfeedback_file_feedback', array('grade'=>$gradeid));
     }
 
     /**
@@ -130,13 +130,13 @@ class assignment_feedback_file extends assignment_feedback_plugin {
         $filefeedback = $this->get_file_feedback($grade->id);
         if ($filefeedback) {
             $filefeedback->numfiles = $this->count_files($grade->id, ASSIGN_FILEAREA_FEEDBACK_FILES);
-            return $DB->update_record('assign_feedback_file', $filefeedback);
+            return $DB->update_record('assignfeedback_file_feedback', $filefeedback);
         } else {
             $filefeedback = new stdClass();
             $filefeedback->numfiles = $this->count_files($grade->id, ASSIGN_FILEAREA_FEEDBACK_FILES);
             $filefeedback->grade = $grade->id;
             $filefeedback->assignment = $this->assignment->get_instance()->id;
-            return $DB->insert_record('assign_feedback_file', $filefeedback) > 0;
+            return $DB->insert_record('assignfeedback_file_feedback', $filefeedback) > 0;
         }
     }
 
@@ -176,7 +176,7 @@ class assignment_feedback_file extends assignment_feedback_plugin {
     public function delete_instance() {
         global $DB;
         // will throw exception on failure
-        $DB->delete_records('assign_feedback_file', array('assignment'=>$this->assignment->get_instance()->id));
+        $DB->delete_records('assignfeedback_file_feedback', array('assignment'=>$this->assignment->get_instance()->id));
 
         return true;
     }

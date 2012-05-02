@@ -60,7 +60,7 @@ class assignment_submission_file extends assignment_submission_plugin {
      */
     private function get_file_submission($submissionid) {
         global $DB;
-        return $DB->get_record('assign_submission_file', array('submission'=>$submissionid));
+        return $DB->get_record('assignsubmission_file_submission', array('submission'=>$submissionid));
     }
 
     /**
@@ -208,13 +208,13 @@ class assignment_submission_file extends assignment_submission_plugin {
 
         if ($filesubmission) {
             $filesubmission->numfiles = $this->count_files($submission->id, ASSIGN_FILEAREA_SUBMISSION_FILES);
-            return $DB->update_record('assign_submission_file', $filesubmission);
+            return $DB->update_record('assignsubmission_file_submission', $filesubmission);
         } else {
             $filesubmission = new stdClass();
             $filesubmission->numfiles = $this->count_files($submission->id, ASSIGN_FILEAREA_SUBMISSION_FILES);
             $filesubmission->submission = $submission->id;
             $filesubmission->assignment = $this->assignment->get_instance()->id;
-            return $DB->insert_record('assign_submission_file', $filesubmission) > 0;
+            return $DB->insert_record('assignsubmission_file_submission', $filesubmission) > 0;
         }
     }
 
@@ -331,7 +331,7 @@ class assignment_submission_file extends assignment_submission_plugin {
         $filesubmission->submission = $submission->id;
         $filesubmission->assignment = $this->assignment->get_instance()->id;
 
-        if (!$DB->insert_record('assign_submission_file', $filesubmission) > 0) {
+        if (!$DB->insert_record('assignsubmission_file_submission', $filesubmission) > 0) {
             $log .= get_string('couldnotconvertsubmission', 'mod_assign', $submission->userid);
             return false;
         }
@@ -365,7 +365,7 @@ class assignment_submission_file extends assignment_submission_plugin {
     public function delete_instance() {
         global $DB;
         // will throw exception on failure
-        $DB->delete_records('assign_submission_file', array('assignment'=>$this->assignment->get_instance()->id));
+        $DB->delete_records('assignsubmission_file_submission', array('assignment'=>$this->assignment->get_instance()->id));
 
         return true;
     }

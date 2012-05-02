@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * restore subplugin class that provides the necessary information needed to restore one assign_feedback subplugin.
+ * restore subplugin class that provides the necessary information needed to restore one assignfeedback subplugin.
  *
  * @package   assignfeedback_comments
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -61,6 +61,6 @@ class restore_assignfeedback_comments_subplugin extends restore_subplugin {
         // the mapping is set in the restore for the core assign activity. When a grade node is processed
         $data->grade = $this->get_mappingid('grade', $data->grade);
 
-        $DB->insert_record('assign_feedback_comments', $data);
+        $DB->insert_record('assignfeedback_comments_feedback', $data);
     }
 }
