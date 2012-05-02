@@ -65,6 +65,7 @@ class mod_assign_grade_form extends moodleform {
      * @param array $files
      */
     function validation($data, $files) {
+        global $DB;
         $errors = parent::validation($data, $files);
         // advanced grading
         if (!array_key_exists('grade', $data)) {

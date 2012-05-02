@@ -1083,7 +1083,7 @@ class assign {
      * @return string
      */
     private function view_plugin_content($pluginsubtype) {
-        global $CFG, $USER;
+        global $USER;
 
         $o = '';
 
@@ -1609,6 +1609,7 @@ class assign {
      * @return void
      */
     private function plagiarism_print_disclosure() {
+        global $CFG;
         $o = '';
 
         if (!empty($CFG->enableplagiarism)) {
@@ -2891,7 +2892,7 @@ class assign {
             $gradebookgrade = clone $result;
             // now get the feedback
             if ($gradebookplugin) {
-                $grade = $this->get_user_grade($grade->userid, false);
+                $grade = $this->get_user_grade($result->userid, false);
                 $gradebookgrade->feedbacktext = $gradebookplugin->text_for_gradebook($grade);
                 $gradebookgrade->feedbackformat = $gradebookplugin->format_for_gradebook($grade);
             }

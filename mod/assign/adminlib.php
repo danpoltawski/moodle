@@ -264,7 +264,7 @@ class assign_plugin_manager {
      * @return string the name of the next page to display
      */
     public function delete_plugin($plugin) {
-        global $CFG, $DB;
+        global $CFG, $DB, $OUTPUT;
         $confirm = optional_param('confirm', null, PARAM_BOOL);
 
         if ($confirm) {

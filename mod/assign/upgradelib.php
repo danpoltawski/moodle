@@ -317,7 +317,7 @@ class assign_upgrade_manager {
      * @return bool
      */
     private function delete_course_module($cm) {
-        global $CFG, $USER, $DB;
+        global $CFG, $USER, $DB, $OUTPUT;
         $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
         $coursecontext = context_course::instance($course->id);
