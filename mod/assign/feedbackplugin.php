@@ -29,13 +29,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mod/assign/assignmentplugin.php');
 
 /**
- * Abstract class for feedback_plugin inherited from assignment_plugin abstract class.
+ * Abstract class for feedback_plugin inherited from assign_plugin abstract class.
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class assignment_feedback_plugin extends assignment_plugin {
+abstract class assign_feedback_plugin extends assign_plugin {
 
     /**
      * return subtype name of the plugin

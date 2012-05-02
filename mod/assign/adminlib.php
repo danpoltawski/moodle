@@ -36,7 +36,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class admin_page_manage_assignment_plugins extends admin_externalpage {
+class assign_admin_page_manage_assign_plugins extends admin_externalpage {
 
     /** @var string the name of plugin subtype */
     private $subtype = '';
@@ -92,7 +92,7 @@ class admin_page_manage_assignment_plugins extends admin_externalpage {
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_plugin_manager {
+class assign_plugin_manager {
 
     /** @var object the url of the manage submission plugin page */
     private $pageurl;
@@ -447,7 +447,7 @@ class assignment_plugin_manager {
      * @param stdClass $module - The handle to the current module
      * @return None
      */
-    static function add_admin_assignment_plugin_settings($subtype, part_of_admin_tree $admin, admin_settingpage $settings, stdClass $module) {
+    static function add_admin_assign_plugin_settings($subtype, part_of_admin_tree $admin, admin_settingpage $settings, stdClass $module) {
         global $CFG;
 
         $plugins = get_plugin_list_with_file($subtype, 'settings.php', false);

@@ -37,7 +37,7 @@ require_once($CFG->libdir.'/accesslib.php');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_upgrade_manager {
+class assign_upgrade_manager {
 
     /**
      * This function converts all of the base settings for an instance of
@@ -83,7 +83,7 @@ class assignment_upgrade_manager {
         $data->submissiondrafts = $oldassignment->resubmit;
         $data->preventlatesubmissions = $oldassignment->preventlate;
 
-        $newassignment = new assignment(null, null, null);
+        $newassignment = new assign(null, null, null);
 
         if (!$newassignment->add_instance($data, false)) {
             $log = get_string('couldnotcreatenewassignmentinstance', 'mod_assign');
@@ -367,7 +367,7 @@ class assignment_upgrade_manager {
      * This function copies the grades from the old assignment module to this one.
      *
      * @param stdClass $oldassignment old assignment data record
-     * @param assignment $newassignment the new assignment class
+     * @param assign $newassignment the new assign class
      * @return bool true or false
      */
     public function copy_grades_for_upgrade($oldassignment, $newassignment) {

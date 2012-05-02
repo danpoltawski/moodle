@@ -65,7 +65,7 @@ class mod_assign_mod_form extends moodleform_mod {
             $cm = get_coursemodule_from_instance('assign', $this->current->id, 0, false, MUST_EXIST);
             $ctx = context_module::instance($cm->id);
         }
-        $assignment = new assignment($ctx, null, null);
+        $assignment = new assign($ctx, null, null);
         if ($this->current && $this->current->course) {
             if (!$ctx) {
                 $ctx = context_course::instance($this->current->course);
@@ -136,7 +136,7 @@ class mod_assign_mod_form extends moodleform_mod {
             $cm = get_coursemodule_from_instance('assign', $this->current->id, 0, false, MUST_EXIST);
             $ctx = context_module::instance($cm->id);
         }
-        $assignment = new assignment($ctx, null, null);
+        $assignment = new assign($ctx, null, null);
         if ($this->current && $this->current->course) {
             if (!$ctx) {
                 $ctx = context_course::instance($this->current->course);

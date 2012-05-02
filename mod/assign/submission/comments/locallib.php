@@ -36,7 +36,7 @@
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_submission_comments extends assignment_submission_plugin {
+class assign_submission_comments extends assign_submission_plugin {
 
    /**
     * get the name of the online comment submission plugin

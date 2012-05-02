@@ -37,7 +37,7 @@ define('ASSIGN_FILEAREA_SUBMISSION_ONLINETEXT', 'submissions_onlinetext');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_submission_onlinetext extends assignment_submission_plugin {
+class assign_submission_onlinetext extends assign_submission_plugin {
 
     /**
      * Get the name of the online text submission plugin

@@ -42,7 +42,7 @@ define('ASSIGN_FILEAREA_SUBMISSION_FILES', 'submission_files');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_submission_file extends assignment_submission_plugin {
+class assign_submission_file extends assign_submission_plugin {
 
     /**
      * Get the name of the file submission plugin

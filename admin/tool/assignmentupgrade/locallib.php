@@ -127,7 +127,7 @@ function tool_assignmentupgrade_any_upgradable_assignments() {
 
     foreach ($types as $assignment) {
         $shorttype = substr($assignment->assignmenttype, strlen('assignment_'));
-        if (assignment::can_upgrade_assignment($shorttype, $assignment->version)) {
+        if (assign::can_upgrade_assignment($shorttype, $assignment->version)) {
             $upgradabletypes[] = $shorttype;
         }
     }
@@ -157,7 +157,7 @@ function tool_assignmentupgrade_load_all_upgradable_assignmentids() {
 
     foreach ($types as $assignment) {
         $shorttype = substr($assignment->assignmenttype, strlen('assignment_'));
-        if (assignment::can_upgrade_assignment($shorttype, $assignment->version)) {
+        if (assign::can_upgrade_assignment($shorttype, $assignment->version)) {
             $upgradabletypes[] = $shorttype;
         }
     }
@@ -196,7 +196,7 @@ function tool_assignmentupgrade_upgrade_multiple_assignments($upgradeall, $assig
         $assignmentids = tool_assignmentupgrade_load_all_upgradable_assignmentids();
     }
 
-    $assignment_upgrader = new assignment_upgrade_manager();
+    $assignment_upgrader = new assign_upgrade_manager();
     foreach ($assignmentids as $assignmentid) {
         $info = tool_assignmentupgrade_get_assignment($assignmentid);
         if ($info) {
@@ -225,7 +225,7 @@ function tool_assignmentupgrade_upgrade_assignment($assignmentinfo, &$log) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
     require_once($CFG->dirroot . '/mod/assign/upgradelib.php');
-    $assignment_upgrader = new assignment_upgrade_manager();
+    $assignment_upgrader = new assign_upgrade_manager();
     return $assignment_upgrader->upgrade_assignment($assignmentinfo->id, $log);
 }
 

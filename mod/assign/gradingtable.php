@@ -36,7 +36,7 @@ require_once($CFG->dirroot.'/mod/assign/locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_grading_table extends table_sql implements renderable {
-    /** @var assignment $assignment */
+    /** @var assign $assignment */
     private $assignment = null;
     /** @var int $perpage */
     private $perpage = 10;
@@ -52,12 +52,12 @@ class assign_grading_table extends table_sql implements renderable {
     /**
      * overridden constructor keeps a reference to the assignment class that is displaying this table
      *
-     * @param assignment $assignment The assignment class
+     * @param assign $assignment The assignment class
      * @param int $perpage how many per page
      * @param string $filter The current filter
      * @param int $rowoffset For showing a subsequent page of results
      */
-    function __construct(assignment $assignment, $perpage, $filter, $rowoffset=0) {
+    function __construct(assign $assignment, $perpage, $filter, $rowoffset=0) {
         global $CFG, $PAGE;
         parent::__construct('mod_assign_grading');
         $this->assignment = $assignment;
@@ -459,13 +459,13 @@ class assign_grading_table extends table_sql implements renderable {
     /**
      * Write the plugin summary with an optional link to view the full feedback/submission.
      *
-     * @param assignment_plugin $plugin Submission plugin or feedback plugin
+     * @param assign_plugin $plugin Submission plugin or feedback plugin
      * @param stdClass $item Submission or grade
      * @param string $returnaction The return action to pass to the view_submission page (the current page)
      * @param string $returnparams The return params to pass to the view_submission page (the current page)
      * @return string The summary with an optional link
      */
-    private function format_plugin_summary_with_link(assignment_plugin $plugin, stdClass $item, $returnaction, $returnparams) {
+    private function format_plugin_summary_with_link(assign_plugin $plugin, stdClass $item, $returnaction, $returnparams) {
         $link = '';
         $showviewlink = false;
         $summary = $plugin->view_summary($item, $showviewlink);

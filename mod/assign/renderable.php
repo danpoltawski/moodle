@@ -111,7 +111,7 @@ class assign_feedback_plugin_feedback implements renderable {
     /** @var int FULL */
     const FULL                   = 20;
 
-    /** @var assignment_submission_plugin $plugin */
+    /** @var assign_submission_plugin $plugin */
     var $plugin = null;
     /** @var stdClass $grade */
     var $grade = null;
@@ -127,14 +127,14 @@ class assign_feedback_plugin_feedback implements renderable {
     /**
      * feedback for a single plugin
      *
-     * @param assignment_feedback_plugin $plugin
+     * @param assign_feedback_plugin $plugin
      * @param stdClass $grade
      * @param string $view one of feedback_plugin::SUMMARY or feedback_plugin::FULL
      * @param int $coursemoduleid
      * @param string $returnaction The action required to return to this page
      * @param array $returnparams The params required to return to this page
      */
-    public function __construct(assignment_feedback_plugin $plugin, stdClass $grade, $view, $coursemoduleid, $returnaction, $returnparams) {
+    public function __construct(assign_feedback_plugin $plugin, stdClass $grade, $view, $coursemoduleid, $returnaction, $returnparams) {
         $this->plugin = $plugin;
         $this->grade = $grade;
         $this->view = $view;
@@ -157,7 +157,7 @@ class assign_submission_plugin_submission implements renderable {
     /** @var int FULL */
     const FULL                   = 20;
 
-    /** @var assignment_submission_plugin $plugin */
+    /** @var assign_submission_plugin $plugin */
     var $plugin = null;
     /** @var stdClass $submission */
     var $submission = null;
@@ -174,14 +174,14 @@ class assign_submission_plugin_submission implements renderable {
 
     /**
      * Constructor
-     * @param assignment_submission_plugin $plugin
+     * @param assign_submission_plugin $plugin
      * @param stdClass $submission
      * @param string $view one of submission_plugin::SUMMARY, submission_plugin::FULL
      * @param int $coursemoduleid - the course module id
      * @param string $returnaction The action to return to the current page
      * @param array $returnparams The params to return to the current page
      */
-    public function __construct(assignment_submission_plugin $plugin, stdClass $submission, $view, $coursemoduleid, $returnaction, $returnparams) {
+    public function __construct(assign_submission_plugin $plugin, stdClass $submission, $view, $coursemoduleid, $returnaction, $returnparams) {
         $this->plugin = $plugin;
         $this->submission = $submission;
         $this->view = $view;
@@ -458,7 +458,7 @@ class assign_files implements renderable {
             require_once($CFG->libdir . '/plagiarismlib.php');
 
             // for plagiarism_get_links
-            $assignment = new assignment($this->context, null, null);
+            $assignment = new assign($this->context, null, null);
             foreach ($files as $file) {
 
                $output .= plagiarism_get_links(array('userid' => $sid,

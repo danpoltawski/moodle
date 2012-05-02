@@ -78,7 +78,7 @@ require_once($CFG->libdir.'/eventslib.php');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment {
+class assign {
 
 
     /** @var stdClass the assignment record that contains the global settings for this assign instance */
@@ -224,7 +224,7 @@ class assignment {
      * get a specific submission plugin by its type
      * @param string $subtype assignsubmission | assignfeedback
      * @param string $type
-     * @return mixed assignment_plugin|null
+     * @return mixed assign_plugin|null
      */
     private function get_plugin_by_type($subtype, $type) {
         $shortsubtype = substr($subtype, strlen('assign'));
@@ -241,7 +241,7 @@ class assignment {
     /**
      * Get a feedback plugin by type
      * @param string $type - The type of plugin e.g comments
-     * @return mixed assignment_feedback_plugin|null
+     * @return mixed assign_feedback_plugin|null
      */
     public function get_feedback_plugin_by_type($type) {
         return $this->get_plugin_by_type('assignfeedback', $type);
@@ -250,7 +250,7 @@ class assignment {
     /**
      * Get a submission plugin by type
      * @param string $type - The type of plugin e.g comments
-     * @return mixed assignment_submission_plugin|null
+     * @return mixed assign_submission_plugin|null
      */
     public function get_submission_plugin_by_type($type) {
         return $this->get_plugin_by_type('assignsubmission', $type);
@@ -272,11 +272,11 @@ class assignment {
                 require_once($path . '/locallib.php');
 
                 $shortsubtype = substr($subtype, strlen('assign'));
-                $pluginclass = 'assignment_' . $shortsubtype . '_' . $name;
+                $pluginclass = 'assign_' . $shortsubtype . '_' . $name;
 
                 $plugin = new $pluginclass($this, $name);
 
-                if ($plugin instanceof assignment_plugin) {
+                if ($plugin instanceof assign_plugin) {
                     $idx = $plugin->get_sort_order();
                     while (array_key_exists($idx, $result)) $idx +=1;
                     $result[$idx] = $plugin;
@@ -317,7 +317,7 @@ class assignment {
             $this->process_unlock();
             $action = 'grading';
          } else if ($action == 'confirmsubmit') {
-            $this->process_submit_assignment_for_grading();
+            $this->process_submit_for_grading();
             // save and show next button
          } else if ($action == 'batchgradingoperation') {
             $this->process_batch_grading_operation();
@@ -507,11 +507,11 @@ class assignment {
     /**
      * Update the settings for a single plugin
      *
-     * @param assignment_plugin $plugin The plugin to update
+     * @param assign_plugin $plugin The plugin to update
      * @param stdClass $formdata The form data
      * @return bool false if an error occurs
      */
-    private function update_plugin_instance(assignment_plugin $plugin, stdClass $formdata) {
+    private function update_plugin_instance(assign_plugin $plugin, stdClass $formdata) {
         if ($plugin->is_visible()) {
             $enabledname = $plugin->get_subtype() . '_' . $plugin->get_type() . '_enabled';
             if ($formdata->$enabledname) {
@@ -682,11 +682,11 @@ class assignment {
     /**
      * Add one plugins settings to edit plugin form
      *
-     * @param assignment_plugin $plugin The plugin to add the settings from
+     * @param assign_plugin $plugin The plugin to add the settings from
      * @param MoodleQuickForm $mform The form to add the configuration settings to. This form is modified directly (not returned)
      * @return void
      */
-    private function add_plugin_settings(assignment_plugin $plugin, MoodleQuickForm $mform) {
+    private function add_plugin_settings(assign_plugin $plugin, MoodleQuickForm $mform) {
         global $CFG;
         if ($plugin->is_visible()) {
             // enabled
@@ -2218,7 +2218,7 @@ class assignment {
      *
      * @return void
      */
-    private function process_submit_assignment_for_grading() {
+    private function process_submit_for_grading() {
         global $USER;
 
         // Need submit permission to submit an assignment
@@ -2782,7 +2782,7 @@ class assignment {
      * @return bool
      */
     public static function can_upgrade_assignment($type, $version) {
-        $assignment = new assignment(null, null, null);
+        $assignment = new assign(null, null, null);
         return $assignment->can_upgrade($type, $version);
     }
 

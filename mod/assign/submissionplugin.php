@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/mod/assign/assignmentplugin.php');
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class assignment_submission_plugin extends assignment_plugin {
+abstract class assign_submission_plugin extends assign_plugin {
 
     /**
      * return subtype name of the plugin

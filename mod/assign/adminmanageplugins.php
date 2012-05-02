@@ -28,7 +28,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot.'/mod/assign/adminlib.php');
 
 // create the class for this controller
-$pluginmanager = new assignment_plugin_manager(required_param('subtype', PARAM_PLUGIN));
+$pluginmanager = new assign_plugin_manager(required_param('subtype', PARAM_PLUGIN));
 
 $PAGE->set_context(get_system_context());
 

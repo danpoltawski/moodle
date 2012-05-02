@@ -30,14 +30,14 @@ $ADMIN->add('modules', new admin_category('assignmentplugins',
                 new lang_string('assignmentplugins', 'assign'), !$module->visible));
 $ADMIN->add('assignmentplugins', new admin_category('assignsubmissionplugins',
                 new lang_string('submissionplugins', 'assign'), !$module->visible));
-$ADMIN->add('assignsubmissionplugins', new admin_page_manage_assignment_plugins('assignsubmission'));
+$ADMIN->add('assignsubmissionplugins', new assign_admin_page_manage_assign_plugins('assignsubmission'));
 $ADMIN->add('assignmentplugins', new admin_category('assignfeedbackplugins',
                 new lang_string('feedbackplugins', 'assign'), !$module->visible));
-$ADMIN->add('assignfeedbackplugins', new admin_page_manage_assignment_plugins('assignfeedback'));
+$ADMIN->add('assignfeedbackplugins', new assign_admin_page_manage_assign_plugins('assignfeedback'));
 
 
-assignment_plugin_manager::add_admin_assignment_plugin_settings('assignsubmission', $ADMIN, $settings, $module);
-assignment_plugin_manager::add_admin_assignment_plugin_settings('assignfeedback', $ADMIN, $settings, $module);
+assign_plugin_manager::add_admin_assign_plugin_settings('assignsubmission', $ADMIN, $settings, $module);
+assign_plugin_manager::add_admin_assign_plugin_settings('assignfeedback', $ADMIN, $settings, $module);
 
 foreach (get_plugin_list('assignfeedback') as $type => $notused) {
     $visible = !get_config('assignfeedback_' . $type, 'disabled');

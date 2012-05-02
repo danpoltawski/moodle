@@ -39,7 +39,7 @@ function xmldb_assignfeedback_file_install() {
 
     require_once($CFG->dirroot . '/mod/assign/adminlib.php');
     // set the correct initial order for the plugins
-    $pluginmanager = new assignment_plugin_manager('assignfeedback');
+    $pluginmanager = new assign_plugin_manager('assignfeedback');
 
     $pluginmanager->move_plugin('file', 'down');
 

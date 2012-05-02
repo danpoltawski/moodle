@@ -198,7 +198,7 @@ class assign_portfolio_caller extends portfolio_module_caller_base {
     /**
      * fetch the plugin by its type
      *
-     * @return assignment_submission_plugin
+     * @return assign_submission_plugin
      */
     private function get_submission_plugin() {
         global $CFG;
@@ -210,7 +210,7 @@ class assign_portfolio_caller extends portfolio_module_caller_base {
 
         $context = context_module::instance($this->cmid);
 
-        $assignment = new assignment($context, null, null);
+        $assignment = new assign($context, null, null);
         return $assignment->get_submission_plugin_by_type($this->plugin);
     }
 

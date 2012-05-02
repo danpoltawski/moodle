@@ -148,7 +148,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
         global $CFG;
         $version = get_config('assignment_' . $row->type, 'version');
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        if (assignment::can_upgrade_assignment($row->type, $version)) {
+        if (assign::can_upgrade_assignment($row->type, $version)) {
             $row->upgradable = true;
             return '<input type="checkbox" name="selectedassignment" value="' . $row->id . '"/>';
         }

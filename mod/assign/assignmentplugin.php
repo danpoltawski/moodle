@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the functions for assignment_plugin abstract class
+ * This file contains the functions for assign_plugin abstract class
  *
  *
  * @package   mod_assign
@@ -26,29 +26,29 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Abstract class for assignment_plugin (submission/feedback).
+ * Abstract class for assign_plugin (submission/feedback).
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class assignment_plugin {
+abstract class assign_plugin {
 
-    /** @var assignment the assignment record that contains the global settings for this assign instance */
+    /** @var assign $assignment the assignment record that contains the global settings for this assign instance */
     protected $assignment;
-    /** @var string assignment plugin type */
+    /** @var string $type assignment plugin type */
     private $type = '';
-    /** @var string error message */
+    /** @var string $error error message */
     private $error = '';
 
 
     /**
      * Constructor for the abstract plugin type class
      *
-     * @param assignment $assignment
+     * @param assign $assignment
      * @param string $type
      */
-    public final function __construct(assignment $assignment, $type) {
+    public final function __construct(assign $assignment, $type) {
         $this->assignment = $assignment;
         $this->type = $type;
     }
@@ -184,7 +184,7 @@ abstract class assignment_plugin {
     /**
      * Save any custom data for this form submission
      *
-     * @param stdClass $submissionorgrade - assignment_submission or assignment_grade
+     * @param stdClass $submissionorgrade - assign_submission or assign_grade
      *              For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param stdClass $data - the data submitted from the form
      * @return bool - on error the subtype should call set_error and return false.
@@ -235,7 +235,7 @@ abstract class assignment_plugin {
     /**
      * Should not output anything - return the result as a string so it can be consumed by webservices.
      *
-     * @param stdClass $submissionorgrade assignment_submission or assignment_grade 
+     * @param stdClass $submissionorgrade assign_submission or assign_grade 
      *                 For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @return string - return a string representation of the submission in full
      */
@@ -339,7 +339,7 @@ abstract class assignment_plugin {
     /**
      * Should not output anything - return the result as a string so it can be consumed by webservices.
      *
-     * @param stdClass $submissionorgrade assignment_submission or assignment_grade 
+     * @param stdClass $submissionorgrade assign_submission or assign_grade 
      *                 For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @param bool $showviewlink Modifed to return whether or not to show a link to the full submission/feedback
      * @return string - return a string representation of the submission in full
@@ -363,7 +363,7 @@ abstract class assignment_plugin {
     /**
      * Produce a list of files suitable for export that represent this feedback or submission
      *
-     * @param stdClass $submissionorgrade assignment_submission or assignment_grade 
+     * @param stdClass $submissionorgrade assign_submission or assign_grade 
      *                 For submission plugins this is the submission data, for feedback plugins it is the grade data
      * @return array - return an array of files indexed by filename
      */
@@ -414,7 +414,7 @@ abstract class assignment_plugin {
      * @param context $oldcontext The data record for the old context
      * @param stdClass $oldassignment The data record for the old assignment
      * @param stdClass $oldsubmissionorgrade The data record for the old submission
-     * @param stdClass $submissionorgrade assignment_submission or assignment_grade The new submission or grade
+     * @param stdClass $submissionorgrade assign_submission or assign_grade The new submission or grade
      * @param string $log Record upgrade messages in the log
      * @return boolean true or false - false will trigger a rollback
      */
@@ -426,7 +426,7 @@ abstract class assignment_plugin {
     /**
      * Formatting for log info
      * 
-     * @param stdClass $submissionorgrade assignment_submission or assignment_grade The new submission or grade
+     * @param stdClass $submissionorgrade assign_submission or assign_grade The new submission or grade
      * @return string
      */
     public function format_for_log(stdClass $submissionorgrade) {
@@ -451,7 +451,7 @@ abstract class assignment_plugin {
 
     /**
      * Is this assignment plugin empty? (ie no submission or feedback)
-     * @param stdClass $submissionorgrade assignment_submission or assignment_grade
+     * @param stdClass $submissionorgrade assign_submission or assign_grade
      * @return bool
      */
     public function is_empty(stdClass $submissionorgrade) {

@@ -35,7 +35,7 @@ function assign_add_instance(stdClass $data, mod_assign_mod_form $form) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
-    $assignment = new assignment(context_module::instance($data->coursemodule), null, null);
+    $assignment = new assign(context_module::instance($data->coursemodule), null, null);
     return $assignment->add_instance($data, true);
 }
 
@@ -50,7 +50,7 @@ function assign_delete_instance($id) {
     $cm = get_coursemodule_from_instance('assign', $id, 0, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
 
-    $assignment = new assignment($context, null, null);
+    $assignment = new assign($context, null, null);
     return $assignment->delete_instance();
 }
 
@@ -66,7 +66,7 @@ function assign_update_instance(stdClass $data, mod_assign_mod_form $form) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
     $context = context_module::instance($data->coursemodule);
-    $assignment = new assignment($context, null, null);
+    $assignment = new assign($context, null, null);
     return $assignment->update_instance($data);
 }
 
@@ -677,7 +677,7 @@ function assign_cron() {
     foreach ($plugins as $name => $plugin) {
         $disabled = get_config('assignsubmission_' . $name, 'disabled');
         if (!$disabled) {
-            $class = 'assignment_submission_' . $name;
+            $class = 'assign_submission_' . $name;
             require_once($CFG->dirroot . '/mod/assign/submission/' . $name . '/locallib.php');
             $class::cron();
         }
@@ -687,7 +687,7 @@ function assign_cron() {
     foreach ($plugins as $name => $plugin) {
         $disabled = get_config('assignfeedback_' . $name, 'disabled');
         if (!$disabled) {
-            $class = 'assignment_feedback_' . $name;
+            $class = 'assign_feedback_' . $name;
             require_once($CFG->dirroot . '/mod/assign/feedback/' . $name . '/locallib.php');
             $class::cron();
         }
@@ -752,7 +752,7 @@ function assign_get_user_grades($assign, $userid=0) {
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
     $context = context_module::instance($assign->cmidnumber);
-    $assignment = new assignment($context, null, null);
+    $assignment = new assign($context, null, null);
     return $assignment->get_user_grades_for_gradebook($userid);
 }
 
@@ -796,7 +796,7 @@ function mod_assign_get_file_areas($course, $cm, $context) {
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
     $areas = array();
 
-    $assignment = new assignment($context, $cm, $course);
+    $assignment = new assign($context, $cm, $course);
     foreach ($assignment->get_submission_plugins() as $plugin) {
         if ($plugin->is_visible()) {
             $pluginareas = $plugin->get_file_areas();
@@ -846,7 +846,7 @@ function mod_assign_get_file_info($browser, $areas, $course, $cm, $context, $fil
     $filename = is_null($filename) ? '.' : $filename;
 
     // need to find the plugin this belongs to
-    $assignment = new assignment($context, $cm, $course);
+    $assignment = new assign($context, $cm, $course);
     $pluginowner = null;
     foreach ($assignment->get_submission_plugins() as $plugin) {
         if ($plugin->is_visible()) {
@@ -894,7 +894,7 @@ function assign_user_complete($course, $user, $coursemodule, $assign) {
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
     $context = context_module::instance($coursemodule->id);
 
-    $assignment = new assignment($context, $coursemodule, $course);
+    $assignment = new assign($context, $coursemodule, $course);
 
     echo $assignment->view_student_summary($user, false);
 }

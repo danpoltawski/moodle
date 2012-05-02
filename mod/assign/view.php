@@ -43,11 +43,11 @@ $context = context_module::instance($cm->id);
 
 require_capability('mod/assign:view', $context);
 
-$assignment = new assignment($context,$cm,$course);
+$assign = new assign($context,$cm,$course);
 
 // Mark as viewed
 $completion=new completion_info($course);
 $completion->set_module_viewed($cm);
 
-// Get the assignment to render the page
-echo $assignment->view(optional_param('action', '', PARAM_TEXT));
+// Get the assign to render the page
+echo $assign->view(optional_param('action', '', PARAM_TEXT));

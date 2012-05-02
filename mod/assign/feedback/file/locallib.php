@@ -38,7 +38,7 @@ define('ASSIGN_FEEDBACK_FILE_MAX_SUMMARY_FILES', 5);
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_feedback_file extends assignment_feedback_plugin {
+class assign_feedback_file extends assign_feedback_plugin {
 
     /**
      * Get the name of the file feedback plugin

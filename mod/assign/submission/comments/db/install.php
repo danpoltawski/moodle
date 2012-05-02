@@ -38,7 +38,7 @@ function xmldb_assignsubmission_comments_install() {
 
     require_once($CFG->dirroot . '/mod/assign/adminlib.php');
     // set the correct initial order for the plugins
-    $pluginmanager = new assignment_plugin_manager('assignsubmission');
+    $pluginmanager = new assign_plugin_manager('assignsubmission');
 
     $pluginmanager->move_plugin('comments', 'down');
     $pluginmanager->move_plugin('comments', 'down');

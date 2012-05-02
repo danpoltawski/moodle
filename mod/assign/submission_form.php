@@ -30,7 +30,7 @@ require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 /**
- * Assignment submission form
+ * Assign submission form
  *
  * @package   mod_assign
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
@@ -44,9 +44,9 @@ class mod_assign_submission_form extends moodleform {
     function definition() {
         $mform = $this->_form;
 
-        list($assignment, $data) = $this->_customdata;
+        list($assign, $data) = $this->_customdata;
 
-        $assignment->add_submission_form_elements($mform, $data);
+        $assign->add_submission_form_elements($mform, $data);
 
         $this->add_action_buttons(true, get_string('savechanges', 'assign'));
         if ($data) {
