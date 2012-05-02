@@ -79,12 +79,24 @@ class assign_grading_table extends table_sql implements renderable {
             // insert a record that will never match to the sql is still valid.
             $users[] = -1;
         }
+
+        $params = array();
+        $params[] = $this->assignment->get_instance()->id;
+        $params[] = $this->assignment->get_instance()->id;
+
         $fields = user_picture::fields('u') . ', u.id as userid, u.firstname as firstname, u.lastname as lastname, ';
         $fields .= 's.status as status, s.id as submissionid, s.timecreated as firstsubmission, s.timemodified as timesubmitted, ';
         $fields .= 'g.id as gradeid, g.grade as grade, g.timemodified as timemarked, g.timecreated as firstmarked, g.mailed as mailed, g.locked as locked';
-        $from = '{user} u LEFT JOIN {assign_submission} s ON u.id = s.userid AND s.assignment = ' . $this->assignment->get_instance()->id .
-                        ' LEFT JOIN {assign_grades} g ON u.id = g.userid AND g.assignment = ' . $this->assignment->get_instance()->id;
-        $where = 'u.id IN (' . implode(',', $users) . ')';
+        $from = '{user} u LEFT JOIN {assign_submission} s ON u.id = s.userid AND s.assignment = ?' . 
+                        ' LEFT JOIN {assign_grades} g ON u.id = g.userid AND g.assignment = ?';
+
+        $userparams = array();
+        foreach ($users as $userid) {
+            $userparams[] = '?';
+            $params[] = $userid;
+        }
+        
+        $where = 'u.id IN (' . implode(',', $userparams) . ')';
         if ($filter == ASSIGN_FILTER_SUBMITTED) {
             $where .= ' AND s.timecreated > 0 ';
         }
@@ -93,10 +105,10 @@ class assign_grading_table extends table_sql implements renderable {
         }
         if (strpos($filter, ASSIGN_FILTER_SINGLE_USER) === 0) {
             $userfilter = (int) array_pop(explode('=', $filter));
-            $where .= ' AND (u.id = ' . $userfilter . ')';
+            $where .= ' AND (u.id = ?)';
+            $params[] = $userfilter;
         }
-        $params = array($assignment->get_instance()->id, $assignment->get_instance()->id);
-        $this->set_sql($fields, $from, $where, array());
+        $this->set_sql($fields, $from, $where, $params);
 
         $columns = array();
         $headers = array();
