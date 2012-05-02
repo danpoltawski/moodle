@@ -243,7 +243,7 @@ class assign_submission_file extends assign_submission_plugin {
      * @param bool $showviewlink Set this to true if the list of files is long
      * @return string
      */
-    public function view_summary(stdClass $submission, & $showviewlink) {
+    public function view_summary(stdClass $submission, $showviewlink) {
         $count = $this->count_files($submission->id, ASSIGN_FILEAREA_SUBMISSION_FILES);
 
         // show we show a link to view all files for this plugin?

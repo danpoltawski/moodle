@@ -147,7 +147,7 @@ class assign_feedback_file extends assign_feedback_plugin {
      * @param bool $showviewlink - Set to true to show a link to see the full list of files
      * @return string
      */
-    public function view_summary(stdClass $grade, & $showviewlink) {
+    public function view_summary(stdClass $grade, $showviewlink) {
         $count = $this->count_files($grade->id, ASSIGN_FILEAREA_FEEDBACK_FILES);
         // show a view all link if the number of files is over this limit
         $showviewlink = $count > ASSIGN_FEEDBACK_FILE_MAX_SUMMARY_FILES;
