@@ -50,7 +50,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
      */
     public function get_feedback_comments($gradeid) {
         global $DB;
-        return $DB->get_record('assignfeedback_comments_feedback', array('grade'=>$gradeid));
+        return $DB->get_record('assignfeedback_comments', array('grade'=>$gradeid));
     }
 
     /**
@@ -87,14 +87,14 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
         if ($feedbackcomment) {
             $feedbackcomment->commenttext = $data->assignfeedbackcomments_editor['text'];
             $feedbackcomment->commentformat = $data->assignfeedbackcomments_editor['format'];
-            return $DB->update_record('assignfeedback_comments_feedback', $feedbackcomment);
+            return $DB->update_record('assignfeedback_comments', $feedbackcomment);
         } else {
             $feedbackcomment = new stdClass();
             $feedbackcomment->commenttext = $data->assignfeedbackcomments_editor['text'];
             $feedbackcomment->commentformat = $data->assignfeedbackcomments_editor['format'];
             $feedbackcomment->grade = $grade->id;
             $feedbackcomment->assignment = $this->assignment->get_instance()->id;
-            return $DB->insert_record('assignfeedback_comments_feedback', $feedbackcomment) > 0;
+            return $DB->insert_record('assignfeedback_comments', $feedbackcomment) > 0;
         }
     }
 
@@ -176,7 +176,7 @@ class assignment_feedback_comments extends assignment_feedback_plugin {
     public function delete_instance() {
         global $DB;
         // will throw exception on failure
-        $DB->delete_records('assignfeedback_comments_feedback', array('assignment'=>$this->assignment->get_instance()->id));
+        $DB->delete_records('assignfeedback_comments', array('assignment'=>$this->assignment->get_instance()->id));
         return true;
     }
 

@@ -61,6 +61,6 @@ class restore_assignfeedback_comments_subplugin extends restore_subplugin {
         // the mapping is set in the restore for the core assign activity. When a grade node is processed
         $data->grade = $this->get_mappingid('grade', $data->grade);
 
-        $DB->insert_record('assignfeedback_comments_feedback', $data);
+        $DB->insert_record('assignfeedback_comments', $data);
     }
 }

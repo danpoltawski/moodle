@@ -52,7 +52,7 @@ class backup_assignsubmission_onlinetext_subplugin extends backup_subplugin {
         $subpluginwrapper->add_child($subpluginelement);
 
         // set source to populate the data
-        $subpluginelement->set_source_table('assignsubmission_onlinetext_submission', array('submission' => backup::VAR_PARENTID));
+        $subpluginelement->set_source_table('assignsubmission_onlinetext', array('submission' => backup::VAR_PARENTID));
 
         $subpluginelement->annotate_files('assignsubmission_onlinetext', 'submissions_onlinetext', 'submission');
         return $subplugin;

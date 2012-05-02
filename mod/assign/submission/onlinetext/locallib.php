@@ -57,7 +57,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     private function get_onlinetext_submission($submissionid) {
         global $DB;
 
-        return $DB->get_record('assignsubmission_onlinetext_submission', array('submission'=>$submissionid));
+        return $DB->get_record('assignsubmission_onlinetext', array('submission'=>$submissionid));
     }
 
     /**
@@ -132,7 +132,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
             $onlinetextsubmission->onlineformat = $data->onlinetext_editor['format'];
 
 
-            return $DB->update_record('assignsubmission_onlinetext_submission', $onlinetextsubmission);
+            return $DB->update_record('assignsubmission_onlinetext', $onlinetextsubmission);
         } else {
 
             $onlinetextsubmission = new stdClass();
@@ -141,7 +141,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
 
             $onlinetextsubmission->submission = $submission->id;
             $onlinetextsubmission->assignment = $this->assignment->get_instance()->id;
-            return $DB->insert_record('assignsubmission_onlinetext_submission', $onlinetextsubmission) > 0;
+            return $DB->insert_record('assignsubmission_onlinetext', $onlinetextsubmission) > 0;
         }
 
 
@@ -310,7 +310,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
 
         $onlinetextsubmission->submission = $submission->id;
         $onlinetextsubmission->assignment = $this->assignment->get_instance()->id;
-        if (!$DB->insert_record('assignsubmission_onlinetext_submission', $onlinetextsubmission) > 0) {
+        if (!$DB->insert_record('assignsubmission_onlinetext', $onlinetextsubmission) > 0) {
             $log .= get_string('couldnotconvertsubmission', 'mod_assign', $submission->userid);
             return false;
         }
@@ -354,7 +354,7 @@ class assignment_submission_onlinetext extends assignment_submission_plugin {
     public function delete_instance() {
         global $DB;
         // will throw exception on failure
-        $DB->delete_records('assignsubmission_onlinetext_submission', array('assignment'=>$this->assignment->get_instance()->id));
+        $DB->delete_records('assignsubmission_onlinetext', array('assignment'=>$this->assignment->get_instance()->id));
 
         return true;
     }

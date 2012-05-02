@@ -60,7 +60,7 @@ class restore_assignsubmission_file_subplugin extends restore_subplugin {
         // the mapping is set in the restore for the core assign activity. When a submission node is processed
         $data->submission = $this->get_mappingid('submission', $data->submission);
 
-        $DB->insert_record('assignsubmission_file_submission', $data);
+        $DB->insert_record('assignsubmission_file', $data);
 
         $this->add_related_files('assignsubmission_file', 'submission_files', 'submission', null, $oldsubmissionid);
     }
