@@ -124,7 +124,9 @@ class assign_plugin_manager {
             if (!$idx) {
                 $idx = 0;
             }
-            while (array_key_exists($idx, $result)) $idx +=1;
+            while (array_key_exists($idx, $result)) {
+                $idx +=1;
+            }
             $result[$idx] = $name;
         }
         ksort($result);

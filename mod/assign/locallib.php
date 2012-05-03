@@ -278,7 +278,9 @@ class assign {
 
                 if ($plugin instanceof assign_plugin) {
                     $idx = $plugin->get_sort_order();
-                    while (array_key_exists($idx, $result)) $idx +=1;
+                    while (array_key_exists($idx, $result)) {
+                        $idx +=1;
+                    }
                     $result[$idx] = $plugin;
                 }
             }
@@ -1031,7 +1033,7 @@ class assign {
      *
      * @return bool
      */
-    static function cron() {
+    public static function cron() {
         global $CFG, $USER, $DB;
 
 
