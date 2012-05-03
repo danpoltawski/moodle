@@ -57,7 +57,7 @@ class tool_assignmentupgrade_assignments_table extends table_sql implements rend
         $this->perpage = $perpage;
         $this->output = $PAGE->get_renderer('tool_assignmentupgrade');
 
-        $this->define_baseurl(new moodle_url($CFG->wwwroot . '/tool/assignmentupgrade/listnotupgraded.php'));
+        $this->define_baseurl(new moodle_url('/admin/tool/assignmentupgrade/listnotupgraded.php'));
 
         $this->anyupgradableassignments = tool_assignmentupgrade_any_upgradable_assignments();
 
