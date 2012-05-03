@@ -91,7 +91,7 @@ class assign {
     /** @var stdClass the course this assign instance belongs to */
     private $course;
 
-    /** @var assign_renderer the custom renderer for this module */
+    /** @var mod_assign_renderer the custom renderer for this module */
     private $output;
 
     /** @var stdClass the course module for this assign instance */
@@ -296,7 +296,7 @@ class assign {
      * The assignment is displayed differently depending on your role,
      * the settings for the assignment and the status of the assignment.
      * @param string $action The current action if any.
-     * @return void
+     * @return string output text
      */
     public function view($action='') {
 
@@ -1012,7 +1012,7 @@ class assign {
      * Generate zip file from array of given files
      *
      * @param array $filesforzipping - array of files to pass into archive_to_pathname - this array is indexed by the final file name and each element in the array is an instance of a stored_file object
-     * @return path of temp file - note this returned file does not have a .zip extension - it is a temp file.
+     * @return string path of temp file - note this returned file does not have a .zip extension - it is a temp file.
      */
      private function pack_files($filesforzipping) {
          global $CFG;
@@ -1657,7 +1657,7 @@ class assign {
      * View edit submissions page.
      *
      * @param moodleform $mform
-     * @return void
+     * @return string The html to output
      */
     private function view_edit_submission_page($mform) {
         global $CFG;

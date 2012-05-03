@@ -66,7 +66,7 @@ class assign_submission_onlinetext extends assign_submission_plugin {
      * @param mixed $submission can be null
      * @param MoodleQuickForm $mform
      * @param stdClass $data
-     * @return true if elements were added to the form
+     * @return boolean true if elements were added to the form
      */
     public function get_form_elements($submission, MoodleQuickForm $mform, stdClass $data) {
         $elements = array();

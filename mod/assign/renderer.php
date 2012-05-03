@@ -165,7 +165,7 @@ class mod_assign_renderer extends plugin_renderer_base {
     /**
      * Page is done - render the footer
      *
-     * @return void
+     * @return string The HTML
      */
     public function render_footer() {
         return $this->output->footer();
@@ -604,12 +604,12 @@ class mod_assign_renderer extends plugin_renderer_base {
     /**
      * Helper method dealing with the fact we can not just fetch the output of flexible_table
      *
-     * @param flexible_table $table The table to render
+     * @param table_sql $table The table to render
      * @param int $rowsperpage How many assignments to render in a page
      * @param bool $displaylinks - Whether to render links in the table (e.g. downloads would not enable this)
      * @return string HTML
      */
-    protected function flexible_table(flexible_table $table, $rowsperpage, $displaylinks) {
+    protected function flexible_table(table_sql $table, $rowsperpage, $displaylinks) {
 
         $o = '';
         ob_start();

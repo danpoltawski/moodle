@@ -35,7 +35,7 @@ class backup_assign_activity_structure_step extends backup_activity_structure_st
 
     /**
      * Define the structure for the assign activity
-     * @return void
+     * @return FIXME
      */
     protected function define_structure() {
 
