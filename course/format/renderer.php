@@ -263,9 +263,10 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
      *
      * @param stdClass $section The course_section entry from DB
      * @param stdClass $course The course entry from DB
+     * @param array $mods ccourse module info
      * @return string HTML to output.
      */
-    protected function section_summary($section, $course) {
+    protected function section_summary($section, $course, $mods) {
 
         $o = '';
         $o.= html_writer::start_tag('li', array('id' => 'section-'.$section->section));
@@ -279,6 +280,15 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
         $o.= html_writer::start_tag('div', array('class' => 'summarytext'));
         $o.= format_text($section->summary, $section->summaryformat);
         $o.= html_writer::end_tag('div');
+        if ($section->hasactivites) {
+            $count = 0;
+            foreach (explode(',', $section->sequence) as $id) {
+                if (coursemodule_visible_for_user($mods[$id])) {
+                    $count++;
+                }
+            }
+            $o.= get_string('activitiesinsection', 'format_'.$course->format, array('count' => $count));
+        }
         $o.= html_writer::end_tag('div');
         $o.= html_writer::end_tag('li');
 
@@ -534,7 +544,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
 
             if (!$PAGE->user_is_editing() && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
                 // Display section summary only.
-                echo $this->section_summary($thissection, $course);
+                echo $this->section_summary($thissection, $course, $mods);
             } else {
                 echo $this->section_header($thissection, $course, false);
                 print_section($course, $thissection, $mods, $modnamesused);

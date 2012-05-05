@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['activitiesinsection'] = 'Modules/Activities in this topic: {$a->count}';
 $string['currentsection'] = 'This topic';
 $string['sectionname'] = 'Topic';
 $string['pluginname'] = 'Topics format';

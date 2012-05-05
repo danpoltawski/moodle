@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['activitiesinsection'] = 'Modules/Activities in this week: {$a->count}';
 $string['currentsection'] = 'This week';
 $string['sectionname'] = 'Week';
 $string['pluginname'] = 'Weekly format';
