@@ -4538,3 +4538,40 @@ function course_get_url($course, $sectionno = null) {
 
     return $url;
 }
+
+/**
+ * Delete a section which is empty (and update other sections to
+ * retain the order)
+ *
+ * @param stdClass $course The course to get the section name for
+ * @param int $sectionno The section number (not id!) to delete
+ * @throws moodle_exception if the section isn't empty or doesnt exist
+ */
+function course_delete_empty_section($course, $sectionno) {
+    global $DB;
+
+    $transaction = $DB->start_delegated_transaction();
+
+    $section = $DB->get_record('course_sections', array('course' => $course->id, 'section' => $sectionno), '*', MUST_EXIST);
+
+    // We do not allow the general section to be deleted.
+    if ($sectionno < 1) {
+        throw new moodle_exception('cantdeletegeneralsection');
+    }
+
+    // Check its got an empty list of coruse modules and double check the DB records..
+    if (!empty($section->sequence) ||
+        $cms = $DB->get_records('course_modules', array('course' => $course->id, 'section' => $section->id))) {
+
+        throw new moodle_exception('sectionotempty');
+    }
+
+    $DB->delete_records('course_sections', array('id' => $section->id));
+
+    // Update existing course sections.
+    $DB->execute('UPDATE {course_sections} SET section = section - 1
+                  WHERE course = :courseid AND section > :sectionno',
+                array('courseid' => $course->id, 'sectionno' => $section->section));
+
+    $transaction->allow_commit();
+}

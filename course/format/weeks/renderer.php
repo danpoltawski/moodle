@@ -35,6 +35,44 @@ require_once($CFG->dirroot.'/course/format/renderer.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format_weeks_renderer extends format_section_renderer_base {
+
+    /**
+     * Generate the edit controls of a section
+     *
+     * @param stdClass $course The course entry from DB
+     * @param stdClass $section The course_section entry from DB
+     * @param bool $onsectionpage true if being printed on a section page
+     * @return array of links with edit controls
+     */
+    protected function section_edit_controls($course, $section, $onsectionpage = false) {
+        global $PAGE;
+
+        if (!$PAGE->user_is_editing()) {
+            return array();
+        }
+
+        if (!has_capability('moodle/course:update', context_course::instance($course->id))) {
+            return array();
+        }
+
+        $controls = array();
+
+        // Add delete button if on last section and empty..
+        if ($section->section == $course->numsections && empty($section->sequence)) {
+            $url = new moodle_url('/course/deletesection.php');
+            $url->param('sesskey', sesskey());
+            $url->param('courseid', $course->id);
+            $url->param('section', $section->section);
+
+            $controls[] = html_writer::link($url,
+                html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/delete'),
+                'class' => 'icon down', 'alt' => get_string('delete'))),
+                array('title' => get_String('delete'), 'class' => 'delete'));
+        }
+
+        return array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage));
+    }
+
     /**
      * Generate the starting container html for a list of sections
      * @return string HTML to output.

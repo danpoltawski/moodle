@@ -100,6 +100,18 @@ class format_topics_renderer extends format_section_renderer_base {
                             array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
         }
 
+        if (empty($section->sequence)) {
+            $url = new moodle_url('/course/deletesection.php');
+            $url->param('sesskey', sesskey());
+            $url->param('courseid', $course->id);
+            $url->param('section', $section->section);
+
+            $controls[] = html_writer::link($url,
+                html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/delete'),
+                'class' => 'icon down', 'alt' => get_string('delete'))),
+                array('title' => get_String('delete'), 'class' => 'delete'));
+        }
+
         return array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage));
     }
 

@@ -144,4 +144,46 @@ class courselib_testcase extends advanced_testcase {
         $this->assertGreaterThanOrEqual($category2->sortorder, $category3->sortorder);
         $this->assertGreaterThanOrEqual($category1->sortorder, $category3->sortorder);
     }
+
+    public function test_delete_nonempty_section() {
+        global $DB;
+        $this->resetAfterTest(true);
+
+        $sectionno = 4;
+        $course = $this->getDataGenerator()->create_course(array('numsections'=>10), array('createsections'=>true));
+        $section = $DB->get_record('course_sections', array('course' => $course->id, 'section' => $sectionno));
+        $mod = $this->getDataGenerator()->create_module('page', array('course'=> $course->id), array('section' => $section->id));
+
+        // Try and delete a section with section in it.
+        $this->setExpectedException('moodle_exception', 'error/sectionotempty');
+        course_delete_empty_section($course, $sectionno);
+    }
+
+    public function test_delete_empty_section() {
+        global $DB;
+        $this->resetAfterTest(true);
+
+        $sectionno = 4;
+        $course = $this->getDataGenerator()->create_course(array('numsections'=>10), array('createsections'=>true));
+        $section = $DB->get_record('course_sections', array('course' => $course->id, 'section' => $sectionno));
+        $mod = $this->getDataGenerator()->create_module('page', array('course'=> $course->id), array('section' => $section->id));
+
+        // Delete the section before our section.
+        course_delete_empty_section($course, ($sectionno - 1));
+
+        // Our section should be the number before now.
+        $sectionno--;
+        $this->assertEquals($sectionno, $DB->get_field('course_sections', 'section', array('id' => $section->id)));
+    }
+
+    public function test_delete_general_section() {
+        global $DB;
+        $this->resetAfterTest(true);
+
+        $course = $this->getDataGenerator()->create_course(array('numsections'=>10), array('createsections'=>true));
+
+        // Try and delete the general section..
+        $this->setExpectedException('moodle_exception', 'error/cantdeletegeneralsection');
+        course_delete_empty_section($course, 0);
+    }
 }
