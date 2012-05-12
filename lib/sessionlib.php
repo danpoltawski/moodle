@@ -821,11 +821,11 @@ class memcache_session extends session_stub {
             throw new coding_exeption('Cannot initiailise memcache sessions. Memcache is ' .
                     'not installed, or not properly configured.');
         }
-        ini_set('session.save_handler', 'memcache');
+        ini_set('session.save_handler', 'memcached');
         ini_set('memcache.hash_strategy', 'consistent');
         $savepaths = array();
         foreach ($this->get_memcache_hosts() as $host => $port) {
-            $savepaths[] = "tcp://{$host}:{$port}";
+            $savepaths[] = "{$host}:{$port}";
         }
         ini_set('session.save_path', implode(',', $savepaths));
     }
