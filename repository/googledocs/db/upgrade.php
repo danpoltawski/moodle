@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add event handlers for the picasa portfolio.
- *
- * @package    portfolio_picasa
- * @category   event
- * @copyright  2009 Penny Leach
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @param int $oldversion the version we are upgrading from
+ * @return bool result
  */
+function xmldb_repository_googledocs_upgrade($oldversion) {
+    global $CFG, $DB;
 
-$handlers = array (
-    'user_deleted' => array (
-         'handlerfile'      => '/portfolio/picasa/lib.php',
-         'handlerfunction'  => 'portfolio_picasa_user_deleted',
-         'schedule'         => 'cron',
-         'internal'         => 0,
-     ),
-);
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2012051400) {
+        // Delete old user preferences containing authsub tokens.
+        $DB->delete_records('user_preferences', array('name' => 'google_authsub_sesskey'));
+        upgrade_plugin_savepoint(true, 2012051400, 'repository', 'googledocs');
+    }
+
+    return true;
+}
