@@ -4127,7 +4127,6 @@ class cache_file {
      * @return string cached file path
      */
     public static function create_from_url($ref, $url, $options = array()) {
-        global $CFG;
         $instance = self::get_instance($options);
         $cachedfilepath = $instance->generate_filepath($ref);
         $fp = fopen($cachedfilepath, 'w');
@@ -4147,7 +4146,6 @@ class cache_file {
      * @return string cached file path
      */
     public static function create_from_string($ref, $string, $options = array()) {
-        global $CFG;
         $instance = self::get_instance($options);
         $cachedfilepath = $instance->generate_filepath($ref);
         $fp = fopen($cachedfilepath, 'w');
