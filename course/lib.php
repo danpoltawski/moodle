@@ -4615,6 +4615,10 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
             'modchooserdisable',
     ), 'moodle');
 
+    // Add ajaxenabled class earlier than YUI is awake and ready. This will make
+    // the page load more visually pleasant.
+    $PAGE->requires->js_init_code("document.body.className += ' ajaxenabled';");
+
     return true;
 }
 
