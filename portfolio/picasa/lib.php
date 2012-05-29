@@ -75,10 +75,6 @@ class portfolio_plugin_picasa extends portfolio_plugin_push_base {
         }
     }
 
-    private function get_oauth_client() {
-
-    }
-
     public function post_control($stage, $params) {
         if ($stage != PORTFOLIO_STAGE_CONFIG) {
             return;
