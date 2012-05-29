@@ -53,7 +53,7 @@ M.course_dndupload = {
     // The classes that an element must have to be identified as a course section
     sectionclasses: ['section', 'main'],
     // The ID of the main content area of the page (for adding the 'status' div)
-    pagecontentid: 'page-content',
+    pagecontentid: 'region-main',
     // The selector identifying the list of modules within a section (note changing this may require
     // changes to the get_mods_element function)
     modslistselector: 'ul.section',
