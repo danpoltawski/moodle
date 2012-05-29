@@ -47,16 +47,16 @@ class google_docs {
     const UPLOAD_URL       = 'https://docs.google.com/feeds/upload/create-session/default/private/full?convert=false';
 
     /** @var google_oauth oauth curl class for making authenticated requests */
-    private $google_curl = null;
+    private $googleoauth = null;
 
     /**
      * Constructor.
      *
-     * @param google_oauth $google_curl oauth curl class for making authenticated requests
+     * @param google_oauth $googleoauth oauth curl class for making authenticated requests
      */
-    public function __construct(google_oauth $google_curl) {
-        $this->google_curl = $google_curl;
-        $this->google_curl->setHeader('GData-Version: 3.0');
+    public function __construct(google_oauth $googleoauth) {
+        $this->googleoauth = $googleoauth;
+        $this->googleoauth->setHeader('GData-Version: 3.0');
     }
 
     /**
@@ -72,7 +72,7 @@ class google_docs {
         if ($search) {
             $url.='?q='.urlencode($search);
         }
-        $content = $this->google_curl->get($url);
+        $content = $this->googleoauth->get($url);
 
         $xml = new SimpleXMLElement($content);
 
@@ -130,26 +130,26 @@ class google_docs {
      */
     public function send_file($file) {
         // First we create the 'resumable upload request'.
-        $this->google_curl->setHeader("Content-Length: 0");
-        $this->google_curl->setHeader("X-Upload-Content-Length: ". $file->get_filesize());
-        $this->google_curl->setHeader("X-Upload-Content-Type: ". $file->get_mimetype());
-        $this->google_curl->setHeader("Slug: ". $file->get_filename());
-        $this->google_curl->post(self::UPLOAD_URL);
+        $this->googleoauth->setHeader("Content-Length: 0");
+        $this->googleoauth->setHeader("X-Upload-Content-Length: ". $file->get_filesize());
+        $this->googleoauth->setHeader("X-Upload-Content-Type: ". $file->get_mimetype());
+        $this->googleoauth->setHeader("Slug: ". $file->get_filename());
+        $this->googleoauth->post(self::UPLOAD_URL);
 
-        if ($this->google_curl->info['http_code'] !== 200) {
+        if ($this->googleoauth->info['http_code'] !== 200) {
             throw new moodle_exception('Cantpostupload');
         }
 
         // Now we http PUT the file in the location returned.
-        $location = $this->google_curl->response['Location'];
+        $location = $this->googleoauth->response['Location'];
         if (empty($location)) {
             throw new moodle_exception('Nouploadlocation');
         }
 
         // Reset the curl object for actually sending the file.
-        $this->google_curl->clear_headers();
-        $this->google_curl->setHeader("Content-Length: ". $file->get_filesize());
-        $this->google_curl->setHeader("Content-Type: ". $file->get_mimetype());
+        $this->googleoauth->clear_headers();
+        $this->googleoauth->setHeader("Content-Length: ". $file->get_filesize());
+        $this->googleoauth->setHeader("Content-Type: ". $file->get_mimetype());
 
         // We can't get a filepointer, so have to copy the file..
         $tmproot = make_temp_directory('googledocsuploads');
@@ -157,12 +157,12 @@ class google_docs {
         $file->copy_content_to($tmpfilepath);
 
         // HTTP PUT the file.
-        $this->google_curl->put($location, array('file'=>$tmpfilepath));
+        $this->googleoauth->put($location, array('file'=>$tmpfilepath));
 
         // Remove the temporary file we created..
         unlink($tmpfilepath);
 
-        if ($this->google_curl->info['http_code'] === 201) {
+        if ($this->googleoauth->info['http_code'] === 201) {
             return true;
         } else {
             return false;
@@ -177,7 +177,7 @@ class google_docs {
      * @return array stucture for repository download_file
      */
     public function download_file($url, $path) {
-        $content = $this->google_curl->get($url);
+        $content = $this->googleoauth->get($url);
         file_put_contents($path, $content);
         return array('path'=>$path, 'url'=>$url);
     }
@@ -208,18 +208,18 @@ class google_picasa {
     const MANAGE_URL        = 'http://picasaweb.google.com/';
 
     /** @var google_oauth oauth curl class for making authenticated requests */
-    private $google_curl = null;
+    private $googleoauth = null;
     /** @var string Last album name retrievied */
     private $lastalbumname = null;
 
     /**
      * Constructor.
      *
-     * @param google_oauth $google_curl oauth curl class for making authenticated requests
+     * @param google_oauth $googleoauth oauth curl class for making authenticated requests
      */
-    public function __construct(google_oauth $google_curl) {
-        $this->google_curl = $google_curl;
-        $this->google_curl->setHeader('GData-Version: 2');
+    public function __construct(google_oauth $googleoauth) {
+        $this->googleoauth = $googleoauth;
+        $this->googleoauth->setHeader('GData-Version: 2');
     }
 
     /**
@@ -229,13 +229,13 @@ class google_picasa {
      * @return boolean True on success
      */
     public function send_file($file) {
-        $this->google_curl->setHeader("Content-Length: ". $file->get_filesize());
-        $this->google_curl->setHeader("Content-Type: ". $file->get_mimetype());
-        $this->google_curl->setHeader("Slug: ". $file->get_filename());
+        $this->googleoauth->setHeader("Content-Length: ". $file->get_filesize());
+        $this->googleoauth->setHeader("Content-Type: ". $file->get_mimetype());
+        $this->googleoauth->setHeader("Slug: ". $file->get_filename());
 
-        $this->google_curl->post(self::UPLOAD_LOCATION, $file->get_content());
+        $this->googleoauth->post(self::UPLOAD_LOCATION, $file->get_content());
 
-        if ($this->google_curl->info['http_code'] === 201) {
+        if ($this->googleoauth->info['http_code'] === 201) {
             return true;
         } else {
             return false;
@@ -265,7 +265,7 @@ class google_picasa {
      * @return mixed $files A list of files for the file picker
      */
     public function get_album_photos($albumid) {
-        $albumcontent = $this->google_curl->get(self::ALBUM_PHOTO_LIST.$albumid);
+        $albumcontent = $this->googleoauth->get(self::ALBUM_PHOTO_LIST.$albumid);
 
         return $this->get_photo_details($albumcontent);
     }
@@ -287,7 +287,7 @@ class google_picasa {
      * @return mixed $files A list of files for the file picker
      */
     public function do_photo_search($query) {
-        $content = $this->google_curl->get(self::PHOTO_SEARCH_URL.htmlentities($query));
+        $content = $this->googleoauth->get(self::PHOTO_SEARCH_URL.htmlentities($query));
 
         return $this->get_photo_details($content);
     }
@@ -299,7 +299,7 @@ class google_picasa {
      * @return mixes $files Array in the format get_listing uses for folders
      */
     public function get_albums() {
-        $content = $this->google_curl->get(self::LIST_ALBUMS_URL);
+        $content = $this->googleoauth->get(self::LIST_ALBUMS_URL);
         $xml = new SimpleXMLElement($content);
 
         $files = array();
