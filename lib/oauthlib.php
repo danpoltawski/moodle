@@ -441,7 +441,7 @@ abstract class oauth2_client extends curl {
     public static function callback_url() {
         global $CFG;
 
-        return new moodle_url('/'.$CFG->admin.'/oauth2callback.php');
+        return new moodle_url('/admin/oauth2callback.php');
     }
 
     /**
