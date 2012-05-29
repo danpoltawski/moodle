@@ -45,6 +45,8 @@ M.course_dndupload = {
     uploaddialog: false,
     // An array containing the last selected file handler for each file type
     lastselected: null,
+    // Should the 'dnd enabled' message be hidden?
+    hidemessage: 0,
 
     // The following are used to identify specific parts of the course page
 
@@ -81,6 +83,7 @@ M.course_dndupload = {
         this.handlers = options.handlers;
         this.uploadqueue = new Array();
         this.lastselected = new Array();
+        this.hidemessage = options.hidemessage;
 
         var sectionselector = this.sectiontypename + '.' + this.sectionclasses.join('.');
         var sections = this.Y.all(sectionselector);
@@ -92,7 +95,9 @@ M.course_dndupload = {
             this.init_events(el);
         }, this);
 
-        this.add_status_div();
+        if (!this.hidemessage) {
+            this.add_status_div();
+        }
     },
 
     /**
@@ -133,7 +138,13 @@ M.course_dndupload = {
         if (handlelink) {
             $msgident += 'link';
         }
-        div.setContent(M.util.get_string($msgident, 'moodle'));
+        var closebtn = this.Y.Node.create('<a href="#"><img class="closeicon" src="'+M.util.image_url('t/delete', 'moodle')+'" /></a>');
+        closebtn.on('click', function (e) {
+            M.util.set_user_preference('course_dnd_hidemessage', 1);
+            div.hide();
+        });
+        div.appendChild(M.util.get_string($msgident, 'moodle'));
+        div.appendChild(closebtn);
     },
 
     /**

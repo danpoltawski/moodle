@@ -160,6 +160,7 @@ input.titleeditor {
 
 /* Course drag and drop upload styles */
 #dndupload-status {width:60%;margin:0 auto;padding:2px;border:1px solid #ddd;text-align:center;background:#ffc}
+#dndupload-status img.closeicon {padding:0px; height: 8px; float: right;}
 .dndupload-preview {color:#909090;border:1px dashed #909090;}
 .dndupload-progress-outer {width:70px;border:solid black 1px;height:10px;display:inline-block;margin:0;padding:0;overflow:hidden;position:relative;}
 .dndupload-progress-inner {width:0%;height:100%;background-color:green;display:inline-block;margin:0;padding:0;float:left;}

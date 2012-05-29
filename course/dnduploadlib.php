@@ -70,9 +70,11 @@ function dndupload_add_to_course($course, $modnames) {
     $vars = array(
         array('courseid' => $course->id,
               'maxbytes' => get_max_upload_file_size($CFG->maxbytes, $course->maxbytes),
-              'handlers' => $handler->get_js_data())
+              'handlers' => $handler->get_js_data(),
+              'hidemessage' => get_user_preferences('course_dnd_hidemessage', 0))
     );
 
+    user_preference_allow_ajax_update('course_dnd_hidemessage', PARAM_BOOL);
     $PAGE->requires->js_init_call('M.course_dndupload.init', $vars, true, $jsmodule);
 }
 
