@@ -29,5 +29,11 @@ function xmldb_repository_googledocs_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2012051400, 'repository', 'googledocs');
     }
 
+    if ($oldversion < 2012052900) {
+        // Disable plugin, as we now need configuration to be done.
+        $DB->execute('UPDATE {repository} SET visible = 0 WHERE type = ?', array('googledocs'));
+        upgrade_plugin_savepoint(true, 2012052900, 'repository', 'googledocs');
+    }
+
     return true;
 }
