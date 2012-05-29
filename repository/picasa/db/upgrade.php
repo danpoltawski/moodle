@@ -26,7 +26,7 @@ function xmldb_repository_picasa_upgrade($oldversion) {
     if ($oldversion < 2012051400) {
         // Delete old user preferences storing authsub tokens.
         $DB->delete_records('user_preferences', array('name' => 'google_authsub_sesskey_picasa'));
-        upgrade_plugin_savepoint(true, 2012051400, 'repository', 'googledocs');
+        upgrade_plugin_savepoint(true, 2012051400, 'repository', 'picasa');
     }
 
     return true;
