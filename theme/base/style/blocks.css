@@ -33,3 +33,6 @@
 .dir-rtl .block .header,
 .dir-rtl .block h2.header {text-align:right;}
 .dir-rtl .block .header .commands { text-align: right;}
+
+/** Hide what is not required when ajax is enabled **/
+.ajaxenabled .block .editing_move {display: none;}
