@@ -55,12 +55,17 @@ class repository_picasa extends repository {
         return $this->googleoauth->is_logged_in();
     }
 
-    public function print_login($ajax = true) {
-        $popup = new stdClass();
-        $popup->type = 'popup';
+    public function print_login() {
         $url = $this->googleoauth->get_login_url();
-        $popup->url = $url->out(false);
-        return array('login' => array($popup));
+
+        if ($this->options['ajax']) {
+            $popup = new stdClass();
+            $popup->type = 'popup';
+            $popup->url = $url->out(false);
+            return array('login' => array($popup));
+        } else {
+            echo '<a target="_blank" href="'.$url->out(false).'">'.get_string('login', 'repository').'</a>';
+        }
     }
 
     public function get_listing($path='', $page = '') {
