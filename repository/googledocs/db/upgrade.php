@@ -29,11 +29,42 @@ function xmldb_repository_googledocs_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2012051400, 'repository', 'googledocs');
     }
 
-    if ($oldversion < 2012052900) {
-        // Disable plugin, as we now need configuration to be done.
-        $DB->execute('UPDATE {repository} SET visible = 0 WHERE type = ?', array('googledocs'));
-        upgrade_plugin_savepoint(true, 2012052900, 'repository', 'googledocs');
+    if ($oldversion < 2012053000) {
+        require_once($CFG->dirroot.'/repository/lib.php');
+        $existing = $DB->get_record('repository', array('type' => 'googledocs'));
+
+        if ($existing) {
+            $googledocsplugin = new repository_type('googledocs', array(), true);
+            $googledocsplugin->delete();
+            repository_googledocs_admin_upgrade_notification();
+        }
+
+        upgrade_plugin_savepoint(true, 2012053000, 'repository', 'googledocs');
     }
 
     return true;
+}
+
+function repository_googledocs_admin_upgrade_notification() {
+    $admins = get_admins();
+
+    if (empty($admins)) {
+        return;
+    }
+    $mainadmin = reset($admins);
+
+    foreach ($admins as $admin) {
+        $message = new stdClass();
+        $message->component         = 'moodle';
+        $message->name              = 'notices';
+        $message->userfrom          = $mainadmin;
+        $message->userto            = $admin;
+        $message->smallmessage      = get_string('oauth2upgrade_message_small', 'repository_googledocs');
+        $message->subject           = get_string('oauth2upgrade_message_subject', 'repository_googledocs');
+        $message->fullmessage       = get_string('oauth2upgrade_message_content', 'repository_googledocs');
+        $message->fullmessagehtml   = get_string('oauth2upgrade_message_content', 'repository_googledocs');
+        $message->fullmessageformat = FORMAT_PLAIN;
+        $message->notification      = 1;
+        message_send($message);
+    }
 }
