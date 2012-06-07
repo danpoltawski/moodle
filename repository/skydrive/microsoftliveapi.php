@@ -91,7 +91,7 @@ class microsoft_skydrive extends oauth2_client {
                         'path' => $file->id,
                         'size' => 0,
                         'date' => strtotime($file->updated_time),
-                        'thumbnail' => $OUTPUT->pix_url('f/folder-32')->out(false),
+                        'thumbnail' => $OUTPUT->pix_url(file_folder_icon(90))->out(false),
                         'children' => array(),
                     );
                     break;
@@ -120,7 +120,7 @@ class microsoft_skydrive extends oauth2_client {
                         'title' => $file->name,
                         'size' => $file->size,
                         'date' => strtotime($file->updated_time),
-                        'thumbnail' => $OUTPUT->pix_url(file_extension_icon($file->name, 32))->out(false),
+                        'thumbnail' => $OUTPUT->pix_url(file_extension_icon($file->name, 90))->out(false),
                         'source' => $file->id,
                         'url' => $file->link,
                     );
@@ -130,7 +130,7 @@ class microsoft_skydrive extends oauth2_client {
                         'title' => $file->name,
                         'size' => $file->size,
                         'date' => strtotime($file->updated_time),
-                        'thumbnail' => $OUTPUT->pix_url(file_extension_icon($file->name, 32))->out(false),
+                        'thumbnail' => $OUTPUT->pix_url(file_extension_icon($file->name, 90))->out(false),
                         'source' => $file->id,
                         'url' => $file->link,
                     );

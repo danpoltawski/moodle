@@ -34,9 +34,12 @@ class repository_skydrive extends repository {
 
         $clientid = get_config('skydrive', 'clientid');
         $secret = get_config('skydrive', 'secret');
-        $returnurl = new moodle_url('/repository/repository_callback.php', array('callback' => 'yes',
-                                                                                 'repo_id' =>$this->id));
-        $this->skydrive = new microsoft_skydrive($clientid, $secret, $returnurl->out(false));
+        $returnurl = new moodle_url('/repository/repository_callback.php');
+        $returnurl->param('callback', 'yes');
+        $returnurl->param('repo_id', $this->id);
+        $returnurl->param('sesskey', sesskey());
+
+        $this->skydrive = new microsoft_skydrive($clientid, $secret, $returnurl);
         $this->check_login();
     }
 
@@ -70,6 +73,10 @@ class repository_skydrive extends repository {
     }
 
     public static function type_config_form($mform, $classname = 'repository') {
+        $a = new stdClass;
+        $a->callbackurl = google_oauth::callback_url()->out(false);
+        $mform->addElement('static', null, '', get_string('oauthinfo', 'repository_skydrive', $a));
+
         parent::type_config_form($mform);
         $strrequired = get_string('required');
         $mform->addElement('text', 'clientid', get_string('clientid', 'repository_skydrive'));
