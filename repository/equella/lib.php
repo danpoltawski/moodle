@@ -19,6 +19,7 @@ require_once($CFG->dirroot . '/repository/lib.php');
 class repository_equella extends repository {
     /** @var array mimetype filter */
     private $mimetypes = array();
+    private $forceattachmentonly = false;
 
     /**
      * Constructor
@@ -36,6 +37,11 @@ class repository_equella extends repository {
                 $this->mimetypes = array_unique(array_map(array($this, 'to_mime_type'), $mt));
             }
         }
+
+        $env = optional_param('env', '', PARAM_RAW);
+        if ($env == 'filemanager') {
+            $this->forceattachmentonly = true;
+        }
     }
 
     /**
@@ -51,12 +57,12 @@ class repository_equella extends repository {
 
         $mimetypesstr = '';
         $restrict = '';
-        if (!empty($this->mimetypes)) {
+        if ($this->forceattachmentonly || !empty($this->mimetypes)) {
             $mimetypesstr = '&mimeTypes=' . implode(',', $this->mimetypes);
             // We're restricting to a mime type, so we always restrict to selecting resources only.
             $restrict = '&attachmentonly=true';
         } else if ($this->get_option('equella_select_restriction') != 'none') {
-            // The option value matches the EQUELLA paramter name.
+            // The option value matches the EQUELLA parameter name.
             $restrict = '&' . $this->get_option('equella_select_restriction') . '=true';
         }
 
@@ -74,6 +80,11 @@ class repository_equella extends repository {
                 . '&attachmentUuidUrls=true'
                 . '&options='.urlencode($this->get_option('equella_options') . $mimetypesstr)
                 . $restrict;
+
+        $manageurl = $this->get_option('equella_url');
+        $manageurl = str_ireplace('signon.do', 'logon.do', $manageurl);
+        $manageurl = $this->appendtoken($manageurl);
+
         $list = array();
         $list['object'] = array();
         $list['object']['type'] = 'text/html';
@@ -81,6 +92,7 @@ class repository_equella extends repository {
         $list['nologin']  = true;
         $list['nosearch'] = true;
         $list['norefresh'] = true;
+        $list['manage'] = $manageurl;
         return $list;
     }
 
