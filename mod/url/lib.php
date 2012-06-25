@@ -257,8 +257,12 @@ function url_get_coursemodule_info($coursemodule) {
     $info = new cached_cm_info();
     $info->name = $url->name;
 
-    //note: there should be a way to differentiate links from normal resources
-    $info->icon = url_guess_icon($url->externalurl);
+    $mimetype = resourcelib_guess_url_mimetype($url->externalurl);
+
+    if ($mimetype != 'text/html' and $mimetype != 'document/unknown') {
+        // Use a filetype specific icon if not html.
+        $info->icon = url_guess_icon($url->externalurl);
+    }
 
     $display = url_get_final_display_type($url);
 
