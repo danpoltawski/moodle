@@ -2368,7 +2368,7 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
     function setCollapsableElements($elements, $formid) {
         global $PAGE, $CFG;
         $this->_collapsableElements = $elements;
-        if (count($elements) && $CFG->enableshortmenus) {
+        if (count($elements) && !empty($CFG->enableshortmenus)) {
             $PAGE->requires->yui_module('moodle-form-shortforms', 'M.form.init_shortforms', array(array('formid' => $formid)));
         }
     }
