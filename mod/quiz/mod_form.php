@@ -137,6 +137,7 @@ class mod_quiz_mod_form extends moodleform_mod {
 
         // -------------------------------------------------------------------------------
         $mform->addElement('header', 'layouthdr', get_string('layout', 'quiz'));
+        $mform->setExpanded('layouthdr');
 
         // Shuffle questions.
         $shuffleoptions = array(

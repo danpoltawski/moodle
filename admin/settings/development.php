@@ -18,6 +18,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     $enablecssoptimiser = new admin_setting_configcheckbox('enablecssoptimiser', new lang_string('enablecssoptimiser','admin'), new lang_string('enablecssoptimiser_desc','admin'), 0);
     $enablecssoptimiser->set_updatedcallback('theme_reset_all_caches');
     $temp->add($enablecssoptimiser);
+    $temp->add(new admin_setting_configcheckbox('enableshortmenus', get_string('enableshortmenus', 'admin'), get_string('configenableshortmenus', 'admin'), 0));
 
     $ADMIN->add('experimental', $temp);
 
