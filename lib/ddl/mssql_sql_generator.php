@@ -549,7 +549,7 @@ class mssql_sql_generator extends sql_generator {
 
         // Look for any default constraint in this field and drop it
         if ($default = $this->mdb->get_record_sql("SELECT id, object_name(cdefault) AS defaultconstraint
-                                                     FROM syscolumns
+                                                     FROM sys.columns
                                                     WHERE id = object_id(?)
                                                           AND name = ?", array($tablename, $fieldname))) {
             return $default->defaultconstraint;
@@ -607,7 +607,7 @@ class mssql_sql_generator extends sql_generator {
             case 'fk':
             case 'ck':
                 if ($check = $this->mdb->get_records_sql("SELECT name
-                                                            FROM sysobjects
+                                                            FROM sys.objects
                                                            WHERE lower(name) = ?", array(strtolower($object_name)))) {
                     return true;
                 }
@@ -615,7 +615,7 @@ class mssql_sql_generator extends sql_generator {
             case 'ix':
             case 'uix':
                 if ($check = $this->mdb->get_records_sql("SELECT name
-                                                            FROM sysindexes
+                                                            FROM sys.indexes
                                                            WHERE lower(name) = ?", array(strtolower($object_name)))) {
                     return true;
                 }
