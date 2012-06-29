@@ -74,7 +74,7 @@ class repository_skydrive extends repository {
 
     public static function type_config_form($mform, $classname = 'repository') {
         $a = new stdClass;
-        $a->callbackurl = google_oauth::callback_url()->out(false);
+        $a->callbackurl = microsoft_skydrive::callback_url()->out(false);
         $mform->addElement('static', null, '', get_string('oauthinfo', 'repository_skydrive', $a));
 
         parent::type_config_form($mform);
