@@ -128,6 +128,10 @@
                 echo '</font></p>';
             }
 
+            if (!is_null($section->name)) {
+                echo $OUTPUT->heading($section->name, 1, 'sectionname');
+            }
+
             $context = get_context_instance(CONTEXT_COURSE, SITEID);
             $summarytext = file_rewrite_pluginfile_urls($section->summary, 'pluginfile.php', $context->id, 'course', 'section', $section->id);
             $summaryformatoptions = new stdClass();
