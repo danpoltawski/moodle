@@ -113,10 +113,11 @@ function forum_add_instance($forum, $mform = null) {
     /// stage. However, because the forum is brand new, we know that there are
     /// no role assignments or overrides in the forum context, so using the
     /// course context gives the same list of users.
-        $users = forum_get_potential_subscribers($modcontext, 0, 'u.id, u.email', '');
-        foreach ($users as $user) {
+        $rs = forum_get_potential_subscribers_rs($modcontext, 0, 'u.id, u.email');
+        foreach ($rs as $user) {
             forum_subscribe($user->id, $forum->id);
         }
+        $rs->close();
     }
 
     forum_grade_item_update($forum);
@@ -510,26 +511,26 @@ function forum_cron() {
             // caching subscribed users of each forum
             if (!isset($subscribedusers[$forumid])) {
                 $modcontext = get_context_instance(CONTEXT_MODULE, $coursemodules[$forumid]->id);
-                if ($subusers = forum_subscribed_users($courses[$courseid], $forums[$forumid], 0, $modcontext, "u.*")) {
-                    foreach ($subusers as $postuser) {
-                        // this user is subscribed to this forum
-                        $subscribedusers[$forumid][$postuser->id] = $postuser->id;
-                        $userscount++;
-                        if ($userscount > FORUM_CRON_USER_CACHE) {
-                            // Store minimal user info.
-                            $minuser = new stdClass();
-                            $minuser->id = $postuser->id;
-                            $users[$postuser->id] = $minuser;
-                        } else {
-                            // Cache full user record.
-                            forum_cron_minimise_user_record($postuser);
-                            $users[$postuser->id] = $postuser;
-                        }
+                $rs = forum_subscribed_users_rs($courses[$courseid], $forums[$forumid], 0, $modcontext);
+
+                foreach ($rs as $postuser) {
+                    // this user is subscribed to this forum
+                    $subscribedusers[$forumid][$postuser->id] = $postuser->id;
+                    $userscount++;
+                    if ($userscount > FORUM_CRON_USER_CACHE) {
+                        // Store minimal user info.
+                        $minuser = new stdClass();
+                        $minuser->id = $postuser->id;
+                        $users[$postuser->id] = $minuser;
+                    } else {
+                        // Cache full user record.
+                        forum_cron_minimise_user_record($postuser);
+                        $users[$postuser->id] = $postuser;
                     }
                     // Release memory.
-                    unset($subusers);
                     unset($postuser);
                 }
+                $rs->close();
             }
 
             $mailcount[$pid] = 0;
@@ -2848,45 +2849,101 @@ function forum_get_user_discussions($courseid, $userid, $groupid=0) {
 }
 
 /**
- * Get the list of potential subscribers to a forum.
+ * Get the list of potential subscribers to a forum. NOTE: it is recomended to use
+ * forum_get_potential_subscribers_rs() instead to retreieve the potentially large
+ * list in a memory efficient way.
+ *
+ * @deprecated since 2.3.2 MDL-23687 - please try to use forum_get_potential_subscribers_rs() instead
+ * @param object $forumcontext the forum context.
+ * @param integer $groupid the id of a group, or 0 for all groups.
+ * @param string $fields the list of fields to return for each user. Must contain u.id.
+ * @param string $sort sort order. As for get_users_by_capability.
+ * @return array list of users indexed by userid
+ */
+function forum_get_potential_subscribers($forumcontext, $groupid, $fields, $sort = null) {
+    $rs = forum_get_potential_subscribers_rs($forumcontext, $groupid, $fields, $sort);
+
+    if (!$rs->valid()) {
+        return array();
+    }
+
+    $ret = array();
+    foreach ($rs as $potentialsubscriber) {
+        // The use of 'id' is a hack to support backwards compatibility, but previous
+        // code assumed that id was present.
+        $ret[$potentialsubscriber->id] = $potentialsubscriber;
+    }
+    $rs->close();
+    return $ret;
+}
+
+/**
+ * Get the list of potential subscribers to a forum as a recordset.
  *
  * @param object $forumcontext the forum context.
  * @param integer $groupid the id of a group, or 0 for all groups.
  * @param string $fields the list of fields to return for each user. As for get_users_by_capability.
  * @param string $sort sort order. As for get_users_by_capability.
- * @return array list of users.
+ * @return moodle_recordset A recordset of results to iterate over.
  */
-function forum_get_potential_subscribers($forumcontext, $groupid, $fields, $sort) {
+function forum_get_potential_subscribers_rs($forumcontext, $groupid, $fields, $sort = null) {
     global $DB;
 
-    // only active enrolled users or everybody on the frontpage
+    // Only active enrolled users or everybody on the frontpage.
     list($esql, $params) = get_enrolled_sql($forumcontext, '', $groupid, true);
 
     $sql = "SELECT $fields
               FROM {user} u
               JOIN ($esql) je ON je.id = u.id";
-    if ($sort) {
+
+    if (!empty($sort)) {
         $sql = "$sql ORDER BY $sort";
-    } else {
-        $sql = "$sql ORDER BY u.lastname ASC, u.firstname ASC";
     }
 
-    return $DB->get_records_sql($sql, $params);
+    return $DB->get_recordset_sql($sql, $params);
+}
+
+
+/**
+ * Returns list of user objects that are subscribed to this forum. NOTE: it is recomended
+ * to use forum_subscribed_users_rs() instead to retreieve the potentially large list
+ * in a memory efficient way.
+ *
+ * @deprecated since 2.3.2 MDL-23687 - please try to use forum_subscribed_users_rs() instead
+ * @param object $course the course
+ * @param forum $forum the forum
+ * @param integer $groupid group id, or 0 for all.
+ * @param object $context the forum context, to save re-fetching it where possible.
+ * @param string $fields requested user fields (with "u." table prefix), must contain u.id.
+ * @return array list of users.indexed by userid
+ */
+function forum_subscribed_users($course, $forum, $groupid=0, $context = null, $fields = null) {
+    $rs = forum_subscribed_users_rs($course, $forum, $groupid, $context, $fields);
+    if (!$rs->valid()) {
+        return array();
+    }
+
+    $ret = array();
+    foreach ($rs as $potentialsubscriber) {
+        // The use of 'id' is a hack to support backwards compatibility, but previous
+        // code assumed that id was present.
+        $ret[$potentialsubscriber->id] = $potentialsubscriber;
+    }
+    $rs->close();
+    return $ret;
 }
 
 /**
- * Returns list of user objects that are subscribed to this forum
+ * Returns list of user objects that are subscribed to this forum as a recordset.
  *
- * @global object
- * @global object
  * @param object $course the course
  * @param forum $forum the forum
  * @param integer $groupid group id, or 0 for all.
  * @param object $context the forum context, to save re-fetching it where possible.
  * @param string $fields requested user fields (with "u." table prefix)
- * @return array list of users.
+ * @return moodle_recordset A recordset of results to iterate over.
  */
-function forum_subscribed_users($course, $forum, $groupid=0, $context = null, $fields = null) {
+function forum_subscribed_users_rs($course, $forum, $groupid=0, $context = null, $fields = null) {
     global $CFG, $DB;
 
     if (empty($fields)) {
@@ -2918,24 +2975,20 @@ function forum_subscribed_users($course, $forum, $groupid=0, $context = null, $f
     }
 
     if (forum_is_forcesubscribed($forum)) {
-        $results = forum_get_potential_subscribers($context, $groupid, $fields, "u.email ASC");
-
-    } else {
-        // only active enrolled users or everybody on the frontpage
-        list($esql, $params) = get_enrolled_sql($context, '', $groupid, true);
-        $params['forumid'] = $forum->id;
-        $results = $DB->get_records_sql("SELECT $fields
-                                           FROM {user} u
-                                           JOIN ($esql) je ON je.id = u.id
-                                           JOIN {forum_subscriptions} s ON s.userid = u.id
-                                          WHERE s.forum = :forumid
-                                       ORDER BY u.email ASC", $params);
+        return forum_get_potential_subscribers_rs($context, $groupid, $fields);
     }
 
+    // only active enrolled users or everybody on the frontpage
+    list($esql, $params) = get_enrolled_sql($context, '', $groupid, true);
+    $params['forumid'] = $forum->id;
     // Guest user should never be subscribed to a forum.
-    unset($results[$CFG->siteguest]);
-
-    return $results;
+    $params['guestid'] = $CFG->siteguest;
+    return $DB->get_recordset_sql("SELECT $fields
+        FROM {user} u
+        JOIN ($esql) je ON je.id = u.id
+        JOIN {forum_subscriptions} s ON s.userid = u.id
+        WHERE s.forum = :forumid AND u.id != :guestid",
+        $params);
 }
 
 
