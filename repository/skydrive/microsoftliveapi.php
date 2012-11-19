@@ -60,6 +60,77 @@ class microsoft_skydrive extends oauth2_client {
     }
 
     /**
+     * Returns a folder name property
+     *
+     * @param string $path the path which we are in
+     * @return mixed folder name or false in case of error
+     */
+    public function get_folder_name($path) {
+        if (!empty($path)) {
+            $url = self::API."/{$path}";
+            $ret = json_decode($this->get($url));
+            if (isset($ret->error)) {
+                $this->log_out();
+                return false;
+            }
+            return $ret->name;
+        }
+        return false;
+    }
+
+    /**
+     * Updates current path. Currently uses session named by get_tokenname which
+     * is cleared on logout.
+     *
+     * Path and the directory names are stored in the session varabile, this is
+     * easier than calling API recuresevely to determine names and parents
+     * each time directory is chnaged.
+     *
+     * @param string $path the path which we are in
+     * @return void
+     */
+    public function update_current_path($path) {
+        global $SESSION;
+        $name = $this->get_tokenname();
+        $pathlist = array();
+        if (!empty($path)) {
+            if (isset($SESSION->{$name}->path)) {
+                $pathlist = $SESSION->{$name}->path;
+            }
+            $key = array_search($path, $pathlist, true);
+            if (is_number($key)) {
+                $pathlist = array_slice($pathlist, 0, $key+1);
+            } else {
+                if ($foldername = $this->get_folder_name($path)) {
+                    $pathlist[] = $path;
+                    $SESSION->{$name}->pathnames[$path] = $foldername;
+                }
+            }
+        }
+        $SESSION->{$name}->path = $pathlist;
+    }
+
+    /**
+     * Get path bar. Currently uses session named by get_tokenname
+     *
+     * @param mixed $pathlist Array of arrays containing initial path data in repo plugin format
+     * @return mixed Array of arrays containing path data in repo plugin format
+     */
+    public function get_path_bar($pathlist = array()) {
+        global $SESSION;
+
+        $name = $this->get_tokenname();
+
+        if (!empty($SESSION->{$name}->path)) {
+            $pathnames = $SESSION->{$name}->pathnames;
+            foreach ($SESSION->{$name}->path as $path) {
+                $pathlist[] = array('name'=> $pathnames[$path], 'path'=>$path);
+            }
+        }
+        return $pathlist;
+    }
+
+    /**
      * Returns a list of files the user has formated for files api
      *
      * @param string $path the path which we are in
