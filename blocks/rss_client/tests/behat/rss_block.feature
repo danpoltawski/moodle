@@ -17,11 +17,11 @@ Feature: Add and configure RSS block
     And I follow "Add/edit feeds"
     And I press "Add a new feed"
     Then I should see "Add a new feed"
-    When I fill in "Feed URL" with "http://download.moodle.org/unittest/rsstest.xml"
+    When I fill in "Feed URL" with "http://download.moodle.org/unittest/behat-rsstest.xml"
     And I fill in "Custom title (leave blank to use title supplied by feed):" with "$NASTYSTRING1"
     And I press "Add a new feed"
     Then I should see "$NASTYSTRING1"
-    And I should see "http://download.moodle.org/unittest/rsstest.xml"
+    And I should see "http://download.moodle.org/unittest/behat-rsstest.xml"
     # Add block (unconfigured) to the homepage, to simplify next tests:
     When I am on homepage
     And I follow "RSS Test Course"
@@ -74,14 +74,14 @@ Feature: Add and configure RSS block
     And I press "Save changes"
     Then I should see "$NASTYSTRING1"
     # Should see the first item in the feed:
-    And I should see "Google HOP contest encourages pre-University students to work on Moodle"
+    And I should see "Feed item 1 title"
     # But not the second item:
-    And I should not see "Moodle Bugathon!"
+    And I should not see "Feed item 2 title"
     When I follow "Configure $NASTYSTRING1 block"
     And I fill in "Max number entries to show per block." with "2"
     And I press "Save changes"
     Then I should see "$NASTYSTRING1"
     # Should see the first item in the feed:
-    And I should see "Google HOP contest encourages pre-University students to work on Moodle"
+    And I should see "Feed item 1 title"
     # And the second item:
-    And I should see "Moodle Bugathon!"
+    And I should see "Feed item 2 title"
