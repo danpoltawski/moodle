@@ -85,3 +85,17 @@ Feature: Add and configure RSS block
     And I should see "Feed item 1 title"
     # And the second item:
     And I should see "Feed item 2 title"
+
+  @javascript
+  Scenario: Switch "link description" setting
+    Given I log in as "admin"
+    And I follow "RSS Test Course"
+    And I turn editing mode on
+    And I follow "Configure $NASTYSTRING1 block"
+    And I select "No" from "Display each link's description?"
+    And I press "Save changes"
+    Then I should not see "Item 1 description."
+    When I follow "Configure $NASTYSTRING1 block"
+    And I select "Yes" from "Display each link's description?"
+    And I press "Save changes"
+    Then I should see "Item 1 description."
