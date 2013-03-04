@@ -22,7 +22,7 @@
 */
 
 define('RFC2445_CRLF',               "\r\n");
-define('RFC2445_WSP',                "\t ");
+define('RFC2445_WSP',                "\t");
 define('RFC2445_WEEKDAYS',           'MO,TU,WE,TH,FR,SA,SU');
 define('RFC2445_FOLDED_LINE_LENGTH', 75);
 
