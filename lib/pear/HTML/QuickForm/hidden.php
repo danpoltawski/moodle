@@ -61,10 +61,6 @@ class HTML_QuickForm_hidden extends HTML_QuickForm_input
      * @access    public
      * @return    void
      */
-    function freeze()
-    {
-        return false;
-    } //end func freeze
 
     // }}}
     // {{{ accept()
