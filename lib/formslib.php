@@ -1271,8 +1271,10 @@ abstract class moodleform {
                         $key = substr($key, 0, $pos);
                     }
                     if (!array_key_exists($key, $mform->_types)) {
-                        debugging("Did you remember to call setType() for '$key'? ".
-                            'Defaulting to PARAM_RAW cleaning.', DEBUG_DEVELOPER);
+                        if (!$element->isFrozen()) {
+                            debugging("Did you remember to call setType() for '$key'? ".
+                                'Defaulting to PARAM_RAW cleaning.', DEBUG_DEVELOPER);
+                        }
                     }
                     break;
             }
