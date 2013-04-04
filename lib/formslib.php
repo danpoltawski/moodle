@@ -1268,6 +1268,10 @@ abstract class moodleform {
                     // to work that way.
                     $pos = strpos($key, '[');
                     if ($pos !== false) {
+                        if (array_key_exists($key, $mform->_types)) {
+                            // It's named foo[i] and has cleaning on that too.
+                            continue;
+                        }
                         $key = substr($key, 0, $pos);
                     }
                     if (!array_key_exists($key, $mform->_types)) {
