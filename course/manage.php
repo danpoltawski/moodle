@@ -495,7 +495,7 @@ if (!$courses) {
             $icons[] = $OUTPUT->action_icon($url, new pix_icon('t/edit', get_string('settings')));
         }
 
-        // Role assignment icon.
+        // Enrolment icon.
         if (has_capability('moodle/course:enrolreview', $coursecontext)) {
             $url = new moodle_url('/enrol/users.php', array('id' => $acourse->id));
             $icons[] = $OUTPUT->action_icon($url, new pix_icon('t/enrolusers', get_string('enrolledusers', 'enrol')));
@@ -643,6 +643,7 @@ function print_category_edit(html_table $table, coursecat $category, $depth = -1
         $str->show = new lang_string('show');
         $str->cohorts = new lang_string('cohorts', 'cohort');
         $str->spacer = $OUTPUT->spacer().' ';
+        $str->assignroles = new lang_string('assignroles','role');
     }
 
     if ($category->id) {
@@ -693,6 +694,16 @@ function print_category_edit(html_table $table, coursecat $category, $depth = -1
                     null, array('title' => $str->cohorts)
                 );
             }
+
+            // Assign category roles.
+            if (has_capability('moodle/role:assign', $categorycontext)) {
+                $icons[] = $OUTPUT->action_icon(
+                    new moodle_url('/admin/roles/assign.php', array('contextid' => $categorycontext->id)),
+                    new pix_icon('i/roles', $str->assignroles, 'moodle', array('class' => 'iconsmall')),
+                    null, array('title' => $str->assignroles)
+                );
+            }
+
             // Move up/down.
             if ($up) {
                 $icons[] = $OUTPUT->action_icon(
