@@ -83,6 +83,8 @@ class repository_skydrive extends repository {
         $mform->addElement('text', 'secret', get_string('secret', 'repository_skydrive'));
         $mform->addRule('clientid', $strrequired, 'required', null, 'client');
         $mform->addRule('secret', $strrequired, 'required', null, 'client');
+        $mform->setType('clientid', PARAM_RAW_TRIMMED);
+        $mform->setType('secret', PARAM_RAW_TRIMMED);
     }
 
     public function logout() {
