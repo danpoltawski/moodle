@@ -25,6 +25,7 @@
  */
 
 require_once('microsoftliveapi.php');
+require_once($CFG->libdir.'/googleapi.php');
 
 class repository_skydrive extends repository {
     private $skydrive = null;
@@ -56,10 +57,13 @@ class repository_skydrive extends repository {
     }
 
     public function get_listing($path='', $page = '') {
+        $this->skydrive->update_current_path($path);
         $ret = array();
         $ret['dynload'] = true;
         $ret['nosearch'] = true;
+        $ret['path'] = $this->skydrive->get_path_bar(array(array('name'=> $this->name, 'path'=>'')));
         $ret['list'] = $this->skydrive->get_file_list($path);
+
         return $ret;
     }
 
