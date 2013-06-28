@@ -23,11 +23,29 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once('microsoftliveapi.php');
 
+/**
+ * Microsoft skydrive repository plugin.
+ *
+ * @package    repository_skydrive
+ * @copyright  2012 Lancaster University Network Services Ltd
+ * @author     Dan Poltawski <dan.poltawski@luns.net.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class repository_skydrive extends repository {
+    /** @var microsoft_skydrive skydrive oauth2 api helper object */
     private $skydrive = null;
 
+    /**
+     * Constructor
+     *
+     * @param int $repositoryid repository instance id.
+     * @param int|stdClass $context a context id or context object.
+     * @param array $options repository options.
+     */
     public function __construct($repositoryid, $context = SYSCONTEXTID, $options = array()) {
         parent::__construct($repositoryid, $context, $options);
 
@@ -42,11 +60,21 @@ class repository_skydrive extends repository {
         $this->check_login();
     }
 
+    /**
+     * Checks whether the user is logged in or not.
+     *
+     * @return bool true when logged in
+     */
     public function check_login() {
         return $this->skydrive->is_logged_in();
     }
 
-    public function print_login($ajax = true) {
+    /**
+     * Print the login form, if required
+     *
+     * @return array of login options
+     */
+    public function print_login() {
         $popup = new stdClass();
         $popup->type = 'popup';
         $url = $this->skydrive->get_login_url();
@@ -54,6 +82,15 @@ class repository_skydrive extends repository {
         return array('login' => array($popup));
     }
 
+    /**
+     * Given a path, and perhaps a search, get a list of files.
+     *
+     * See details on {@link http://docs.moodle.org/dev/Repository_plugins}
+     *
+     * @param string $path identifier for current path
+     * @param string $page the page number of file list
+     * @return array list of files including meta information as specified by parent.
+     */
     public function get_listing($path='', $page = '') {
         $this->skydrive->update_current_path($path);
         $ret = array();
@@ -65,15 +102,35 @@ class repository_skydrive extends repository {
         return $ret;
     }
 
-    public function get_file($url, $filename = '') {
+    /**
+     * Downloads a repository file and saves to a path.
+     *
+     * @param string $id identifier of file
+     * @param string $filename to save file as
+     * @return array with keys:
+     *          path: internal location of the file
+     *          url: URL to the source
+     */
+    public function get_file($id, $filename = '') {
         $path = $this->prepare_file($filename);
-        return $this->skydrive->download_file($url, $path);
+        return $this->skydrive->download_file($id, $path);
     }
 
+    /**
+     * Return names of the options to display in the repository form
+     *
+     * @return array of option names
+     */
     public static function get_type_option_names() {
         return array('clientid', 'secret', 'pluginname');
     }
 
+    /**
+     * Setup repistory form.
+     *
+     * @param moodleform $mform Moodle form (passed by reference)
+     * @param string $classname repository class name
+     */
     public static function type_config_form($mform, $classname = 'repository') {
         $a = new stdClass;
         $a->callbackurl = microsoft_skydrive::callback_url()->out(false);
@@ -89,19 +146,40 @@ class repository_skydrive extends repository {
         $mform->setType('secret', PARAM_RAW_TRIMMED);
     }
 
+    /**
+     * Logout from repository instance and return
+     * login form.
+     *
+     * @return page to display
+     */
     public function logout() {
         $this->skydrive->log_out();
         return $this->print_login();
     }
 
+    /**
+     * This repository doesn't support global search.
+     *
+     * @return bool if supports global search
+     */
     public function global_search() {
         return false;
     }
 
+    /**
+     * This repoistory supports any filetype.
+     *
+     * @return string '*' means this repository support any files
+     */
     public function supported_filetypes() {
         return '*';
     }
 
+    /**
+     * This repostiory only supports internal files
+     *
+     * @return int return type bitmask supported
+     */
     public function supported_returntypes() {
         return FILE_INTERNAL;
     }
