@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A helper class to access microsoft live resources using the api frm
- * http://msdn.microsoft.com/en-us/library/hh243648.aspx
+ * Functions for operating with the skydrive API
  *
  * @package    repository_skydrive
  * @copyright  2012 Lancaster University Network Services Ltd
@@ -29,26 +28,69 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/oauthlib.php');
 
+/**
+ * A helper class to access microsoft live resources using the api.
+ *
+ * This uses the microsfot API defined in
+ * http://msdn.microsoft.com/en-us/library/hh243648.aspx
+ *
+ * @package    repository_skydrive
+ * @copyright  2012 Lancaster University Network Services Ltd
+ * @author     Dan Poltawski <dan.poltawski@luns.net.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class microsoft_skydrive extends oauth2_client {
+    /** @var string OAuth 2.0 scope */
     const SCOPE = 'wl.skydrive';
+    /** @var string Base url to access API */
     const API = 'https://apis.live.net/v5.0';
 
+    /**
+     * Construct a skydrive request object
+     *
+     * @param string $clientid client id for OAuth 2.0 provided by microsoft
+     * @param string $clientsecret secret for OAuth 2.0 provided by microsoft
+     * @param moodle_url $returnurl url to return to after succseful auth
+     */
     public function __construct($clientid, $clientsecret, $returnurl) {
         parent::__construct($clientid, $clientsecret, $returnurl, self::SCOPE);
     }
 
+    /**
+     * Should HTTP GET be used instead of POST?
+     *
+     * The Microsoft API does not support POST, so we should use
+     * GET instead (with the auth_token passed as a GET param).
+     *
+     * @return bool true if GET should be used
+     */
     protected function use_http_get() {
         return true;
     }
 
+    /**
+     * Returns the auth url for OAuth 2.0 request
+     * @return string the auth url
+     */
     protected function auth_url() {
         return 'https://oauth.live.com/authorize';
     }
 
+    /**
+     * Returns the token url for OAuth 2.0 request
+     * @return string the auth url
+     */
     protected function token_url() {
         return 'https://oauth.live.com/token';
     }
 
+    /**
+     * Downloads a file to a  file from skydrive using authenticated request
+     *
+     * @param string $id id of file
+     * @param string $path path to save file to
+     * @return array stucture for repository download_file
+     */
     public function download_file($id, $path) {
         $url = self::API."/${id}/content";
         // Microsoft live redirects to the real download location..
