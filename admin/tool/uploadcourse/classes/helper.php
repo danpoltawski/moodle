@@ -110,18 +110,18 @@ class tool_uploadcourse_helper {
 
         switch ($block[1]) {
             case '+':
-                $repl = textlib::strtoupper($repl);
+                $repl = core_text::strtoupper($repl);
                 break;
             case '-':
-                $repl = textlib::strtolower($repl);
+                $repl = core_text::strtolower($repl);
                 break;
             case '~':
-                $repl = textlib::strtotitle($repl);
+                $repl = core_text::strtotitle($repl);
                 break;
         }
 
         if (!empty($block[2])) {
-            $repl = textlib::substr($repl, 0, $block[2]);
+            $repl = core_text::substr($repl, 0, $block[2]);
         }
 
         return $repl;
@@ -137,7 +137,7 @@ class tool_uploadcourse_helper {
     public static function get_course_formats() {
         $cache = cache::make('tool_uploadcourse', 'helper');
         if (($formats = $cache->get('format')) === false) {
-            $formats = array_keys(get_plugin_list('format'));
+            $formats = array_keys(core_component::get_plugin_list('format'));
             $cache->set('format', $formats);
         }
         return $formats;
@@ -221,7 +221,7 @@ class tool_uploadcourse_helper {
      * @param string $backupfile path to a backup file.
      * @param string $shortname shortname of a course.
      * @param array $errors will be populated with errors found.
-     * @return string|false false when the backup couldn't retrieved.
+     * @return string|bool false when the backup couldn't retrieved.
      */
     public static function get_restore_content_dir($backupfile = null, $shortname = null, &$errors = array()) {
         global $CFG, $DB, $USER;
@@ -390,7 +390,6 @@ class tool_uploadcourse_helper {
      * @return int category ID.
      */
     public static function resolve_category($data, &$errors = array()) {
-        global $DB;
         $catid = null;
 
         if (!empty($data['category'])) {

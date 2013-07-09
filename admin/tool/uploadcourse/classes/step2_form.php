@@ -38,7 +38,7 @@ class tool_uploadcourse_step2_form extends tool_uploadcourse_base_form {
      * @return void.
      */
     public function definition () {
-        global $CFG, $COURSE, $DB;
+        global $CFG;
 
         $mform   = $this->_form;
         $data    = $this->_customdata['data'];
@@ -198,7 +198,6 @@ class tool_uploadcourse_step2_form extends tool_uploadcourse_base_form {
      * @return array $errors - form errors
      */
     public function validation($data, $files) {
-        global $DB;
 
         $errors = parent::validation($data, $files);
         $columns = $this->_customdata['columns'];

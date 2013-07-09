@@ -92,7 +92,7 @@ if ($form2data = $mform2->is_cancelled()) {
     }
 
 } else {
-    $processor = new tool_uploadcourse_processor($cir, $form1data->options, array());
+    $processor = new tool_uploadcourse_processor($cir, $WHERE_HAVE_I_COME_FROM->options, array());
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('uploadcoursespreview', 'tool_uploadcourse'));
     $processor->preview($previewrows, new tool_uploadcourse_tracker(tool_uploadcourse_tracker::OUTPUT_HTML));

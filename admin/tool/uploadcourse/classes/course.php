@@ -347,7 +347,7 @@ class tool_uploadcourse_course {
     /**
      * Get the directory of the object to restore.
      *
-     * @return string|false subdirectory in $CFG->tempdir/backup/...
+     * @return string|bool subdirectory in $CFG->tempdir/backup/...
      */
     protected function get_restore_content_dir() {
         $backupfile = null;
@@ -664,10 +664,12 @@ class tool_uploadcourse_course {
     /**
      * Proceed with the import of the course.
      *
+     * @throws moodle_exception
+     * @throws coding_exception
      * @return void
      */
     public function proceed() {
-        global $CFG, $USER;
+        global $USER;
 
         if (!$this->prepared) {
             throw new coding_exception('The course has not been prepared.');
@@ -684,7 +686,7 @@ class tool_uploadcourse_course {
             } else {
                 $this->error('errorwhiledeletingcourse', new lang_string('errorwhiledeletingcourse', 'tool_uploadcourse'));
             }
-            return true;
+            return;
         } else if ($this->do === self::DO_CREATE) {
             $course = create_course((object) $this->data);
             $this->id = $course->id;
@@ -779,7 +781,6 @@ class tool_uploadcourse_course {
                     if ($instance->enrol == $enrolmethod) {
                         $plugin = $enrolmentplugins[$instance->enrol];
                         $plugin->update_status($instance, ENROL_INSTANCE_DISABLED);
-                        $enrol_updated = true;
                         break;
                     }
                 }

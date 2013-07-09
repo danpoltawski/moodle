@@ -107,7 +107,6 @@ class tool_uploadcourse_tracker {
      * @return void
      */
     public function results($total, $created, $updated, $deleted, $errors) {
-        global $OUTPUT;
 
         if ($this->outputmode == self::NO_OUTPUT) {
             return;
@@ -182,7 +181,7 @@ class tool_uploadcourse_tracker {
             echo html_writer::tag('td', isset($data['shortname']) ? $data['shortname'] : '', array('class' => 'c' . $ci++));
             echo html_writer::tag('td', isset($data['fullname']) ? $data['fullname'] : '', array('class' => 'c' . $ci++));
             echo html_writer::tag('td', isset($data['idnumber']) ? $data['idnumber'] : '', array('class' => 'c' . $ci++));
-            echo html_writer::tag('td', $status, array('class' => 'c' . $ci++));
+            echo html_writer::tag('td', $status, array('class' => 'c' . $ci));
             echo html_writer::end_tag('tr');
         }
     }
