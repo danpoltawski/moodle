@@ -227,7 +227,10 @@ class microsoft_skydrive extends oauth2_client {
                     break;
             }
         }
-        return $files;
+
+        // Filter on accepted_types..
+        $filteredfiles = array_filter($files, array('repository', 'filter'));
+        return $filteredfiles;
     }
 
     /**

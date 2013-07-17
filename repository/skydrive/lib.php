@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('microsoftliveapi.php');
+require_once($CFG->dirroot.'/repository/skydrive/microsoftliveapi.php');
 
 /**
  * Microsoft skydrive repository plugin.
