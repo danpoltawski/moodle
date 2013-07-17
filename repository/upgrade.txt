@@ -7,6 +7,7 @@ http://docs.moodle.org/dev/Repository_API
 
 * get_option() now always return null when the first parameter ($config) is not empty, and
   no value was found for this $config. Previously this could sometimes return an empty array().
+* repository::filter() was declared static, properly reflecting its function.
 
 === 2.5 ===
 
