@@ -88,6 +88,9 @@ class core_text_testcase extends advanced_testcase {
         $this->assertSame($str, core_text::convert($utf8, 'utf-8', 'GB18030'));
         $this->assertSame($utf8, core_text::convert($str, 'GB18030', 'utf-8'));
         $this->assertSame($utf8, core_text::convert($utf8, 'utf-8', 'utf-8'));
+
+        // Attempt to convert an invalid utf8 char.
+        $this->assertSame('?', core_text::convert(chr(130), 'utf-8', 'ascii'));
     }
 
     /**
