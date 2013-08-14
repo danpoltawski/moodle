@@ -91,6 +91,9 @@ class core_textlib_testcase extends advanced_testcase {
         $this->assertSame(textlib::convert($utf8, 'utf-8', 'GB18030'), $str);
         $this->assertSame(textlib::convert($str, 'GB18030', 'utf-8'), $utf8);
         $this->assertSame(textlib::convert($utf8, 'utf-8', 'utf-8'), $utf8);
+
+        // Attempt to convert an invalid utf8 char.
+        $this->assertSame('?', textlib::convert(chr(130), 'utf-8', 'ascii'));
     }
 
     /**
