@@ -182,7 +182,7 @@ class core_text {
             return fix_utf8($text);
         }
 
-        $result = iconv($fromCS, $toCS.'//TRANSLIT', $text);
+        $result = iconv($fromCS, $toCS.'//TRANSLIT//IGNORE', $text);
 
         if ($result === false or $result === '') {
             // note: iconv is prone to return empty string when invalid char encountered, or false if encoding unsupported
