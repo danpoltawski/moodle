@@ -4286,7 +4286,7 @@ function guest_user() {
  *
  * Note: this function works only with non-mnet accounts!
  *
- * @param string $username  User's username
+ * @param string $username  User's username (or also email if $CFG->authloginviaemail enabled)
  * @param string $password  User's password
  * @param bool $ignorelockout useful when guessing is prevented by other mechanism such as captcha or SSO
  * @param int $failurereason login failure reason, can be used in renderers (it may disclose if account exists)
@@ -4296,9 +4296,30 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
     global $CFG, $DB;
     require_once("$CFG->libdir/authlib.php");
 
+    $select = "mnethostid = :mnethostid AND UPPER(username) = UPPER(:username) AND deleted = 0";
+    $params = array('mnethostid'=>$CFG->mnet_localhost_id, 'username'=>$username);
+    if ($user = $DB->get_record_select('user', $select, $params, 'id')) {
+        $user = get_complete_user_data('id', $user->id);
+        $username = core_text::strtolower($user->username);
+
+    } else if (!empty($CFG->authloginviaemail)) {
+        if ($email = clean_param($username, PARAM_EMAIL)) {
+            $select = "mnethostid = :mnethostid AND UPPER(email) = UPPER(:email) AND deleted = 0";
+            $params = array('mnethostid'=>$CFG->mnet_localhost_id, 'email'=>$email);
+            $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            if (count($users) === 1) {
+                // Use email for login only if unique.
+                $user = reset($users);
+                $user = get_complete_user_data('id', $user->id);
+                $username = core_text::strtolower($user->username);
+            }
+            unset($users);
+        }
+    }
+
     $authsenabled = get_enabled_auth_plugins();
 
-    if ($user = get_complete_user_data('username', $username, $CFG->mnet_localhost_id)) {
+    if ($user) {
         // Use manual if auth not set.
         $auth = empty($user->auth) ? 'manual' : $user->auth;
         if (!empty($user->suspended)) {
@@ -4366,7 +4387,7 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
             // User already exists in database.
             if (empty($user->auth)) {
                 // For some reason auth isn't set yet.
-                $DB->set_field('user', 'auth', $auth, array('username' => $username));
+                $DB->set_field('user', 'auth', $auth, array('id' => $user->id));
                 $user->auth = $auth;
             }
 
