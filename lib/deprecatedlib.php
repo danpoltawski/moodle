@@ -2744,3 +2744,17 @@ function tag_autocomplete($text) {
                                    FROM {tag} tg
                                   WHERE tg.name LIKE ?", array(core_text::strtolower($text)."%"));
 }
+
+/**
+ * Returns host part from url.
+ *
+ * @param string $url to get host from
+ * @return string host
+ * @deprecated since Moodle 3.1
+ * @see moodle_url::get_host()
+ */
+function get_host_from_url($url) {
+    debugging('get_host_from_url is deprecated, please use moodle_url::get_host instead', DEBUG_DEVELOPER);
+    $murl = new moodle_url($url);
+    return $murl->get_host();
+}

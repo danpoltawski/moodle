@@ -593,8 +593,8 @@ function forum_cron() {
 
     if ($users && $posts) {
 
-        $urlinfo = parse_url($CFG->wwwroot);
-        $hostname = $urlinfo['host'];
+        $murl = new moodle_url($CFG->wwwroot);
+        $hostname = $murl->get_host();;
 
         foreach ($users as $userto) {
             // Terminate if processing of any account takes longer than 2 minutes.
