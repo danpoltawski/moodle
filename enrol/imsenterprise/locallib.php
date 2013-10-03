@@ -30,14 +30,14 @@ class imsenterprise_roles {
 
     function __construct() {
         $this->imsroles = array(
-        '01'=>'Learner',
-        '02'=>'Instructor',
-        '03'=>'Content Developer',
-        '04'=>'Member',
-        '05'=>'Manager',
-        '06'=>'Mentor',
-        '07'=>'Administrator',
-        '08'=>'TeachingAssistant',
+            '01'=>'Learner',
+            '02'=>'Instructor',
+            '03'=>'Content Developer',
+            '04'=>'Member',
+            '05'=>'Manager',
+            '06'=>'Mentor',
+            '07'=>'Administrator',
+            '08'=>'TeachingAssistant',
         );
         // PLEASE NOTE: It may seem odd that "Content Developer" has a space in it
         // but "TeachingAssistant" doesn't. That's what the spec says though!!!
@@ -48,32 +48,32 @@ class imsenterprise_roles {
     }
 
     /**
-    * This function is only used when first setting up the plugin, to
-    * decide which role assignments to recommend by default.
-    * For example, IMS role '01' is 'Learner', so may map to 'student' in Moodle.
-    */
+     * This function is only used when first setting up the plugin, to
+     * decide which role assignments to recommend by default.
+     * For example, IMS role '01' is 'Learner', so may map to 'student' in Moodle.
+     */
     function determine_default_rolemapping($imscode) {
         global $DB;
 
         switch($imscode) {
-            case '01':
-            case '04':
-                $shortname = 'student';
-                break;
-            case '06':
-            case '08':
-                $shortname = 'teacher';
-                break;
-            case '02':
-            case '03':
-                $shortname = 'editingteacher';
-                break;
-            case '05':
-            case '07':
-                $shortname = 'admin';
-                break;
-            default:
-                return 0; // Zero for no match
+        case '01':
+        case '04':
+            $shortname = 'student';
+            break;
+        case '06':
+        case '08':
+            $shortname = 'teacher';
+            break;
+        case '02':
+        case '03':
+            $shortname = 'editingteacher';
+            break;
+        case '05':
+        case '07':
+            $shortname = 'admin';
+            break;
+        default:
+            return 0; // Zero for no match
         }
         return (string)$DB->get_field('role', 'id', array('shortname'=>$shortname));
     }
@@ -137,14 +137,14 @@ class imsenterprise_courses {
      */
     function determine_default_coursemapping($courseattr) {
         switch($courseattr) {
-            case 'fullname':
-                $imsname = 'short';
-                break;
-            case 'shortname':
-                $imsname = 'coursecode';
-                break;
-            default:
-                $imsname = 'ignore';
+        case 'fullname':
+            $imsname = 'short';
+            break;
+        case 'shortname':
+            $imsname = 'coursecode';
+            break;
+        default:
+            $imsname = 'ignore';
         }
 
         return $imsname;
