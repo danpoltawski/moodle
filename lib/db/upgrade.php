@@ -2576,5 +2576,257 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2013092700.01);
     }
 
+    if ($oldversion < 2013100700.00) {
+        // Define table outcome_sets to be created.
+        $table = new xmldb_table('outcome_sets');
+
+        // Adding fields to table outcome_sets.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('idnumber', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('provider', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('revision', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('region', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('deleted', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_sets.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table outcome_sets.
+        $table->add_index('idnumber', XMLDB_INDEX_UNIQUE, array('idnumber'));
+
+        // Conditionally launch create table for outcome_sets.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome to be created.
+        $table = new xmldb_table('outcome');
+
+        // Adding fields to table outcome.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('outcomesetid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('parentid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('idnumber', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('docnum', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('assessable', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('deleted', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('outcomesetid', XMLDB_KEY_FOREIGN, array('outcomesetid'), 'outcome_sets', array('id'));
+        $table->add_key('parentid', XMLDB_KEY_FOREIGN, array('parentid'), 'outcome', array('id'));
+
+        // Adding indexes to table outcome.
+        $table->add_index('idnumber', XMLDB_INDEX_UNIQUE, array('idnumber'));
+
+        // Conditionally launch create table for outcome.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_metadata to be created.
+        $table = new xmldb_table('outcome_metadata');
+
+        // Adding fields to table outcome_metadata.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('outcomeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('value', XMLDB_TYPE_CHAR, '1333', null, null, null, null);
+
+        // Adding keys to table outcome_metadata.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('outcomeid', XMLDB_KEY_FOREIGN, array('outcomeid'), 'outcome', array('id'));
+
+        // Conditionally launch create table for outcome_metadata.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_areas to be created.
+        $table = new xmldb_table('outcome_areas');
+
+        // Adding fields to table outcome_areas.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('area', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_areas.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table outcome_areas.
+        $table->add_index('component_area_itemid', XMLDB_INDEX_UNIQUE, array('component', 'area', 'itemid'));
+
+        // Conditionally launch create table for outcome_areas.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_area_outcomes to be created.
+        $table = new xmldb_table('outcome_area_outcomes');
+
+        // Adding fields to table outcome_area_outcomes.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('outcomeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('outcomeareaid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_area_outcomes.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('outcomeid', XMLDB_KEY_FOREIGN, array('outcomeid'), 'outcome', array('id'));
+        $table->add_key('outcomeareaid', XMLDB_KEY_FOREIGN, array('outcomeareaid'), 'outcome_areas', array('id'));
+
+        // Conditionally launch create table for outcome_area_outcomes.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_used_areas to be created.
+        $table = new xmldb_table('outcome_used_areas');
+
+        // Adding fields to table outcome_used_areas.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('outcomeareaid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_used_areas.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('cmid', XMLDB_KEY_FOREIGN, array('cmid'), 'course_modules', array('id'));
+        $table->add_key('outcomeareaid', XMLDB_KEY_FOREIGN, array('outcomeareaid'), 'outcome_areas', array('id'));
+
+        // Conditionally launch create table for outcome_used_areas.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_used_sets to be created.
+        $table = new xmldb_table('outcome_used_sets');
+
+        // Adding fields to table outcome_used_sets.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('outcomesetid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('filter', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table outcome_used_sets.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+        $table->add_key('outcomesetid', XMLDB_KEY_FOREIGN, array('outcomesetid'), 'outcome_sets', array('id'));
+
+        // Conditionally launch create table for outcome_used_sets.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_attempts to be created.
+        $table = new xmldb_table('outcome_attempts');
+
+        // Adding fields to table outcome_attempts.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('outcomeusedareaid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('percentgrade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('mingrade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('maxgrade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('rawgrade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_attempts.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+
+        // Adding indexes to table outcome_attempts.
+        $table->add_index('outcomeusedareaid_userid', XMLDB_INDEX_NOTUNIQUE, array('outcomeusedareaid', 'userid'));
+        $table->add_index('itemid', XMLDB_INDEX_NOTUNIQUE, array('itemid'));
+
+        // Conditionally launch create table for outcome_attempts.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_marks to be created.
+        $table = new xmldb_table('outcome_marks');
+
+        // Adding fields to table outcome_marks.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('outcomeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('graderid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('result', XMLDB_TYPE_INTEGER, '2', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_marks.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+        $table->add_key('outcomeid', XMLDB_KEY_FOREIGN, array('outcomeid'), 'outcome', array('id'));
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $table->add_key('graderid', XMLDB_KEY_FOREIGN, array('graderid'), 'user', array('id'));
+
+        // Conditionally launch create table for outcome_marks.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_marks_history to be created.
+        $table = new xmldb_table('outcome_marks_history');
+
+        // Adding fields to table outcome_marks_history.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('action', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('outcomemarkid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('outcomeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('graderid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('result', XMLDB_TYPE_INTEGER, '2', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_marks_history.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+        $table->add_key('outcomeid', XMLDB_KEY_FOREIGN, array('outcomeid'), 'outcome', array('id'));
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $table->add_key('graderid', XMLDB_KEY_FOREIGN, array('graderid'), 'user', array('id'));
+        $table->add_key('outcomemarkid', XMLDB_KEY_FOREIGN, array('outcomemarkid'), 'outcome_marks', array('id'));
+
+        // Conditionally launch create table for outcome_marks_history.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table outcome_awards to be created.
+        $table = new xmldb_table('outcome_awards');
+
+        // Adding fields to table outcome_awards.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('outcomeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table outcome_awards.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('outcomeid', XMLDB_KEY_FOREIGN, array('outcomeid'), 'outcome', array('id'));
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+
+        // Conditionally launch create table for outcome_awards.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013100700.00);
+    }
+
     return true;
 }

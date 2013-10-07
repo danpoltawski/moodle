@@ -741,6 +741,7 @@ ORDER BY
 
         if ($this->db->get_dbfamily() == 'mysql') {
             $this->delete_usage_records_for_mysql($qubaids);
+            $this->delete_question_outcome_attempts(array_keys($contextids));
             return;
         }
 
@@ -761,6 +762,8 @@ ORDER BY
 
         $this->db->delete_records_select('question_usages',
                 "{question_usages}.id {$qubaids->usage_id_in()}", $qubaids->usage_id_in_params());
+
+        $this->delete_question_outcome_attempts(array_keys($contextids));
     }
 
     /**
@@ -787,6 +790,41 @@ ORDER BY
              LEFT JOIN {question_attempt_step_data} qasd ON qasd.attemptstepid = qas.id
                  WHERE qu.id ' . $qubaidtest,
                 $qubaids->usage_id_in_params());
+    }
+
+    /**
+     * This deletes all outcome attempts for any question attempts
+     * that no longer exist.
+     *
+     * @param array $contextids
+     */
+    protected function delete_question_outcome_attempts($contextids) {
+        global $CFG;
+
+        if (empty($CFG->core_outcome_enable)) {
+            return;
+        }
+        if (empty($contextids)) {
+            return;
+        }
+        list($sql, $params) = $this->db->get_in_or_equal($contextids);
+
+        // In the below query, we use CONTEXT_MODULE because
+        // outcome areas can only be associated to an activity.
+        $this->db->execute("
+            DELETE FROM {outcome_attempts}
+             WHERE outcomeusedareaid IN (
+                SELECT ua.id
+                  FROM {outcome_used_areas} ua
+                  JOIN {outcome_areas} area ON area.id = ua.outcomeareaid
+                  JOIN {context} ctx ON ctx.instanceid = ua.cmid AND ctx.contextlevel = ?
+                 WHERE area.area = ?
+                   AND ctx.id $sql
+               )
+               AND NOT EXISTS (
+                    SELECT 1 FROM {question_attempts} qa WHERE qa.id = itemid
+               )
+        ", array_merge(array(CONTEXT_MODULE, 'qtype'), $params));
     }
 
     /**

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+        xmlns:asn="http://purl.org/ASN/schema/core/"
+        xmlns:cc="http://creativecommons.org/ns#"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:gemq="http://purl.org/gem/qualifiers/"
+        xmlns:loc="http://www.loc.gov/loc.terms/relators/"
+        xmlns:owl="http://www.w3.org/2002/07/owl#"
+        xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+    <asn:StandardDocument rdf:about="ABOUTID">
+        <asn:jurisdiction rdf:resource="http://purl.org/ASN/scheme/ASNJurisdiction/XY"/>
+        <dc:title xml:lang="en-US">Name</dc:title>
+        <dcterms:description xml:lang="en-US">Description</dcterms:description>
+        <asn:publicationStatus rdf:resource="http://purl.org/ASN/scheme/ASNPublicationStatus/Published"/>
+        <asn:repositoryDate rdf:datatype="http://purl.org/dc/terms/W3CDTF">Revision</asn:repositoryDate>
+        <dcterms:valid rdf:datatype="http://purl.org/dc/terms/W3CDTF">NOT USED</dcterms:valid>
+        <dcterms:tableOfContents rdf:resource="http://asn.jesandco.org/resources/TEST/manifest.json"/>
+        <dcterms:subject rdf:resource="http://purl.org/ASN/scheme/ASNTopic/math"/>
+        <dcterms:educationLevel rdf:resource="http://purl.org/ASN/scheme/ASNEducationLevel/K"/>
+        <dcterms:educationLevel rdf:resource="http://purl.org/ASN/scheme/ASNEducationLevel/1"/>
+        <dcterms:educationLevel rdf:resource="http://purl.org/ASN/scheme/ASNEducationLevel/2"/>
+        <dcterms:language rdf:resource="http://id.loc.gov/vocabulary/iso639-2/eng"/>
+        <asn:identifier rdf:resource="NOT USED"/>
+        <gemq:hasChild rdf:resource="http://asn.jesandco.org/resources/TEST"/>
+    </asn:StandardDocument>
+</rdf:RDF>

@@ -29,6 +29,7 @@ $string['alwaysshowdefinition'] = 'Allow users to preview rubric used in the mod
 $string['backtoediting'] = 'Back to editing';
 $string['confirmdeletecriterion'] = 'Are you sure you want to delete this criterion?';
 $string['confirmdeletelevel'] = 'Are you sure you want to delete this level?';
+$string['criterion'] = 'Criterion';
 $string['criterionaddlevel'] = 'Add level';
 $string['criteriondelete'] = 'Delete criterion';
 $string['criterionempty'] = 'Click to edit criterion';

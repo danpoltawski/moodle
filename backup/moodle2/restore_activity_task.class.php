@@ -168,6 +168,9 @@ abstract class restore_activity_task extends restore_task {
             $this->add_step(new restore_userscompletion_structure_step('activity_userscompletion', 'completion.xml'));
         }
 
+        // Outcomes attached to the module.
+        $this->add_step(new restore_activity_outcomes_structure_step('activity_outcomes', 'outcome.xml'));
+
         // Logs (conditionally)
         if ($this->get_setting_value('logs')) {
             $this->add_step(new restore_activity_logs_structure_step('activity_logs', 'logs.xml'));

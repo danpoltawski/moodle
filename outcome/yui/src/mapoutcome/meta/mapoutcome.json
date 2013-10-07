@@ -1,0 +1,13 @@
+{
+    "moodle-core_outcome-mapoutcome": {
+        "requires": [
+            "widget",
+            "handlebars",
+            "json-parse",
+            "json-stringify",
+            "moodle-core_outcome-models",
+            "moodle-core_outcome-outcomepanel",
+            "moodle-core-notification-exception"
+        ]
+    }
+}

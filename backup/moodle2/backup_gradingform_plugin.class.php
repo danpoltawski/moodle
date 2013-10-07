@@ -34,5 +34,5 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @category   backup
  */
-abstract class backup_gradingform_plugin extends backup_plugin {
+abstract class backup_gradingform_plugin extends backup_outcome_area_plugin {
 }

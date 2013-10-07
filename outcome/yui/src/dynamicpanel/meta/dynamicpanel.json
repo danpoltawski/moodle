@@ -1,0 +1,11 @@
+{
+    "moodle-core_outcome-dynamicpanel": {
+        "requires": [
+            "base",
+            "moodle-core_outcome-simpleio",
+            "classnamemanager",
+            "moodle-core-notification-dialogue",
+            "moodle-core_outcome-scrollpanel"
+        ]
+    }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data component="outcomeexport_general">
+    <outcomeSet>
+        <id>1</id>
+        <idnumber>IDNUMBER</idnumber>
+        <name>Name</name>
+        <description>Description</description>
+        <provider>Provider</provider>
+        <revision>Revision</revision>
+        <region>Region</region>
+        <deleted>0</deleted>
+    </outcomeSet>
+</data>

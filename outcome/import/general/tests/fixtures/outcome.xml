@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data component="outcomeexport_general">
+    <outcome>
+        <id>5</id>
+        <parentid>1</parentid>
+        <idnumber>IDNUMBER</idnumber>
+        <docnum>A.B.C</docnum>
+        <description>Description</description>
+        <assessable>1</assessable>
+        <deleted>0</deleted>
+        <subject>Math</subject>
+        <subject>English</subject>
+        <edulevel>9</edulevel>
+        <edulevel>10</edulevel>
+    </outcome>
+</data>

@@ -122,6 +122,13 @@ class question_type {
     }
 
     /**
+     * @return bool true if this question type can be mapped to outcomes
+     */
+    public function supports_outcomes() {
+        return $this->is_real_question_type();
+    }
+
+    /**
      * Whether this question type can perform a frequency analysis of student
      * responses.
      *

@@ -94,6 +94,11 @@ function add_moduleinfo($moduleinfo, $course, $mform = null) {
         $moduleinfo->introformat = $introeditor['format'];
     }
 
+    $outcomearea = false;
+    if (!empty($CFG->core_outcome_enable)) {
+        $outcomearea = \core_outcome\service::mapper()->save_outcome_mappings('mod_'.$moduleinfo->modulename, 'mod', $moduleinfo->coursemodule, $moduleinfo->outcomes);
+    }
+
     $addinstancefunction    = $moduleinfo->modulename."_add_instance";
     $returnfromfunc = $addinstancefunction($moduleinfo, $mform);
     if (!$returnfromfunc or !is_number($returnfromfunc)) {
@@ -102,6 +107,9 @@ function add_moduleinfo($moduleinfo, $course, $mform = null) {
         context_helper::delete_instance(CONTEXT_MODULE, $moduleinfo->coursemodule);
         $DB->delete_records('course_modules', array('id'=>$moduleinfo->coursemodule));
 
+        if ($outcomearea) {
+            \core_outcome\service::mapper()->remove_area($outcomearea);
+        }
         if (!is_number($returnfromfunc)) {
             print_error('invalidfunction', '', course_get_url($course, $cw->section));
         } else {
@@ -138,6 +146,9 @@ function add_moduleinfo($moduleinfo, $course, $mform = null) {
     // Set up conditions.
     if ($CFG->enableavailability) {
         condition_info::update_cm_from_form((object)array('id'=>$moduleinfo->coursemodule), $moduleinfo, false);
+    }
+    if ($outcomearea) {
+        \core_outcome\service::area()->set_area_used($outcomearea, $moduleinfo->coursemodule);
     }
 
     // Trigger event based on the action we did.
@@ -468,9 +479,22 @@ function update_moduleinfo($cm, $moduleinfo, $course, $mform = null) {
         $moduleinfo->introformat = $moduleinfo->introeditor['format'];
         unset($moduleinfo->introeditor);
     }
+
+    $outcomesync = false;
+    if (!empty($CFG->core_outcome_enable)) {
+        $outcomearea = \core_outcome\service::mapper()->save_outcome_mappings('mod_'.$moduleinfo->modulename, 'mod', $moduleinfo->coursemodule, $moduleinfo->outcomes);
+        if ($outcomearea) {
+            $outcomesync = \core_outcome\service::area()->set_area_used($outcomearea, $moduleinfo->coursemodule);
+        }
+    }
+
     $updateinstancefunction = $moduleinfo->modulename."_update_instance";
     if (!$updateinstancefunction($moduleinfo, $mform)) {
         print_error('cannotupdatemod', '', course_get_url($course, $cw->section), $moduleinfo->modulename);
+    }
+
+    if ($outcomesync) {
+        \core_outcome\service::attempt()->sync_mod_attempts_with_gradebook($moduleinfo->coursemodule, $moduleinfo->modulename);
     }
 
     // Make sure visibility is set correctly (in particular in calendar).

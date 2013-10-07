@@ -57,6 +57,8 @@ class gradingform_rubric_renderer extends plugin_renderer_base {
      * @return string
      */
     public function criterion_template($mode, $options, $elementname = '{NAME}', $criterion = null, $levelsstr = '{LEVELS}', $value = null) {
+        global $CFG;
+
         // TODO MDL-31235 description format, remark format
         if ($criterion === null || !is_array($criterion) || !array_key_exists('id', $criterion)) {
             $criterion = array('id' => '{CRITERION-id}', 'description' => '{CRITERION-description}', 'sortorder' => '{CRITERION-sortorder}', 'class' => '{CRITERION-class}');
@@ -80,12 +82,30 @@ class gradingform_rubric_renderer extends plugin_renderer_base {
             $criteriontemplate .= html_writer::end_tag('td'); // .controls
             $criteriontemplate .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => '{NAME}[criteria][{CRITERION-id}][sortorder]', 'value' => $criterion['sortorder']));
             $description = html_writer::tag('textarea', htmlspecialchars($criterion['description']), array('name' => '{NAME}[criteria][{CRITERION-id}][description]', 'cols' => '10', 'rows' => '5'));
+
+            if (!empty($CFG->core_outcome_enable)) {
+                $selectoutcome = html_writer::link('#', get_string('selectoutcome', 'outcome'), array('role' => 'button', 'class' => 'selectoutcome'));
+                $selectoutcome .= html_writer::link('#', get_string('removeoutcome', 'outcome'), array('role' => 'button', 'class' => 'removeoutcome'));
+                $selectoutcome .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => '{NAME}[criteria][{CRITERION-id}][outcomeid]', 'value' => (isset($criterion['outcomeid'])) ? $criterion['outcomeid'] : '0'));
+                $description .= html_writer::tag('div', $selectoutcome, array('class' => 'selectoutcome-box'));
+            }
         } else {
             if ($mode == gradingform_rubric_controller::DISPLAY_EDIT_FROZEN) {
                 $criteriontemplate .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => '{NAME}[criteria][{CRITERION-id}][sortorder]', 'value' => $criterion['sortorder']));
                 $criteriontemplate .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => '{NAME}[criteria][{CRITERION-id}][description]', 'value' => $criterion['description']));
+
+                if (!empty($CFG->core_outcome_enable)) {
+                    $criteriontemplate .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => '{NAME}[criteria][{CRITERION-id}][outcomeid]', 'value' => (isset($criterion['outcomeid'])) ? $criterion['outcomeid'] : '0'));
+                }
             }
             $description = $criterion['description'];
+
+            if (!empty($CFG->core_outcome_enable)) {
+                // Warn users about non-assessable outcomes.
+                if (array_key_exists('outcomeassessable', $criterion) and empty($criterion['outcomeassessable'])) {
+                    $description = $this->output->pix_icon('t/block', get_string('nonassessablewarning', 'outcome')).' '.$description;
+                }
+            }
         }
         $descriptionclass = 'description';
         if (isset($criterion['error_description'])) {

@@ -980,6 +980,18 @@ class plugin_manager {
                 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'
             ),
 
+            'outcomeexport' => array(
+                'general'
+            ),
+
+            'outcomeimport' => array(
+                'ab', 'asn', 'general'
+            ),
+
+            'outcomesupport' => array(
+                'gradingform', 'mod', 'qtype'
+            ),
+
             'plagiarism' => array(
             ),
 

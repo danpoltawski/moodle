@@ -795,6 +795,67 @@ class question_usage_by_activity {
     }
 
     /**
+     * Create an outcome attempts based on the question
+     * attempts.
+     *
+     * @param array|int $userids  Can pass an array of user IDs
+     *                            if multiple users attempted the questions.
+     */
+    public function record_outcomes($userids) {
+        global $CFG;
+
+        if (empty($CFG->core_outcome_enable)) {
+            return;
+        }
+        if (!is_array($userids)) {
+            $userids = array($userids);
+        }
+        foreach ($this->questionattempts as $qa) {
+            /** @var question_attempt $qa */
+            if (!$qa->get_state()->is_graded()) {
+                continue;
+            }
+
+            $question   = $qa->get_question();
+            $usedareaid = \core_outcome\service::area()->get_used_area_id('qtype_'.$question->get_type_name(), 'qtype',
+                $question->id, $this->context->instanceid);
+
+            if (empty($usedareaid)) {
+                continue;
+            }
+            $model                    = new \core_outcome\model\attempt_model();
+            $model->outcomeusedareaid = $usedareaid;
+            $model->itemid            = $qa->get_database_id();
+            $model->percentgrade      = 0;
+            $model->rawgrade          = $qa->get_mark();
+            $model->mingrade          = $qa->get_max_mark() * $qa->get_min_fraction();
+            $model->maxgrade          = $qa->get_max_mark();
+            $model->timemodified      = $qa->get_last_action_time();
+            $model->timecreated       = $qa->get_last_action_time();
+
+            $numerator   = $model->rawgrade - $model->mingrade;
+            $denominator = $model->maxgrade - $model->mingrade;
+            if ($denominator > 0) {
+                $model->percentgrade = ($numerator / $denominator) * 100;
+            }
+            $outcomeattempts = \core_outcome\service::attempt()->get_item_attempts($usedareaid,
+                $qa->get_database_id(), $userids);
+
+            foreach ($userids as $userid) {
+                $model->userid = $userid;
+                foreach ($outcomeattempts as $outcomeattempt) {
+                    if ($outcomeattempt->userid == $userid) {
+                        $model->id          = $outcomeattempt->id;
+                        $model->timecreated = $outcomeattempt->timecreated;
+                        break;
+                    }
+                }
+                \core_outcome\service::attempt()->save_attempt($model, false);
+            }
+        }
+    }
+
+    /**
      * Create a question_usage_by_activity from records loaded from the database.
      *
      * For internal use only.

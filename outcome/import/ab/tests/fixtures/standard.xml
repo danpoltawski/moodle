@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<standard_document year="1234" revision_date="REVISION" uid="IDNUMBER" uid_provider="PROVIDER">
+    <standard uid="IDNUMBER">
+        <title>DESCRIPTION</title>
+        <grade_range_ref code="EDULEVELCODE"/>
+    </standard>
+</standard_document>

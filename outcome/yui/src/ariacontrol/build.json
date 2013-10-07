@@ -1,0 +1,15 @@
+{
+    "name": "moodle-core_outcome-ariacontrol",
+    "builds": {
+        "moodle-core_outcome-ariacontrol": {
+            "jsfiles": [
+                "ariacontrol.js"
+            ]
+        },
+        "moodle-core_outcome-ariacontrolled": {
+            "jsfiles": [
+                "ariacontrolled.js"
+            ]
+        }
+    }
+}

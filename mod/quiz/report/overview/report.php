@@ -370,6 +370,10 @@ class quiz_overview_report extends quiz_attempts_report {
 
         if (!$dryrun) {
             question_engine::save_questions_usage_by_activity($quba);
+
+            if ($finished) {
+                $quba->record_outcomes($attempt->userid);
+            }
         }
 
         $transaction->allow_commit();

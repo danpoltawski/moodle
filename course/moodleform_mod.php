@@ -424,6 +424,15 @@ abstract class moodleform_mod extends moodleform {
         global $COURSE, $CFG, $DB;
         $mform =& $this->_form;
 
+        if (!empty($CFG->core_outcome_enable)) {
+            $mform->addElement('header', 'outcomesheader', get_string('outcomes', 'outcome'));
+            $mform->addElement('mapoutcome', 'outcomes');
+            $mform->addHelpButton('outcomes', 'selectoutcomes', 'outcome');
+            if (!has_capability('moodle/outcome:mapoutcomes', $this->context)) {
+                $mform->hardFreeze('outcomes');
+            }
+        }
+
         $this->_outcomesused = false;
         if ($this->_features->outcomes) {
             if ($outcomes = grade_outcome::fetch_all_available($COURSE->id)) {

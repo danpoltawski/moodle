@@ -204,6 +204,9 @@ abstract class question_edit_form extends question_wizard_form {
         // Any questiontype specific fields.
         $this->definition_inner($mform);
 
+        // Define outcomes.
+        $this->definition_outcomes($mform);
+
         if (!empty($CFG->usetags)) {
             $mform->addElement('header', 'tagsheader', get_string('tags'));
             $mform->addElement('tags', 'tags', get_string('tags'));
@@ -280,6 +283,24 @@ abstract class question_edit_form extends question_wizard_form {
      */
     protected function definition_inner($mform) {
         // By default, do nothing.
+    }
+
+    /**
+     * Conditionally add outcome form definition
+     *
+     * @param MoodleQuickForm $mform
+     */
+    protected function definition_outcomes($mform) {
+        global $CFG;
+
+        if (!empty($CFG->core_outcome_enable) and question_bank::get_qtype($this->qtype())->supports_outcomes()) {
+            $mform->addElement('header', 'outcomesheader', get_string('outcomes', 'outcome'));
+            $mform->addElement('mapoutcome', 'outcomes');
+            $mform->addHelpButton('outcomes', 'selectoutcomes', 'outcome');
+            if (!has_capability('moodle/outcome:mapoutcomes', $this->context)) {
+                $mform->hardFreeze('outcomes');
+            }
+        }
     }
 
     /**

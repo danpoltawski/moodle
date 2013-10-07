@@ -77,6 +77,10 @@ class backup_gradingform_rubric_plugin extends backup_gradingform_plugin {
         // no need to annotate ids or files yet (one day when criterion definition supports
         // embedded files, they must be annotated here)
 
+        // Define outcome area structure.
+        $this->define_outcome_area_structure($criterion, backup_helper::is_sqlparam('gradingform'),
+            backup_helper::is_sqlparam('rubric'), backup_helper::is_sqlparam('criterion'), backup::VAR_PARENTID);
+
         return $plugin;
     }
 

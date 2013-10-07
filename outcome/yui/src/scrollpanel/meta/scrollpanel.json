@@ -1,0 +1,9 @@
+{
+    "moodle-core_outcome-scrollpanel": {
+        "requires": [
+            "plugin",
+            "widget",
+            "panel"
+        ]
+    }
+}

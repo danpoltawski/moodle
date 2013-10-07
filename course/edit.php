@@ -81,6 +81,9 @@ if (!empty($course)) {
     foreach($aliases as $alias) {
         $course->{'role_'.$alias->roleid} = $alias->name;
     }
+    if (!empty($CFG->core_outcome_enable)) {
+        $course->outcomesets = \core_outcome\service::mapper()->get_outcome_set_mappings($course->id);
+    }
 
 } else {
     //editor should respect category context if course context is not set.

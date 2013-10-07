@@ -219,3 +219,11 @@ if (has_capability('moodle/grade:manage', $systemcontext)
 
 } // end of speedup
 
+if ($hassiteconfig and !empty($CFG->core_outcome_enable)) {
+    $ADMIN->add('grades', new admin_externalpage(
+        'core_outcomes',
+        new lang_string('outcomes', 'outcome'),
+        "$CFG->wwwroot/outcome/admin.php?action=outcomeset",
+        array('moodle/site:config', 'moodle/outcome:edit')
+    ));
+}

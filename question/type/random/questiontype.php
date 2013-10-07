@@ -93,6 +93,13 @@ class qtype_random extends question_type {
                      AND qtype IN ($this->manualqtypes)", $qcparams);
     }
 
+    public function supports_outcomes() {
+        // Outcomes are not directly mapped to this question type,
+        // but rather, outcomes are potentially mapped to the
+        // questions in the random question pool.
+        return false;
+    }
+
     /**
      * This method needs to be called before the ->excludedqtypes and
      *      ->manualqtypes fields can be used.

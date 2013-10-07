@@ -952,6 +952,51 @@ abstract class gradingform_instance {
         return $this->get_grade();
     }
 
+    /**
+     * If the grading form supports outcomes, then this will save
+     * outcome attempt data for a user or a set of users.
+     *
+     * This must be called MANUALLY because the grading form does not
+     * know who is being graded.  In addition, the attempts might need
+     * to be synced at a later date (EG: mod/assign blind marking).
+     *
+     * @param array|int $userids The user who owns the outcome attempts (or a list of users)
+     */
+    public function update_outcome_attempts($userids) {
+        global $CFG;
+
+        if (empty($CFG->core_outcome_enable)) {
+            return; // Turned off.
+        }
+        if (!$this->get_controller()->get_context() instanceof context_module) {
+            return; // Only care about activities.
+        }
+        if (!is_array($userids)) {
+            $userids = array($userids);
+        }
+        $time = $this->get_data('timemodified');
+        $attempts = $this->generate_outcome_attempts();
+        foreach ($attempts as $attempt) {
+            if (empty($attempt->timecreated)) {
+                $attempt->timecreated = $time;
+            }
+            foreach ($userids as $userid) {
+                $attempt->userid = $userid;
+                \core_outcome\service::attempt()->save_attempt($attempt);
+            }
+        }
+    }
+
+    /**
+     * Generate outcome attempts based on the grades received
+     * against outcomes.  EG: Rubric allows outcomes to be mapped
+     * as criterion.  So each criterion would be an attempt.
+     *
+     * @return \core_outcome\model\attempt_model[]
+     */
+    protected function generate_outcome_attempts() {
+        return array();
+    }
 
     /**
      * Returns html for form element of type 'grading'. If there is a form input element

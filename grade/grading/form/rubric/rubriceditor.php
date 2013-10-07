@@ -106,13 +106,18 @@ class MoodleQuickForm_rubriceditor extends HTML_QuickForm_input {
         if (!$this->_flagFrozen) {
             $mode = gradingform_rubric_controller::DISPLAY_EDIT_FULL;
             $module = array('name'=>'gradingform_rubriceditor', 'fullpath'=>'/grade/grading/form/rubric/js/rubriceditor.js',
+                'requires' => array('moodle-core_outcome-outcomepanel'),
                 'strings' => array(array('confirmdeletecriterion', 'gradingform_rubric'), array('confirmdeletelevel', 'gradingform_rubric'),
-                    array('criterionempty', 'gradingform_rubric'), array('levelempty', 'gradingform_rubric')
+                    array('criterionempty', 'gradingform_rubric'), array('levelempty', 'gradingform_rubric'),
+                    array('selectoutcomes', 'outcome'), array('close', 'outcome'), array('ok', 'outcome'),
+                    array('openx', 'outcome'), array('closex', 'outcome'), array('outcomesforx', 'outcome'),
+                    array('nooutcomesfound', 'outcome'), array('cancel', 'moodle'), array('error', 'moodle')
                     ));
             $PAGE->requires->js_init_call('M.gradingform_rubriceditor.init', array(
                 array('name' => $this->getName(),
                     'criteriontemplate' => $renderer->criterion_template($mode, $data['options'], $this->getName()),
-                    'leveltemplate' => $renderer->level_template($mode, $data['options'], $this->getName())
+                    'leveltemplate' => $renderer->level_template($mode, $data['options'], $this->getName()),
+                    'contextid' => $PAGE->context->id,
                    )),
                 true, $module);
         } else {

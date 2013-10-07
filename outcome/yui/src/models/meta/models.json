@@ -1,0 +1,11 @@
+{
+    "moodle-core_outcome-models": {
+        "requires": [
+            "base",
+            "model",
+            "model-list",
+            "moodle-core_outcome-simpleio",
+            "json-stringify"
+        ]
+    }
+}

@@ -1364,6 +1364,9 @@ class quiz_attempt {
 
         if (!$this->is_preview() && $this->attempt->state == self::FINISHED) {
             quiz_save_best_grade($this->get_quiz(), $this->get_userid());
+
+            // Question outcome attempts.
+            $this->quba->record_outcomes($this->attempt->userid);
         }
 
         $transaction->allow_commit();
@@ -1426,6 +1429,9 @@ class quiz_attempt {
 
             // Tell any access rules that care that the attempt is over.
             $this->get_access_manager($timestamp)->current_attempt_finished();
+
+            // Question outcome attempts.
+            $this->quba->record_outcomes($this->attempt->userid);
         }
 
         $transaction->allow_commit();

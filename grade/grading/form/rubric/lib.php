@@ -119,7 +119,7 @@ class gradingform_rubric_controller extends gradingform_controller {
      *
      */
     public function update_or_check_rubric(stdClass $newdefinition, $usermodified = null, $doupdate = false) {
-        global $DB;
+        global $CFG, $DB;
 
         // firstly update the common definition data in the {grading_definition} table
         if ($this->definition === false) {
@@ -201,6 +201,19 @@ class gradingform_rubric_controller extends gradingform_controller {
                     }
                 }
             }
+            // Save criterion outcome.
+            if ($doupdate and !empty($CFG->core_outcome_enable)) {
+                $outcome = null;
+                if (!empty($criterion['outcomeid'])) {
+                    $outcome = $criterion['outcomeid'];
+                }
+                $outcomearea = \core_outcome\service::mapper()->save_outcome_mapping('gradingform_rubric', 'criterion', $id, $outcome);
+
+                // If we are within an activity, ensure that the area is flagged as being used.
+                if ($outcomearea and $this->get_context() instanceof context_module) {
+                    \core_outcome\service::area()->set_area_used($outcomearea, $this->get_context()->instanceid);
+                }
+            }
             foreach ($levelsdata as $levelid => $level) {
                 if (isset($level['score'])) {
                     $level['score'] = (float)$level['score'];
@@ -253,6 +266,11 @@ class gradingform_rubric_controller extends gradingform_controller {
                 if ($doupdate) {
                     $DB->delete_records('gradingform_rubric_criteria', array('id' => $id));
                     $DB->delete_records('gradingform_rubric_levels', array('criterionid' => $id));
+
+                    // Remove criterion outcome area.
+                    if (!empty($CFG->core_outcome_enable)) {
+                        \core_outcome\service::area()->delete_area('gradingform_rubric', 'criterion', $id);
+                    }
                 }
                 $haschanges[3] = true;
             }
@@ -296,7 +314,7 @@ class gradingform_rubric_controller extends gradingform_controller {
      * There is a new array called 'rubric_criteria' appended to the list of parent's definition properties.
      */
     protected function load_definition() {
-        global $DB;
+        global $CFG, $DB;
         $sql = "SELECT gd.*,
                        rc.id AS rcid, rc.sortorder AS rcsortorder, rc.description AS rcdescription, rc.descriptionformat AS rcdescriptionformat,
                        rl.id AS rlid, rl.score AS rlscore, rl.definition AS rldefinition, rl.definitionformat AS rldefinitionformat
@@ -342,6 +360,21 @@ class gradingform_rubric_controller extends gradingform_controller {
         if (!$options['sortlevelsasc']) {
             foreach (array_keys($this->definition->rubric_criteria) as $rcid) {
                 $this->definition->rubric_criteria[$rcid]['levels'] = array_reverse($this->definition->rubric_criteria[$rcid]['levels'], true);
+            }
+        }
+        if (!empty($CFG->core_outcome_enable) and !empty($this->definition->rubric_criteria)) {
+            $mappings = \core_outcome\service::mapper()->get_many_outcome_mappings(
+                'gradingform_rubric',
+                'criterion',
+                array_keys($this->definition->rubric_criteria)
+            );
+            foreach ($mappings as $criteriaid => $outcomes) {
+                /** @var $outcome \core_outcome\model\outcome_model */
+                $outcome = current($outcomes);
+                $this->definition->rubric_criteria[$criteriaid]['outcomeid']         = $outcome->id;
+                $this->definition->rubric_criteria[$criteriaid]['outcomeassessable'] = ($outcome->assessable and !$outcome->deleted);
+                $this->definition->rubric_criteria[$criteriaid]['description']       = $outcome->description;
+                $this->definition->rubric_criteria[$criteriaid]['descriptionformat'] = FORMAT_MOODLE;
             }
         }
     }
@@ -549,6 +582,10 @@ class gradingform_rubric_controller extends gradingform_controller {
         $DB->delete_records_list('gradingform_rubric_levels', 'criterionid', $criteria);
         // delete critera
         $DB->delete_records_list('gradingform_rubric_criteria', 'id', $criteria);
+
+        foreach ($criteria as $criteriaid) {
+            \core_outcome\service::area()->delete_area('gradingform_rubric', 'criterion', $criteriaid);
+        }
     }
 
     /**
@@ -834,6 +871,41 @@ class gradingform_rubric_instance extends gradingform_instance {
         $this->get_rubric_filling(true);
     }
 
+    public function generate_outcome_attempts() {
+        $attempts = array();
+        $grade    = $this->get_rubric_filling();
+        foreach ($grade['criteria'] as $criterionid => $record) {
+            $criterion = $this->get_controller()->get_definition()->rubric_criteria[$criterionid];
+
+            if (empty($criterion['outcomeid'])) {
+                continue;
+            }
+            $scores = array();
+            foreach ($criterion['levels'] as $level) {
+                $scores[] = $level['score'];
+            }
+            $maxgrade = max($scores);
+            $mingrade = min($scores);
+            $rawgrade = $criterion['levels'][$record['levelid']]['score'];
+
+            $id = \core_outcome\service::area()->get_used_area_id(
+                'gradingform_rubric',
+                'criterion',
+                $criterionid,
+                $this->get_controller()->get_context()->instanceid
+            );
+            $attempt = new \core_outcome\model\attempt_model();
+            $attempt->outcomeusedareaid = $id;
+            $attempt->mingrade = $mingrade;
+            $attempt->maxgrade = $maxgrade;
+            $attempt->rawgrade = $rawgrade;
+            $attempt->percentgrade = (($rawgrade - $mingrade) / ($maxgrade - $mingrade)) * 100;
+
+            $attempts[] = $attempt;
+        }
+        return $attempts;
+    }
+
     /**
      * Calculates the grade to be pushed to the gradebook
      *
@@ -921,4 +993,12 @@ class gradingform_rubric_instance extends gradingform_instance {
         $html .= $this->get_controller()->get_renderer($page)->display_rubric($criteria, $options, $mode, $gradingformelement->getName(), $value);
         return $html;
     }
+}
+
+/**
+ * @param \core_outcome\model\area_model $area
+ * @return string
+ */
+function gradingform_rubric_get_item_name($area) {
+    return get_string('criterion', 'gradingform_rubric');
 }

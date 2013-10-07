@@ -1,0 +1,14 @@
+{
+    "moodle-core_outcome-editoutcome": {
+        "requires": [
+            "widget",
+            "event-valuechange",
+            "handlebars",
+            "json-parse",
+            "json-stringify",
+            "moodle-core_outcome-models",
+            "moodle-core-notification-dialogue",
+            "moodle-core-notification-exception"
+        ]
+    }
+}

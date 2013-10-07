@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="lib/db" VERSION="20130927" COMMENT="XMLDB file for core Moodle tables"
+<XMLDB PATH="lib/db" VERSION="20131002" COMMENT="XMLDB file for core Moodle tables"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd"
 >
@@ -3046,6 +3046,187 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_backpackid" TYPE="foreign" FIELDS="backpackid" REFTABLE="badge_backpack" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_sets" COMMENT="An outcome set represents a collection of outcomes and perhaps some meta data regarding the revision or applicable region.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="GUID that is auto-generated if missing."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the outcome set."/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The description of the outcome."/>
+        <FIELD NAME="provider" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Provider information regarding the outcome set. EG: Could be set to ASN."/>
+        <FIELD NAME="revision" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Version information regarding the outcome set. This will typically be a date or year, EG: 2011"/>
+        <FIELD NAME="region" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Any region information. Example: In the US this could be a state name."/>
+        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If the outcome set has been deleted."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time modified."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time created."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idnumber" UNIQUE="true" FIELDS="idnumber"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="outcome" COMMENT="Stores information regarding an individual outcome. Outcomes can be stored in a hierarchy, but the hierarchy is visual only.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="outcomesetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Self referencing key. Identifies the parent outcome in the hierarchy."/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="GUID that is auto-generated if missing."/>
+        <FIELD NAME="docnum" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Field for tracking additional information on the outcome. EG: 2.3.A"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The description of the outcome."/>
+        <FIELD NAME="assessable" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="If set to 1, then the outcome is assessable and can be mapped to content. If set to 0, then the outcome is not assessable and cannot be mapped to content."/>
+        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If the outcome has been deleted."/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The sort order. This is 0-X for all outcomes that belong to the same outcome set."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time modified."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time created."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="outcomesetid" TYPE="foreign" FIELDS="outcomesetid" REFTABLE="outcome_sets" REFFIELDS="id"/>
+        <KEY NAME="parentid" TYPE="foreign" FIELDS="parentid" REFTABLE="outcome" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idnumber" UNIQUE="true" FIELDS="idnumber"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="outcome_metadata" COMMENT="Represents additional meta information regarding outcomes.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="outcomeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the meta data."/>
+        <FIELD NAME="value" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="The value of the meta data."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="outcomeid" TYPE="foreign" FIELDS="outcomeid" REFTABLE="outcome" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_areas" COMMENT="This represents that a content item has been mapped to an outcome or to multiple outcomes.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="component" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the component."/>
+        <FIELD NAME="area" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the area. Used when a component has multiple items to associate to outcomes."/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The item ID, usually an ID from another table."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="component_area_itemid" UNIQUE="true" FIELDS="component, area, itemid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="outcome_area_outcomes" COMMENT="This represents the one to many relationship of a single content item mapped to many outcomes.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="outcomeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="outcomeareaid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="outcomeid" TYPE="foreign" FIELDS="outcomeid" REFTABLE="outcome" REFFIELDS="id"/>
+        <KEY NAME="outcomeareaid" TYPE="foreign" FIELDS="outcomeareaid" REFTABLE="outcome_areas" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_used_areas" COMMENT="Associates an outcome content item with an activity.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="outcomeareaid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
+        <KEY NAME="outcomeareaid" TYPE="foreign" FIELDS="outcomeareaid" REFTABLE="outcome_areas" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_used_sets" COMMENT="Associates an outcome set with the course.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="outcomesetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="filter" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Filter criteria for the outcome set."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="outcomesetid" TYPE="foreign" FIELDS="outcomesetid" REFTABLE="outcome_sets" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_attempts" COMMENT="Track a user attempt against a content item within a particular activity.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="outcomeusedareaid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="A way to identify an individual attempt"/>
+        <FIELD NAME="percentgrade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="Percent grade earned on this attempt."/>
+        <FIELD NAME="mingrade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="The minimum possible grade."/>
+        <FIELD NAME="maxgrade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="The maximum possible grade."/>
+        <FIELD NAME="rawgrade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="The points earned, should be between the minimum and maximum grades."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time created."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="outcomeusedareaid_userid" UNIQUE="false" FIELDS="outcomeusedareaid, userid"/>
+        <INDEX NAME="itemid" UNIQUE="false" FIELDS="itemid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="outcome_marks" COMMENT="Graders will manually mark the user as having Met or Not Met an outcome.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="outcomeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="This is the user who is receiving the mark."/>
+        <FIELD NAME="graderid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="This is the user is doing the marking."/>
+        <FIELD NAME="result" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="The marking result."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time modified."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time created."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="outcomeid" TYPE="foreign" FIELDS="outcomeid" REFTABLE="outcome" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="graderid" TYPE="foreign" FIELDS="graderid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_marks_history" COMMENT="Keep track of past markings.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="action" TYPE="int" LENGTH="3" NOTNULL="true" SEQUENCE="false" COMMENT="Action taken on the mark"/>
+        <FIELD NAME="outcomemarkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="outcomeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="This is the user who is receiving the mark."/>
+        <FIELD NAME="graderid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="This is the user is doing the marking."/>
+        <FIELD NAME="result" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" COMMENT="The marking result."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time created."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="outcomeid" TYPE="foreign" FIELDS="outcomeid" REFTABLE="outcome" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="graderid" TYPE="foreign" FIELDS="graderid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="outcomemarkid" TYPE="foreign" FIELDS="outcomemarkid" REFTABLE="outcome_marks" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="outcome_awards" COMMENT="This preserves any outcomes earned by a user.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="outcomeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time created."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="outcomeid" TYPE="foreign" FIELDS="outcomeid" REFTABLE="outcome" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

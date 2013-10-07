@@ -3,6 +3,9 @@ This files describes API changes for question type plugins.
 === 2.6 ===
   + The changes in MDL-32750 were reverted in favour of the new pdw toggle toolbars
     plugin for TinyMCE. The get_non_collapsible_editor_options method has been deprecated.
+  + The method supports_outcomes has been aded to the question_type class.  Defaults to
+    question_type->is_real_question_type().  Override if your question should not be
+    mapped to outcomes.
 
 === 2.5 ===
 

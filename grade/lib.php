@@ -2500,6 +2500,23 @@ abstract class grade_helper {
         return self::$managesetting;
     }
     /**
+     * Returns an array of plugin reports that are enabled
+     *
+     * Use grade_helper::get_plugins_reports for capability
+     * and other checks.
+     *
+     * @return array
+     */
+    public static function get_enabled_plugins_reports() {
+        $plugins = core_component::get_plugin_list('gradereport');
+        foreach (array_keys($plugins) as $plugin) {
+            if (!component_callback('gradereport_'.$plugin, 'is_enabled', array(), true)) {
+                unset($plugins[$plugin]);
+            }
+        }
+        return $plugins;
+    }
+    /**
      * Returns an array of plugin reports as grade_plugin_info objects
      *
      * @param int $courseid
@@ -2514,7 +2531,7 @@ abstract class grade_helper {
         $context = context_course::instance($courseid);
         $gradereports = array();
         $gradepreferences = array();
-        foreach (core_component::get_plugin_list('gradereport') as $plugin => $plugindir) {
+        foreach (self::get_enabled_plugins_reports() as $plugin => $plugindir) {
             //some reports make no sense if we're not within a course
             if ($courseid==$SITE->id && ($plugin=='grader' || $plugin=='user')) {
                 continue;

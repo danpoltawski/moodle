@@ -4837,6 +4837,10 @@ function delete_course($courseorid, $showfeedback = true) {
     $DB->delete_records("course", array("id" => $courseid));
     $DB->delete_records("course_format_options", array("courseid" => $courseid));
 
+    // Cleanup outcomes.
+    \core_outcome\service::mapper()->remove_used_outcome_sets($courseid);
+    \core_outcome\service::mark()->remove_course_marks($courseid);
+
     // Trigger a course deleted event.
     $event = \core\event\course_deleted::create(array(
         'objectid' => $course->id,

@@ -2003,5 +2003,53 @@ $capabilities = array(
                 'teacher'        => CAP_ALLOW,
                 'editingteacher' => CAP_ALLOW,
         )
-    )
+    ),
+
+    // Can map outcomes to content.
+    'moodle/outcome:mapoutcomes' => array(
+        'captype'              => 'write',
+        'contextlevel'         => CONTEXT_SYSTEM,
+        'archetypes'           => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager'        => CAP_ALLOW
+        ),
+    ),
+
+    // Can map outcome sets to courses.
+    'moodle/outcome:mapoutcomesets' => array(
+        'captype'              => 'write',
+        'contextlevel'         => CONTEXT_COURSE,
+        'archetypes'           => array(
+            'coursecreator'  => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager'        => CAP_ALLOW
+        ),
+    ),
+
+    // Can edit outcome sets and their outcomes.
+    'moodle/outcome:edit' => array(
+
+        'riskbitmask'  => RISK_SPAM | RISK_PERSONAL | RISK_XSS | RISK_CONFIG | RISK_DATALOSS,
+
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array()
+    ),
+
+    // Can import new outcome sets.
+    'moodle/outcome:import' => array(
+
+        'riskbitmask'  => RISK_SPAM | RISK_XSS | RISK_CONFIG,
+
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array()
+    ),
+
+    // Can export outcome sets.
+    'moodle/outcome:export' => array(
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes'   => array()
+    ),
 );

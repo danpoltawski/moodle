@@ -1724,6 +1724,7 @@ class assignment_base {
                 // create submission if it did not exist yet because we need submission->id for storing the grading instance
                 $submission = $this->get_submission($userid, true);
                 $_POST['xgrade'] = $gradinginstance->submit_and_get_grade($data->advancedgrading, $submission->id);
+                $gradinginstance->update_outcome_attempts($userid);
             }
         }
         return true;
@@ -2357,6 +2358,12 @@ class assignment_base {
                     $context = context_module::instance($cm->id);
                     $fs->delete_area_files($context->id, 'mod_assignment', 'submission');
                     $fs->delete_area_files($context->id, 'mod_assignment', 'response');
+
+                    // Remove all outcome attempts except for those directly related to the assignment.
+                    if (!empty($CFG->core_outcome_enable)) {
+                        $excludearea = \core_outcome\service::area()->get_area('mod_assignment', 'mod', $cm->id);
+                        \core_outcome\service::attempt()->remove_mod_attempts($cm->id, $excludearea);
+                    }
                 }
             }
 

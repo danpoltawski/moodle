@@ -1,0 +1,15 @@
+{
+    "moodle-core_outcome-ariacontrol": {
+        "requires": [
+            "plugin",
+            "widget",
+            "escape"
+        ]
+    },
+    "moodle-core_outcome-ariacontrolled": {
+        "requires": [
+            "plugin",
+            "widget"
+        ]
+    }
+}

@@ -1661,6 +1661,113 @@ class restore_default_enrolments_step extends restore_execution_step {
 }
 
 /**
+ * This structure step is responsible for restoring used outcome sets
+ * in the course and outcome marks and outcome marks history.
+ */
+class restore_course_outcome_structure_step extends restore_structure_step {
+    /**
+     * Keeps track of the current outcome ID
+     *
+     * @var int
+     */
+    protected $currentoutcomeid;
+
+    /**
+     * Prevent execution if outcomes is disabled or file is missing
+     *
+     * @return bool
+     */
+    protected function execute_condition() {
+        global $CFG;
+
+        if (empty($CFG->core_outcome_enable)) {
+            return false;
+        }
+
+        $fullpath = $this->task->get_taskbasepath();
+        $fullpath = rtrim($fullpath, '/').'/'.$this->filename;
+        if (!file_exists($fullpath)) {
+            return false;
+        }
+        return true;
+    }
+
+    protected function define_structure() {
+        $paths   = array();
+        $paths[] = new restore_path_element('outcome_used_set', '/course_outcome/outcome_used_sets/outcome_used_set');
+
+        if ($this->get_setting_value('users')) {
+            $paths[] = new restore_path_element('outcome_mark', '/course_outcome/outcome_marks/outcome_mark');
+            $paths[] = new restore_path_element('outcome_marks_history',
+                '/course_outcome/outcome_marks/outcome_mark/outcome_marks_histories/outcome_marks_history');
+        }
+        return $paths;
+    }
+
+    protected function process_outcome_used_set($data) {
+        global $DB;
+
+        $data  = (object) $data;
+        $oldid = $data->id;
+
+        $outcomesetid = $DB->get_field('outcome_sets', 'id', array('idnumber' => $data->idnumber));
+        if (empty($outcomesetid)) {
+            return;
+        }
+        // Prevent duplicates.
+        if ($DB->record_exists('outcome_used_sets', array('courseid' => $this->get_courseid(), 'outcomesetid' => $outcomesetid))) {
+            return;
+        }
+        $newid = $DB->insert_record('outcome_used_sets', (object) array(
+            'courseid' => $this->get_courseid(),
+            'outcomesetid' => $outcomesetid,
+            'filter' => $data->filter,
+        ));
+
+        $this->set_mapping('outcome_used_set', $oldid, $newid);
+    }
+
+    protected function process_outcome_mark($data) {
+        global $DB;
+
+        $data  = (object) $data;
+        $oldid = $data->id;
+
+        $this->currentoutcomeid = null;
+
+        $data->courseid  = $this->get_courseid();
+        $data->outcomeid = $DB->get_field('outcome', 'id', array('idnumber' => $data->idnumber));
+        $data->userid    = $this->get_mappingid('user', $data->userid);
+        $data->graderid  = $this->get_mappingid('user', $data->graderid);
+        if (!empty($data->outcomeid) and !empty($data->userid) and !empty($data->graderid)) {
+            $this->currentoutcomeid = $data->outcomeid;
+            $newid = $DB->insert_record('outcome_marks', $data);
+            $this->set_mapping('outcome_mark', $oldid, $newid);
+        }
+    }
+
+    protected function process_outcome_marks_history($data) {
+        global $DB;
+
+        if (empty($this->currentoutcomeid)) {
+            return;
+        }
+        $data  = (object) $data;
+        $oldid = $data->id;
+
+        $data->outcomemarkid = $this->get_new_parentid('outcome_mark');
+        $data->courseid      = $this->get_courseid();
+        $data->outcomeid     = $this->currentoutcomeid;
+        $data->userid        = $this->get_mappingid('user', $data->userid);
+        $data->graderid      = $this->get_mappingid('user', $data->graderid);
+        if (!empty($data->userid) and !empty($data->graderid)) {
+            $newid = $DB->insert_record('outcome_marks_history', $data);
+            $this->set_mapping('outcome_marks_history', $oldid, $newid);
+        }
+    }
+}
+
+/**
  * This structure steps restores the enrol plugins and their underlying
  * enrolments, performing all the mappings and/or movements required
  */
@@ -2700,6 +2807,88 @@ class restore_activity_grading_structure_step extends restore_structure_step {
     }
 }
 
+/**
+ * This structure step restores the relation between outcome areas and
+ * the activity.  In addition, this restores the outcome attempts that
+ * are associated to the outcome area usage.
+ */
+class restore_activity_outcomes_structure_step extends restore_structure_step {
+    /**
+     * Prevent execution if outcomes is disabled or file is missing
+     *
+     * @return bool
+     */
+    protected function execute_condition() {
+        global $CFG;
+
+        if (empty($CFG->core_outcome_enable)) {
+            return false;
+        }
+
+        $fullpath = $this->task->get_taskbasepath();
+        $fullpath = rtrim($fullpath, '/').'/'.$this->filename;
+        if (!file_exists($fullpath)) {
+            return false;
+        }
+        return true;
+    }
+
+    protected function define_structure() {
+        $paths   = array();
+        $paths[] = new restore_path_element('outcome_used_area', '/outcome_used_areas/outcome_used_area');
+
+        if ($this->get_setting_value('userinfo')) {
+            $paths[] = new restore_path_element('outcome_attempt',
+                '/outcome_used_areas/outcome_used_area/outcome_attempts/outcome_attempt');
+        }
+        return $paths;
+    }
+
+    protected function process_outcome_used_area($data) {
+        global $DB;
+
+        $data  = (object) $data;
+        $oldid = $data->id;
+
+        $areaid = $this->get_mappingid('outcome_area', $data->outcomeareaid);
+        if ($areaid !== false) {
+            $newid = $DB->insert_record('outcome_used_areas', (object) array(
+                'cmid' => $this->task->get_moduleid(),
+                'outcomeareaid' => $areaid,
+            ));
+
+            $this->set_mapping('outcome_used_area', $oldid, $newid);
+        }
+    }
+
+    protected function process_outcome_attempt($data) {
+        global $DB;
+
+        $data  = (object) $data;
+        $oldid = $data->id;
+
+        $data->cmid = $this->task->get_moduleid();
+
+        $data->outcomeusedareaid = $this->get_mappingid('outcome_used_area', $data->outcomeusedareaid);
+        if ($data->outcomeusedareaid === false) {
+            return;
+        }
+        if (!is_null($data->itemid)) {
+            // This ends up calling back to the outcomesupport plugin system to remap the item ID.
+            $data->itemid = \core_outcome\service::backup()->remap_attempt_itemid(
+                $this, $data->component, $data->area, $data->itemid
+            );
+            if ($data->itemid === false) {
+                return;
+            }
+        }
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        if ($data->userid !== false) {
+            $newid = $DB->insert_record('outcome_attempts', $data);
+            $this->set_mapping('outcome_used_area', $oldid, $newid);
+        }
+    }
+}
 
 /**
  * This structure step restores the grade items associated with one activity
@@ -2974,6 +3163,9 @@ class restore_module_structure_step extends restore_structure_step {
 
         // Apply for 'plagiarism' plugins optional paths at module level
         $this->add_plugin_structure('plagiarism', $module);
+
+        // Apply for 'outcomesupport' plugins optional paths at module level
+        $this->add_plugin_structure('outcomesupport', $module);
 
         // Apply for 'local' plugins optional paths at module level
         $this->add_plugin_structure('local', $module);
@@ -3275,6 +3467,9 @@ class restore_create_categories_and_questions extends restore_structure_step {
 
         // Apply for 'qtype' plugins optional paths at question level
         $this->add_plugin_structure('qtype', $question);
+
+        // Apply for 'outcomesupport' plugins optional paths at question level
+        $this->add_plugin_structure('outcomesupport', $question);
 
         // Apply for 'local' plugins optional paths at question level
         $this->add_plugin_structure('local', $question);

@@ -1,0 +1,10 @@
+{
+    "name": "moodle-core_outcome-dynamicpanel",
+    "builds": {
+        "moodle-core_outcome-dynamicpanel": {
+            "jsfiles": [
+                "dynamicpanel.js"
+            ]
+        }
+    }
+}

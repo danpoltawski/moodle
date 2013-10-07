@@ -149,6 +149,15 @@ class course_edit_form extends moodleform {
             $mform->hardFreeze($summaryfields);
         }
 
+        if (!empty($CFG->core_outcome_enable)) {
+            $mform->addElement('header', 'outcomes', get_string('outcomes', 'outcome'));
+            $mform->addElement('mapoutcomeset', 'outcomesets');
+            $mform->addHelpButton('outcomesets', 'selectoutcomesets', 'outcome');
+            if (!has_capability('moodle/outcome:mapoutcomesets', $context)) {
+                $mform->hardFreeze('outcomesets');
+            }
+        }
+
         // Course format.
         $mform->addElement('header', 'courseformathdr', get_string('type_format', 'plugin'));
 

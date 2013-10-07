@@ -8500,3 +8500,64 @@ class admin_setting_configmultiselect_modules extends admin_setting_configmultis
         return true;
     }
 }
+
+/**
+ * This setting manages two settings:
+ *      1. $CFG->enableoutcomes - turns legacy outcomes On/Off
+ *      2. $CFG->core_outcome_enable - turns new outcomes On/Off
+ *
+ * This setting allows both system to be on or off.
+ *
+ * @package   core_outcome
+ * @category  outcome
+ * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class admin_setting_outcomes extends admin_setting_configselect {
+    public function __construct() {
+        parent::__construct('core_outcome_enable', new lang_string('enableoutcomes', 'grades'),
+            new lang_string('enableoutcomes_help', 'outcome'), 0, null);
+    }
+
+    public function config_read($name) {
+        global $CFG;
+
+        if (!isset($CFG->enableoutcomes) || !isset($CFG->core_outcome_enable)) {
+            return null;
+        }
+
+        $old = $new = 0;
+        if (!empty($CFG->enableoutcomes)) {
+            $old = 1;
+        }
+        if (!empty($CFG->core_outcome_enable)) {
+            $new = 2;
+        }
+        return $old + $new;
+    }
+
+    public function load_choices() {
+        $this->choices = array(
+            0 => new lang_string('disabled', 'outcome'),
+            1 => new lang_string('legacyoutcomes', 'outcome'),
+            2 => new lang_string('newoutcomes', 'outcome'),
+            3 => new lang_string('bothlegacynew', 'outcome'),
+        );
+        return true;
+    }
+
+    public function write_setting($data) {
+        $old = $new = 0;
+        if ($data == 1) {
+            $old = 1; // Enable legacy outcomes.
+        } else if ($data == 2) {
+            $new = 1; // Enable new outcomes.
+        } else if ($data == 3) {
+            $old = $new = 1; // Enable both.
+        }
+        $this->config_write('enableoutcomes', $old);
+        $this->config_write('core_outcome_enable', $new);
+
+        return '';
+    }
+}

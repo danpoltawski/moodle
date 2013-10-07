@@ -211,7 +211,7 @@ abstract class moodleform {
      * @return string form identifier.
      */
     protected function get_form_identifier() {
-        return get_class($this);
+        return str_replace('\\', '_', get_class($this));
     }
 
     /**
@@ -2973,5 +2973,7 @@ MoodleQuickForm::registerElementType('text', "$CFG->libdir/form/text.php", 'Mood
 MoodleQuickForm::registerElementType('textarea', "$CFG->libdir/form/textarea.php", 'MoodleQuickForm_textarea');
 MoodleQuickForm::registerElementType('url', "$CFG->libdir/form/url.php", 'MoodleQuickForm_url');
 MoodleQuickForm::registerElementType('warning', "$CFG->libdir/form/warning.php", 'MoodleQuickForm_warning');
+MoodleQuickForm::registerElementType('mapoutcomeset', "$CFG->libdir/form/mapoutcomeset.php", 'MoodleQuickForm_map_outcome_set');
+MoodleQuickForm::registerElementType('mapoutcome', "$CFG->libdir/form/mapoutcome.php", 'MoodleQuickForm_map_outcome');
 
 MoodleQuickForm::registerRule('required', null, 'MoodleQuickForm_Rule_Required', "$CFG->libdir/formslib.php");

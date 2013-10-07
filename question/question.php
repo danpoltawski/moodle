@@ -218,6 +218,10 @@ if ($cm !== null){
 
 $toform->inpopup = $inpopup;
 
+if (!empty($CFG->core_outcome_enable) and !empty($question->id) and $qtypeobj->is_real_question_type()) {
+    $toform->outcomes = \core_outcome\service::mapper()->get_outcome_mappings_for_form('qtype_'.$question->qtype, 'qtype', $question->id);
+}
+
 $mform->set_data($toform);
 
 if ($mform->is_cancelled()) {
@@ -279,6 +283,17 @@ if ($mform->is_cancelled()) {
             require_once($CFG->dirroot.'/tag/lib.php');
             tag_set('question', $question->id, $fromform->tags);
         }
+        if (isset($fromform->outcomes)) {
+            \core_outcome\service::mapper()->save_outcome_mappings('qtype_'.$question->qtype, 'qtype', $question->id, $fromform->outcomes);
+        }
+
+        $event = \core\event\question_updated::create(array(
+            'context' => $thiscontext,
+            'objectid' => $question->id,
+            'other' => array('qtype' => $question->qtype)
+        ));
+        $event->add_record_snapshot('question', $question);
+        $event->trigger();
     }
 
     // Purge this question from the cache.

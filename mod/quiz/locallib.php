@@ -1862,6 +1862,39 @@ function quiz_groups_members_removed_handler($event) {
 }
 
 /**
+ * Handle question_updated event
+ *
+ * @param \core\event\question_updated $event
+ */
+function quiz_question_updated_handler(\core\event\question_updated $event) {
+    global $CFG, $DB;
+
+    if (empty($CFG->core_outcome_enable)) {
+        return;
+    }
+    $question = $event->get_record_snapshot('question', $event->objectid);
+    if (!$outcomearea = \core_outcome\service::area()->get_area('qtype_'.$question->qtype, 'qtype', $question->id)) {
+        return;
+    }
+    $cmids = $DB->get_records_sql('
+    (SELECT DISTINCT cm.id
+       FROM {quiz_attempts} quiza
+ INNER JOIN {question_attempts} qa ON qa.questionusageid = quiza.uniqueid
+ INNER JOIN {course_modules} cm ON quiza.quiz = cm.instance
+ INNER JOIN {modules} m ON cm.module = m.id AND m.name = ?
+      WHERE qa.questionid = ?)
+      UNION
+    (SELECT DISTINCT cm.id
+       FROM {quiz_question_instances} qi
+ INNER JOIN {course_modules} cm ON qi.quiz = cm.instance
+ INNER JOIN {modules} m ON cm.module = m.id AND m.name = ?
+      WHERE qi.question = ?)
+    ', array('quiz', $question->id, 'quiz', $question->id));
+
+    \core_outcome\service::area()->set_area_used_by_many($outcomearea, array_keys($cmids));
+}
+
+/**
  * Get the information about the standard quiz JavaScript module.
  * @return array a standard jsmodule structure.
  */

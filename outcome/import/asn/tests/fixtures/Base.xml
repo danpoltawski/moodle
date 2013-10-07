@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+        xmlns:asn="http://purl.org/ASN/schema/core/"
+        xmlns:cc="http://creativecommons.org/ns#"
+        xmlns:dc="http://purl.org/dc/elements/1.1/"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:gemq="http://purl.org/gem/qualifiers/"
+        xmlns:loc="http://www.loc.gov/loc.terms/relators/"
+        xmlns:owl="http://www.w3.org/2002/07/owl#"
+        xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+    <asn:StandardDocument rdf:about="http://asn.jesandco.org/resources/TEST">
+    </asn:StandardDocument>
+    <asn:Statement rdf:about="ABOUTID">
+    </asn:Statement>
+</rdf:RDF>

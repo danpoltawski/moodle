@@ -1,4 +1,4 @@
-M.gradingform_rubriceditor = {'templates' : {}, 'eventhandler' : null, 'name' : null, 'Y' : null};
+M.gradingform_rubriceditor = {'templates' : {}, 'eventhandler' : null, 'name' : null, 'Y' : null, contextid: null, outcomePanel: null};
 
 /**
  * This function is called for each rubriceditor on page.
@@ -6,6 +6,7 @@ M.gradingform_rubriceditor = {'templates' : {}, 'eventhandler' : null, 'name' : 
 M.gradingform_rubriceditor.init = function(Y, options) {
     M.gradingform_rubriceditor.name = options.name
     M.gradingform_rubriceditor.Y = Y
+    M.gradingform_rubriceditor.contextid = options.contextid;
     M.gradingform_rubriceditor.templates[options.name] = {
         'criterion' : options.criteriontemplate,
         'level' : options.leveltemplate
@@ -41,6 +42,11 @@ M.gradingform_rubriceditor.disablealleditors = function() {
 M.gradingform_rubriceditor.clickanywhere = function(e) {
     if (e.type == 'touchstart') return
     var el = e.target
+
+    // Handle clicks specific to outcomes
+    if (M.gradingform_rubriceditor.outcomeclicks(e)) {
+        return;
+    }
     // if clicked on button - disablecurrenteditor, continue
     if (el.get('tagName') == 'INPUT' && el.get('type') == 'submit') {
         return
@@ -53,7 +59,7 @@ M.gradingform_rubriceditor.clickanywhere = function(e) {
         el = el.get('parentNode')
     }
     if (el) {
-        if (el.one('textarea').hasClass('hiddenelement')) {
+        if (el.one('textarea').hasClass('hiddenelement') && !el.one('textarea').hasClass('locked')) {
             M.gradingform_rubriceditor.disablealleditors()
             M.gradingform_rubriceditor.editmode(el, true, focustb)
         }
@@ -71,10 +77,11 @@ M.gradingform_rubriceditor.editmode = function(el, editmode, focustb) {
     var pseudotablink = '<input type="text" size="1" class="pseudotablink"/>',
         taplain = ta.get('parentNode').one('.plainvalue'),
         tbplain = null,
-        tb = el.one('.score input[type=text]')
+        tb = el.one('.score input[type=text]'),
+        sob = el.one('.selectoutcome-box');
     // add 'plainvalue' next to textarea for description/definition and next to input text field for score (if applicable)
     if (!taplain) {
-        ta.get('parentNode').append('<div class="plainvalue">'+pseudotablink+'<span class="textvalue">&nbsp;</span></div>')
+        ta.insert('<div class="plainvalue">'+pseudotablink+'<span class="textvalue">&nbsp;</span></div>', 'after');
         taplain = ta.get('parentNode').one('.plainvalue')
         taplain.one('.pseudotablink').on('focus', M.gradingform_rubriceditor.clickanywhere)
         if (tb) {
@@ -102,6 +109,16 @@ M.gradingform_rubriceditor.editmode = function(el, editmode, focustb) {
             tbplain.removeClass('hiddenelement')
             tb.addClass('hiddenelement')
         }
+        if (sob) {
+            sob.one('.selectoutcome').addClass('hiddenelement');
+            if (sob.one('input').get('value') !== '0') {
+                ta.addClass('locked');
+                el.one('.pseudotablink').hide();
+                sob.one('.removeoutcome').removeClass('hiddenelement');
+            } else {
+                sob.one('.removeoutcome').addClass('hiddenelement');
+            }
+        }
     } else {
         // if we need to show the input fields, set the width/height for textarea so it fills the cell
         try {
@@ -121,6 +138,13 @@ M.gradingform_rubriceditor.editmode = function(el, editmode, focustb) {
         if (tb) {
             tbplain.addClass('hiddenelement')
             tb.removeClass('hiddenelement')
+        }
+        if (sob) {
+            sob.one('.selectoutcome').removeClass('hiddenelement');
+            sob.one('.removeoutcome').addClass('hiddenelement');
+            sob.one('input').set('value', '0');
+            ta.removeClass('locked');
+            el.one('.pseudotablink').show();
         }
     }
     // focus the proper input field in edit mode
@@ -242,3 +266,87 @@ M.gradingform_rubriceditor.calculatenewid = function (elements_str) {
     } );
     return newid
 }
+
+/**
+ * Handle clicks for outcomes
+ * @method M.gradingform_rubriceditor.outcomeclicks
+ * @param {Event} e
+ * @returns {Boolean}
+ */
+M.gradingform_rubriceditor.outcomeclicks = function(e) {
+    // Wants to add an outcome
+    if (e.target.test('.selectoutcome')) {
+        M.gradingform_rubriceditor.selectoutcome(e);
+        return true;
+    }
+    // Wants to remove an outcome
+    if (e.target.test('.removeoutcome')) {
+        M.gradingform_rubriceditor.removeoutcome(e);
+        return true;
+    }
+    // Ignore clicks made when the panel is visible
+    return M.gradingform_rubriceditor.outcomePanel !== null && M.gradingform_rubriceditor.outcomePanel.get('panel').get('visible');
+};
+
+/**
+ * Handler for when Select outcome link is clicked
+ * @method M.gradingform_rubriceditor.selectoutcome
+ * @param {Event} e
+ */
+M.gradingform_rubriceditor.selectoutcome = function (e) {
+    e.preventDefault();
+
+    if (M.gradingform_rubriceditor.outcomePanel === null) {
+        M.gradingform_rubriceditor.outcomePanel = M.core_outcome.init_outcomepanel({
+            contextId: M.gradingform_rubriceditor.contextid,
+            allowMultiple: false
+        });
+        M.gradingform_rubriceditor.outcomePanel.on('save', M.gradingform_rubriceditor.addoutcome);
+        M.gradingform_rubriceditor.outcomePanel.get('panel').after('visibleChange', function(e) {
+            if (e.newVal) {
+                if (M.gradingform_rubriceditor.eventhandler) {
+                    M.gradingform_rubriceditor.eventhandler.detach();
+                }
+            } else {
+                M.gradingform_rubriceditor.addhandlers();
+            }
+        });
+
+    }
+    M.gradingform_rubriceditor.outcomePanel.show_panel();
+};
+
+/**
+ * Handler for when M.gradingform_rubriceditor.outcomePanel is saved
+ * @method M.gradingform_rubriceditor.addoutcome
+ */
+M.gradingform_rubriceditor.addoutcome = function() {
+    var outcomes = M.gradingform_rubriceditor.outcomePanel.get('selectedOutcomes').toArray();
+    if (outcomes.length === 0) {
+        return;
+    }
+    var outcome = outcomes.pop();
+    var name = M.gradingform_rubriceditor.name;
+
+    Y.all('#rubric-' + name + ' .description').some(function(node) {
+        if (node.one('textarea').hasClass('hiddenelement')) {
+            return false;
+        }
+        node.one('textarea').set('value', outcome.get('description'));
+        node.one('.selectoutcome-box input').set('value', outcome.get('id'));
+        return true;
+    });
+};
+
+/**
+ * Handler for when Remove outcome link is clicked
+ * By enabling the editor, we remove the lock and clear out the outcome
+ * @method M.gradingform_rubriceditor.removeoutcome
+ * @param {Event} e
+ */
+M.gradingform_rubriceditor.removeoutcome = function (e) {
+    e.preventDefault();
+    var el = e.target.ancestor('.description');
+    M.gradingform_rubriceditor.editmode(el, true, false);
+    el.one('textarea').set('value', '');
+};

@@ -98,6 +98,9 @@ class backup_course_task extends backup_task {
         // Generate the roles file (optionally role assignments and always role overrides)
         $this->add_step(new backup_roles_structure_step('course_roles', 'roles.xml'));
 
+        // Generate the outcome file
+        $this->add_step(new backup_course_outcome_structure_step('course_outcome', 'outcome.xml'));
+
         // Generate the filter file (conditionally)
         if ($this->get_setting_value('filters')) {
             $this->add_step(new backup_filters_structure_step('course_filters', 'filters.xml'));

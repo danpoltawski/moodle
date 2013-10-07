@@ -115,6 +115,11 @@ function cron_run() {
             mtrace(" Deleted old log records");
         }
 
+        // Delete old outcome marking history records.
+        if (!empty($CFG->core_outcome_enable)) {
+            \core_outcome\service::mark()->clean_history();
+            mtrace(' Deleted old outcome marking history records');
+        }
 
         // Delete old backup_controllers and logs.
         $loglifetime = get_config('backup', 'loglifetime');

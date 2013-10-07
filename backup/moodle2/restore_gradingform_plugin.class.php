@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @category   backup
  */
-abstract class restore_gradingform_plugin extends restore_plugin {
+abstract class restore_gradingform_plugin extends restore_outcome_area_plugin {
 
     /**
      * Helper method returning the mapping identifierto use for

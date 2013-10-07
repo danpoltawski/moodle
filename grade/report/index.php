@@ -23,6 +23,7 @@
  */
 
 require_once '../../config.php';
+require_once $CFG->dirroot.'/grade/lib.php';
 
 $courseid = required_param('id', PARAM_INT);
 
@@ -36,7 +37,7 @@ require_login($course);
 $context = context_course::instance($course->id);
 
 /// find all accessible reports
-$reports = core_component::get_plugin_list('gradereport');     // Get all installed reports
+$reports = grade_helper::get_enabled_plugins_reports(); // Get all enabled reports.
 
 foreach ($reports as $plugin => $plugindir) {                      // Remove ones we can't see
     if (!has_capability('gradereport/'.$plugin.':view', $context)) {

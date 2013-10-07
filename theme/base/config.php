@@ -47,6 +47,7 @@ $THEME->sheets = array(
     'grade',
     'message',
     'question',
+    'outcome',
     'user',
     'filemanager'
 );

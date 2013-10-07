@@ -129,6 +129,7 @@ class assign_upgrade_manager {
         $gradeidmap = array();
         $completiondone = false;
         $gradesdone = false;
+        $outcomedone = false;
 
         // From this point we want to rollback on failure.
         $rollback = false;
@@ -301,6 +302,17 @@ class assign_upgrade_manager {
 
             $gradesdone = true;
 
+            // Re-associate outcome areas and used areas to the new course module.
+            $DB->execute(
+                'UPDATE {outcome_areas} SET component = ?, itemid = ? WHERE component = ? AND area = ? AND itemid = ?',
+                array('mod_assign', $newcoursemodule->id, 'mod_assignment', 'mod', $oldcoursemodule->id)
+            );
+            $DB->execute(
+                'UPDATE {outcome_used_areas} SET cmid = ? WHERE cmid = ?',
+                array($newcoursemodule->id, $oldcoursemodule->id)
+            );
+            $outcomedone = true;
+
         } catch (Exception $exception) {
             $rollback = true;
             $log .= get_string('conversionexception', 'mod_assign', $exception->getMessage());
@@ -313,6 +325,17 @@ class assign_upgrade_manager {
                 $params = array('assignment', $oldassignment->id, 'assign', $newassignment->get_instance()->id);
                 $sql = 'UPDATE {grade_items} SET itemmodule = ?, iteminstance = ? WHERE itemmodule = ? AND iteminstance = ?';
                 $DB->execute($sql, $params);
+            }
+            // Roll back the outcome changes.
+            if ($outcomedone) {
+                $DB->execute(
+                    'UPDATE {outcome_areas} SET component = ?, itemid = ? WHERE component = ? AND area = ? AND itemid = ?',
+                    array('mod_assignment', $oldcoursemodule->id, 'mod_assign', 'mod', $newcoursemodule->id)
+                );
+                $DB->execute(
+                    'UPDATE {outcome_used_areas} SET cmid = ? WHERE cmid = ?',
+                    array($oldcoursemodule->id, $newcoursemodule->id)
+                );
             }
             // Roll back the completion changes.
             if ($completiondone) {

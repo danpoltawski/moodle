@@ -1,0 +1,10 @@
+{
+    "name": "moodle-core_outcome-mapoutcome",
+    "builds": {
+        "moodle-core_outcome-mapoutcome": {
+            "jsfiles": [
+                "mapoutcome.js"
+            ]
+        }
+    }
+}

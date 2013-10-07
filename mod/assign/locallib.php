@@ -716,6 +716,12 @@ class assign {
                 }
             }
 
+            // Remove all outcome attempts except for those directly related to the assignment.
+            if (!empty($CFG->core_outcome_enable) and !is_null($this->get_course_module())) {
+                $excludearea = \core_outcome\service::area()->get_area('mod_assign', 'mod', $this->get_course_module()->id);
+                \core_outcome\service::attempt()->remove_mod_attempts($this->get_course_module()->id, $excludearea);
+            }
+
             $assignssql = 'SELECT a.id
                              FROM {assign} a
                            WHERE a.course=:course';
@@ -3950,6 +3956,9 @@ class assign {
 
         } else {
             $gradebookgrade = $this->convert_grade_for_gradebook($grade);
+        }
+        if ($gradinginstance = $this->get_grading_instance($gradebookgrade['userid'], $grade, true)) {
+            $gradinginstance->update_outcome_attempts($gradebookgrade['userid']);
         }
         // Grading is disabled, return.
         if ($this->grading_disabled($gradebookgrade['userid'])) {

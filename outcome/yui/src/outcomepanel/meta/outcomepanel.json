@@ -1,0 +1,15 @@
+{
+    "moodle-core_outcome-outcomepanel": {
+        "requires": [
+            "base",
+            "handlebars",
+            "moodle-core_outcome-models",
+            "moodle-core_outcome-scrollpanel",
+            "moodle-core_outcome-ariacontrol",
+            "moodle-core_outcome-ariacontrolled",
+            "moodle-core-notification-dialogue",
+            "moodle-core-notification-alert",
+            "moodle-core_outcome-simpleio"
+        ]
+    }
+}

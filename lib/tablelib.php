@@ -795,7 +795,7 @@ class flexible_table {
             }
             return format_text($text, $format, $options);
         } else {
-            $eci =& $this->export_class_instance();
+            $eci = $this->export_class_instance();
             return $eci->format_text($text, $format, $options, $courseid);
         }
     }

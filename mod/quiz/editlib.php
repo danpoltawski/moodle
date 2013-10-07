@@ -63,7 +63,7 @@ function quiz_has_question_use($questionid) {
  * @param int $questionid The id of the question to be deleted.
  */
 function quiz_remove_question($quiz, $questionid) {
-    global $DB;
+    global $CFG, $DB;
 
     $questionids = explode(',', $quiz->questions);
     $key = array_search($questionid, $questionids);
@@ -76,6 +76,12 @@ function quiz_remove_question($quiz, $questionid) {
     $DB->set_field('quiz', 'questions', $quiz->questions, array('id' => $quiz->id));
     $DB->delete_records('quiz_question_instances',
             array('quiz' => $quiz->instance, 'question' => $questionid));
+
+    if (!empty($CFG->core_outcome_enable)) {
+        if ($outcomearea = question_get_outcome_area($questionid)) {
+            \core_outcome\service::area()->unset_area_used($outcomearea, $quiz->cmid);
+        }
+    }
 }
 
 /**
@@ -114,7 +120,8 @@ function quiz_delete_empty_page($layout, $index) {
  * @return bool false if the question was already in the quiz
  */
 function quiz_add_quiz_question($id, $quiz, $page = 0) {
-    global $DB;
+    global $CFG, $DB;
+
     $questions = explode(',', quiz_clean_layout($quiz->questions));
     if (in_array($id, $questions)) {
         return false;
@@ -172,6 +179,12 @@ function quiz_add_quiz_question($id, $quiz, $page = 0) {
     $instance->question = $id;
     $instance->grade = $DB->get_field('question', 'defaultmark', array('id' => $id));
     $DB->insert_record('quiz_question_instances', $instance);
+
+    if (!empty($CFG->core_outcome_enable)) {
+        if ($outcomearea = question_get_outcome_area($id)) {
+            \core_outcome\service::area()->set_area_used($outcomearea, $quiz->cmid);
+        }
+    }
 }
 
 function quiz_add_random_questions($quiz, $addonpage, $categoryid, $number,

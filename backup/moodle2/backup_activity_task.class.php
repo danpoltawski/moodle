@@ -184,6 +184,9 @@ abstract class backup_activity_task extends backup_task {
         // Annotate the scales used in already annotated outcomes
         $this->add_step(new backup_annotate_scales_from_outcomes('annotate_scales'));
 
+        // Generate the outcome file (conditionally)
+        $this->add_step(new backup_activity_outcomes_structure_step('activity_outcomes', 'outcome.xml'));
+
         // NOTE: Historical grade information is saved completely at course level only (see 1.9)
         // not per activity nor per selected activities (all or nothing).
 

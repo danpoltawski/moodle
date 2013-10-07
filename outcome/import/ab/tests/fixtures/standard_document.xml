@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<standard_document year="1234" revision_date="REVISION" uid="IDNUMBER" uid_provider="PROVIDER">
+    <title>NAME</title>
+    <organization org_code="XX" country_code="YY">REGION</organization>
+    <subject code="SUBJECTCODE">SUBJECT</subject>
+    <grade_range lo="0" hi="1" code="EDULEVELCODE">EDULEVEL</grade_range>
+    <standard uid="IDNUMBER">
+    </standard>
+</standard_document>

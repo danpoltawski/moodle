@@ -97,6 +97,8 @@ class restore_course_task extends restore_task {
         // this must be done after all users are enrolled.
         $this->add_step(new restore_ras_and_caps_structure_step('course_ras_and_caps', 'roles.xml'));
 
+        $this->add_step(new restore_course_outcome_structure_step('course_outcome', 'outcome.xml'));
+
         // Restore course filters (conditionally)
         if ($this->get_setting_value('filters')) {
             $this->add_step(new restore_filters_structure_step('course_filters', 'filters.xml'));

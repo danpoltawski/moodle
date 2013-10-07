@@ -1,0 +1,17 @@
+{
+    "moodle-core_outcome-mapoutcomeset": {
+        "requires": [
+            "widget",
+            "model",
+            "model-list",
+            "handlebars",
+            "json-parse",
+            "json-stringify",
+            "moodle-core_outcome-models",
+            "moodle-core-notification-dialogue",
+            "moodle-core-notification-exception",
+            "moodle-core-notification-alert",
+            "moodle-core_outcome-simpleio"
+        ]
+    }
+}

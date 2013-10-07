@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<standard_document year="1234" revision_date="REVISION" uid="IDNUMBER" uid_provider="PROVIDER">
+    <item uid="IDNUMBER" parent_uid="" label="ABC" linkable="Y" stem="" doc_num="DOCNUM">
+        <statement>DESCRIPTION</statement>
+    </item>
+</standard_document>

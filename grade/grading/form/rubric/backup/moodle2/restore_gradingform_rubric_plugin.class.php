@@ -48,7 +48,12 @@ class restore_gradingform_rubric_plugin extends restore_gradingform_plugin {
         $paths[] = new restore_path_element('gradingform_rubric_level',
             $this->get_pathfor('/criteria/criterion/levels/level'));
 
-        return $paths;
+        // Add outcome area paths.
+        $areapaths = $this->define_outcome_area_structure(
+            'gradingform_rubric_criterion', '/criteria/criterion'
+        );
+
+        return array_merge($paths, $areapaths);
     }
 
     /**
