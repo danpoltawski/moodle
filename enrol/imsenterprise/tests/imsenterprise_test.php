@@ -18,7 +18,7 @@
  * IMS Enterprise enrolment tests.
  *
  * @package    enrol_imsenterprise
- * @category   phpunit
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/enrol/imsenterprise/lib.php');
  * IMS Enterprise test case
  *
  * @package    enrol_imsenterprise
- * @category   phpunit
+ * @category   test
  * @copyright  2012 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -44,6 +44,9 @@ class enrol_imsenterprise_testcase extends advanced_testcase {
      */
     protected $imsplugin;
 
+    /**
+     * Setup required for all tests.
+     */
     protected function setUp() {
         $this->resetAfterTest(true);
         $this->imsplugin = enrol_get_plugin('imsenterprise');

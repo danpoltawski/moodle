@@ -25,9 +25,19 @@
 defined('MOODLE_INTERNAL') || die();
 
 
+/**
+ * Class for dealing with role mappings in IMS Enterprise.
+ *
+ * @copyright  2010 Eugene Venter
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class imsenterprise_roles {
+    /** @var imscode => ims role name. Role name mapping. */
     private $imsroles;
 
+    /**
+     * Constructor.
+     */
     public function __construct() {
         $this->imsroles = array(
             '01' => 'Learner',
@@ -43,6 +53,11 @@ class imsenterprise_roles {
         // but "TeachingAssistant" doesn't. That's what the spec says though!!!
     }
 
+    /**
+     * Returns the mapped roles
+     *
+     * @return array of IMS roles indexed by IMS code.
+     */
     public function get_imsroles() {
         return $this->imsroles;
     }
@@ -51,6 +66,8 @@ class imsenterprise_roles {
      * This function is only used when first setting up the plugin, to
      * decide which role assignments to recommend by default.
      * For example, IMS role '01' is 'Learner', so may map to 'student' in Moodle.
+     *
+     * @param string $imscode
      */
     public function determine_default_rolemapping($imscode) {
         global $DB;
@@ -90,8 +107,9 @@ class imsenterprise_roles {
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class imsenterprise_courses {
-
+    /** @var array IMS group description names */
     private $imsnames;
+    /** @var array moodle course field names */
     private $courseattrs;
 
     /**

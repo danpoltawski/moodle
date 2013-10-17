@@ -31,6 +31,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/group/lib.php');
 
 
+/**
+ * IMS Enterprise file enrolment plugin.
+ *
+ * @copyright  2010 Eugene Venter
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class enrol_imsenterprise_plugin extends enrol_plugin {
 
     /**
@@ -711,7 +717,7 @@ class enrol_imsenterprise_plugin extends enrol_plugin {
     /**
      * Process the INNER contents of a <timeframe> tag, to return beginning/ending dates.
      *
-     * @param $string string tag to decode.
+     * @param string $string tag to decode.
      * @return stdClass beginning and/or ending is returned, in unix time, zero indicating not specified.
      */
     protected static function decode_timeframe($string) {
