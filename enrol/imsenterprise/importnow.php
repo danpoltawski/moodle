@@ -37,7 +37,7 @@ $PAGE->navbar->add(get_string('administrationsite'));
 $PAGE->navbar->add(get_string('plugins', 'admin'));
 $PAGE->navbar->add(get_string('enrolments', 'enrol'));
 $PAGE->navbar->add(get_string('pluginname', 'enrol_imsenterprise'),
-    new moodle_url('/admin/settings.php', array('section'=>'enrolsettingsimsenterprise')));
+    new moodle_url('/admin/settings.php', array('section' => 'enrolsettingsimsenterprise')));
 $PAGE->navbar->add(get_string('importimsfile', 'enrol_imsenterprise'));
 $PAGE->navigation->clear_cache();
 

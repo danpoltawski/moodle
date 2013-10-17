@@ -369,8 +369,9 @@ class enrol_imsenterprise_plugin extends enrol_plugin {
                                 $course->category = $catid;
                                 $this->log_line("Created new (hidden) category, #$catid: $newcat->name");
                             } else {
-                                // If not found and not allowed to create, stick with default
-                                $this->log_line('Category '.$group->category.' not found in Moodle database, so using default category instead.');
+                                // If not found and not allowed to create, stick with default.
+                                $this->log_line('Category '.$group->category.' not found in Moodle database, so using '.
+                                    'default category instead.');
                                 $course->category = $this->get_default_category_id();
                             }
                         } else {
@@ -800,6 +801,4 @@ class enrol_imsenterprise_plugin extends enrol_plugin {
 
         return $defaultcategoryid;
     }
-
-
-} // end of class
+}
