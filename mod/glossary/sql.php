@@ -88,17 +88,16 @@
     case GLOSSARY_AUTHOR_VIEW:
 
         $where = '';
-        $params['hookup'] = core_text::strtoupper($hook);
 
         if ( $sqlsortkey == 'firstname' ) {
             $usernamefield = $DB->sql_fullname('u.firstname' , 'u.lastname');
         } else {
             $usernamefield = $DB->sql_fullname('u.lastname' , 'u.firstname');
         }
-        $where = "AND " . $DB->sql_substr("upper($usernamefield)", 1, core_text::strlen($hook)) . " = :hookup";
 
-        if ( $hook == 'ALL' ) {
-            $where = '';
+        if (!empty($hook) && $hook != 'ALL') {
+            $where = "AND " . $DB->sql_substr("upper($usernamefield)", 1, core_text::strlen($hook)) . " = :hookup";
+            $params['hookup'] = core_text::strtoupper($hook);
         }
 
         $sqlselect  = "SELECT ge.*, $usernamefield AS glossarypivot, 1 AS userispivot ";
@@ -114,10 +113,10 @@
         $printpivot = 0;
 
         $where = '';
-        $params['hookup'] = core_text::strtoupper($hook);
 
-        if ($hook != 'ALL' and $hook != 'SPECIAL') {
+        if (!empty($hook) && $hook != 'ALL' && $hook != 'SPECIAL') {
             $where = "AND " . $DB->sql_substr("upper(concept)", 1, core_text::strlen($hook)) . " = :hookup";
+            $params['hookup'] = core_text::strtoupper($hook);
         }
 
         $sqlselect  = "SELECT ge.*, ge.concept AS glossarypivot";
@@ -239,7 +238,7 @@
         break;
 
         case 'letter':
-            if ($hook != 'ALL' and $hook != 'SPECIAL') {
+            if (!empty($hook) && $hook != 'ALL' && $hook != 'SPECIAL') {
                 $params['hookup'] = core_text::strtoupper($hook);
                 $where = "AND " . $DB->sql_substr("upper(concept)", 1, core_text::strlen($hook)) . " = :hookup";
             }
