@@ -2049,3 +2049,40 @@ function upgrade_rename_old_backup_files_using_shortname() {
         @rename($dir . '/' . $file, $dir . '/' . $newname);
     }
 }
+
+/**
+ * Detect duplicate grade item sortorders and resort the
+ * items to remove them.
+ */
+function upgrade_grade_item_fix_sortorder() {
+    global $DB;
+
+    // The simple way to fix these sortorder duplicates would be simply to resort each
+    // affected course. But in order to reduce the impact of this upgrade step we're trying
+    // to do it more efficiently by doing a series of update statements rather than updating
+    // every single grade item in affected courses.
+
+    $transaction = $DB->start_delegated_transaction();
+
+    $sql = 'SELECT g1.id, g1.courseid, g1.sortorder
+              FROM {grade_items} g1
+              JOIN {grade_items} g2 ON g1.courseid = g2.courseid
+             WHERE g1.sortorder = g2.sortorder AND g1.id != g2.id';
+
+    // Get all duplicates in course order, highest sort order first so that we can make space at the
+    // bottom higher end of the sort orders and work down.
+    $rs = $DB->get_recordset_sql($sql, null, 'courseid ASC, sortorder DESC, itemname DESC, id DESC');
+
+    foreach($rs as $duplicate) {
+        // Make room to increase the sortorder of this duplicate.
+        $DB->execute('UPDATE {grade_items}
+                         SET sortorder = sortorder + 1
+                       WHERE courseid = ? AND sortorder > ?', array($duplicate->courseid, $duplicate->sortorder));
+
+        // Increase the sort order of this item.
+        $DB->set_field('grade_items', 'sortorder', ($duplicate->sortorder + 1), array('id' => $duplicate->id));
+    }
+    $rs->close();
+
+    $transaction->allow_commit();
+}
