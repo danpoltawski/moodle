@@ -925,6 +925,45 @@ abstract class moodle_database {
     }
 
     /**
+     * Ensures that limit params are numeric and positive integers, to be passed to the database.
+     *
+     * @param int $limitfrom Where to start results from
+     * @param int $limitnum How many results to return
+     * @return array Normalised limit params in array($limitfrom, $limitnum)
+     */
+    protected function normalise_limit_from_num($limitfrom, $limitnum) {
+        global $CFG;
+
+        if ($limitfrom === null || $limitfrom === '') {
+            $limitfrom = 0;
+        }
+        if ($limitnum === null || $limitnum === '') {
+            $limitnum = 0;
+        }
+
+        if ($CFG->debugdeveloper) {
+            if (!is_numeric($limitfrom)) {
+                $strvalue = var_export($limitfrom, true);
+                debugging("Non-numeric limitfrom parameter detected: $strvalue, did you pass the correct arguments?",
+                    DEBUG_DEVELOPER);
+            }
+
+            if (!is_numeric($limitnum)) {
+                $strvalue = var_export($limitnum, true);
+                debugging("Non-numeric limitnum parameter detected: $strvalue, did you pass the correct arguments?",
+                    DEBUG_DEVELOPER);
+            }
+        }
+
+        $limitfrom = (int)$limitfrom;
+        $limitnum  = (int)$limitnum;
+        $limitfrom = max(0, $limitfrom);
+        $limitnum  = max(0, $limitnum);
+
+        return array($limitfrom, $limitnum);
+    }
+
+    /**
      * Return tables in database WITHOUT current prefix.
      * @param bool $usecache if true, returns list of cached tables.
      * @return array of table names in lowercase and without prefix
