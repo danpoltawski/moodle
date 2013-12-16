@@ -55,33 +55,48 @@ class core_upgradelib_testcase extends advanced_testcase {
         // Create fake items in course1, with sortorder duplicates.
         $course1 = $this->getDataGenerator()->create_course();
         $course1item = array();
-        $course1item[0] = $this->insert_fake_grade_item($course1->id, 1);
-        // Two duplicates at sortorder2.
-        $course1item[1] = $this->insert_fake_grade_item($course1->id, 2);
-        $course1item[2] = $this->insert_fake_grade_item($course1->id, 2);
-        // Some grade items immediately following.
-        $course1item[3] = $this->insert_fake_grade_item($course1->id, 3);
-        $course1item[4] = $this->insert_fake_grade_item($course1->id, 3);
-        $course1item[5] = $this->insert_fake_grade_item($course1->id, 4);
-        $course1item[6] = $this->insert_fake_grade_item($course1->id, 5);
+        $course1item[0] = $this->insert_fake_grade_item_sortorder($course1->id, 1);
 
-        // Create fake items in course1 which need no action.
+        $course1item[1] = $this->insert_fake_grade_item_sortorder($course1->id, 2);
+        $course1item[2] = $this->insert_fake_grade_item_sortorder($course1->id, 2);
+
+        $course1item[3] = $this->insert_fake_grade_item_sortorder($course1->id, 3);
+        $course1item[4] = $this->insert_fake_grade_item_sortorder($course1->id, 3);
+
+        $course1item[5] = $this->insert_fake_grade_item_sortorder($course1->id, 4);
+        $course1item[6] = $this->insert_fake_grade_item_sortorder($course1->id, 5);
+
+        // Create fake items in course2 which need no action.
         $course2 = $this->getDataGenerator()->create_course();
         $course2item = array();
-        $course2item[0] = $this->insert_fake_grade_item($course2->id, 1);
-        $course2item[1] = $this->insert_fake_grade_item($course2->id, 2);
-        $course2item[2] = $this->insert_fake_grade_item($course2->id, 3);
+        $course2item[0] = $this->insert_fake_grade_item_sortorder($course2->id, 1);
+        $course2item[1] = $this->insert_fake_grade_item_sortorder($course2->id, 2);
+        $course2item[2] = $this->insert_fake_grade_item_sortorder($course2->id, 3);
 
         // Create a new course which only has sortorder duplicates.
         $course3 = $this->getDataGenerator()->create_course();
         $course3item = array();
-        $course3item[0] = $this->insert_fake_grade_item($course3->id, 1);
-        $course3item[1] = $this->insert_fake_grade_item($course3->id, 1);
+        $course3item[0] = $this->insert_fake_grade_item_sortorder($course3->id, 1);
+        $course3item[1] = $this->insert_fake_grade_item_sortorder($course3->id, 1);
 
-        $duplicatedetectionsql = 'SELECT courseid, sortorder
+        // A course with non-sequential sortorders and duplicates.
+        $course4 = $this->getDataGenerator()->create_course();
+        $course4item = array();
+        $course4item[0] = $this->insert_fake_grade_item_sortorder($course4->id, 3);
+        $course4item[1] = $this->insert_fake_grade_item_sortorder($course4->id, 3);
+
+        $course4item[2] = $this->insert_fake_grade_item_sortorder($course4->id, 5);
+        $course4item[3] = $this->insert_fake_grade_item_sortorder($course4->id, 6);
+        $course4item[4] = $this->insert_fake_grade_item_sortorder($course4->id, 6);
+
+        $course4item[5] = $this->insert_fake_grade_item_sortorder($course4->id, 9);
+        $course4item[6] = $this->insert_fake_grade_item_sortorder($course4->id, 10);
+
+
+        $duplicatedetectionsql = "SELECT courseid, sortorder
                                     FROM {grade_items}
                                 GROUP BY courseid, sortorder
-                                  HAVING COUNT(id) > 1';
+                                  HAVING COUNT(id) > 1";
 
         // Verify there are duplicates before we start the fix.
         $dupes = $DB->record_exists_sql($duplicatedetectionsql);
@@ -97,12 +112,12 @@ class core_upgradelib_testcase extends advanced_testcase {
         // Load all grade items for ease.
         $afterfixgradeitems = $DB->get_records('grade_items');
 
-        // Verify that the duplicate sortorders have been removed.
+        // Verify that the duplicate sortorders have been removed from course1.
         $this->assertNotEquals($afterfixgradeitems[$course1item[1]->id]->sortorder,
             $afterfixgradeitems[$course1item[2]->id]->sortorder);
         $this->assertNotEquals($afterfixgradeitems[$course1item[3]->id]->sortorder,
             $afterfixgradeitems[$course1item[4]->id]->sortorder);
-        // Verify that the order has been respected.
+        // Verify that the order has been respected in course1.
         $this->assertGreaterThan($afterfixgradeitems[$course1item[0]->id]->sortorder,
             $afterfixgradeitems[$course1item[1]->id]->sortorder);
         $this->assertGreaterThan($afterfixgradeitems[$course1item[2]->id]->sortorder,
@@ -143,20 +158,47 @@ class core_upgradelib_testcase extends advanced_testcase {
 
             $this->assertEquals($originalitem, $newitem);
         }
+
+        // Verify that the duplicates in course4 have been removed.
+        $this->assertNotEquals($afterfixgradeitems[$course4item[0]->id]->sortorder,
+            $afterfixgradeitems[$course4item[1]->id]->sortorder);
+        $this->assertNotEquals($afterfixgradeitems[$course4item[3]->id]->sortorder,
+            $afterfixgradeitems[$course4item[4]->id]->sortorder);
+
+        // Verify that the order has been respected in course4.
+        $this->assertGreaterThan($afterfixgradeitems[$course4item[1]->id]->sortorder,
+            $afterfixgradeitems[$course4item[2]->id]->sortorder, "2 grater than 1");
+        $this->assertGreaterThan($afterfixgradeitems[$course4item[4]->id]->sortorder,
+            $afterfixgradeitems[$course4item[5]->id]->sortorder);
+        $this->assertGreaterThan($afterfixgradeitems[$course4item[5]->id]->sortorder,
+            $afterfixgradeitems[$course4item[6]->id]->sortorder);
+
+        // Verify that no other fields in course4 have been modified.
+        foreach ($course4item as $originalitem) {
+            $newitem = $afterfixgradeitems[$originalitem->id];
+
+            // Ignore changes to sortorder.
+            unset($originalitem->sortorder);
+            unset($newitem->sortorder);
+
+            $this->assertEquals($originalitem, $newitem);
+        }
     }
 
     /**
-     * Populate some fake grade items into the database.
+     * Populate some fake grade items into the database with specified
+     * sortorder and course id.
      *
      * NOTE: This function doesn't make much attempt to respect the
      * gradebook internals, its simply used to fake some data for
-     * testing the upgradelib function.
+     * testing the upgradelib function. Please don't use it for other
+     * purposes.
      *
      * @param int $courseid id of course
      * @param int $sortorder numeric sorting order of item
      * @return stdClass grade item object from the database.
      */
-    private function insert_fake_grade_item($courseid, $sortorder) {
+    private function insert_fake_grade_item_sortorder($courseid, $sortorder) {
         global $DB, $CFG;
         require_once($CFG->libdir.'/gradelib.php');
 
