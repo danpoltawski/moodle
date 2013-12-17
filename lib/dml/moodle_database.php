@@ -934,23 +934,30 @@ abstract class moodle_database {
     protected function normalise_limit_from_num($limitfrom, $limitnum) {
         global $CFG;
 
-        if ($limitfrom === null || $limitfrom === '') {
+        // We explicilty treat these cases as 0.
+        if ($limitfrom === null || $limitfrom === '' || $limitfrom === -1) {
             $limitfrom = 0;
         }
-        if ($limitnum === null || $limitnum === '') {
+        if ($limitnum === null || $limitnum === '' || $limitnum === -1) {
             $limitnum = 0;
         }
 
         if ($CFG->debugdeveloper) {
-            if (!is_numeric($limitfrom)) {
-                $strvalue = var_export($limitfrom, true);
-                debugging("Non-numeric limitfrom parameter detected: $strvalue, did you pass the correct arguments?",
+            if (!is_number($limitfrom)) {
+                $strvalue = "[".gettype($limitfrom)."] '".print_r($limitfrom, true)."'";
+                debugging("Non-integer limitfrom parameter detected $strvalue. Did you pass the correct arguments?",
+                    DEBUG_DEVELOPER);
+            } else if ($limitfrom < 0) {
+                debugging("Negative limitfrom parameter detected: $limitfrom, did you pass the correct arguments?",
                     DEBUG_DEVELOPER);
             }
 
-            if (!is_numeric($limitnum)) {
-                $strvalue = var_export($limitnum, true);
-                debugging("Non-numeric limitnum parameter detected: $strvalue, did you pass the correct arguments?",
+            if (!is_number($limitnum)) {
+                $strvalue = "[".gettype($limitnum)."] '".print_r($limitnum, true)."'";
+                debugging("Non-integer limitnum parameter detected $strvalue. Did you pass the correct arguments?",
+                    DEBUG_DEVELOPER);
+            } else if ($limitnum < 0) {
+                debugging("Negative limitnum parameter detected: $limitnum, did you pass the correct arguments?",
                     DEBUG_DEVELOPER);
             }
         }

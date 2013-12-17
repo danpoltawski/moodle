@@ -4990,7 +4990,10 @@ class core_dml_testcase extends database_driver_testcase {
         $this->assertEquals(2, end($records)->count);
     }
 
-    public function test_invalid_limits() {
+    /**
+     * Test debugging messages about invalid limit number values.
+     */
+    public function test_invalid_limits_debugging() {
         $DB = $this->tdb;
         $dbman = $DB->get_manager();
 
@@ -5005,18 +5008,18 @@ class core_dml_testcase extends database_driver_testcase {
 
         // Verify that get_records_sql throws debug notices with invalid limit params.
         $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, 'invalid');
-        $this->assertDebuggingCalled("Non-numeric limitfrom parameter detected: 'invalid', did you pass the correct arguments?");
+        $this->assertDebuggingCalled("Non-integer limitfrom parameter detected [string] 'invalid'. Did you pass the correct arguments?");
 
         $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, 1, 'invalid');
-        $this->assertDebuggingCalled("Non-numeric limitnum parameter detected: 'invalid', did you pass the correct arguments?");
+        $this->assertDebuggingCalled("Non-integer limitnum parameter detected [string] 'invalid'. Did you pass the correct arguments?");
 
         // Verify that get_recordset_sql throws debug notices with invalid limit params.
         $rs = $DB->get_recordset_sql("SELECT * FROM {{$tablename}}", null, 'invalid');
-        $this->assertDebuggingCalled("Non-numeric limitfrom parameter detected: 'invalid', did you pass the correct arguments?");
+        $this->assertDebuggingCalled("Non-integer limitfrom parameter detected [string] 'invalid'. Did you pass the correct arguments?");
         $rs->close();
 
         $rs = $DB->get_recordset_sql("SELECT * FROM {{$tablename}}", null, 1, 'invalid');
-        $this->assertDebuggingCalled("Non-numeric limitnum parameter detected: 'invalid', did you pass the correct arguments?");
+        $this->assertDebuggingCalled("Non-integer limitnum parameter detected [string] 'invalid'. Did you pass the correct arguments?");
         $rs->close();
 
         // Verify that some edge cases do no create debugging messages.
@@ -5038,9 +5041,21 @@ class core_dml_testcase extends database_driver_testcase {
 
         // Verify that empty arrays DO create debugging mesages.
         $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, array());
-        $this->assertDebuggingCalled("Non-numeric limitfrom parameter detected: array (\n), did you pass the correct arguments?");
+        $this->assertDebuggingCalled("Non-integer limitfrom parameter detected [array] 'Array\n(\n)\n'. Did you pass the correct arguments?");
         $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, 1, array());
-        $this->assertDebuggingCalled("Non-numeric limitnum parameter detected: array (\n), did you pass the correct arguments?");
+        $this->assertDebuggingCalled("Non-integer limitnum parameter detected [array] 'Array\n(\n)\n'. Did you pass the correct arguments?");
+
+        // Verify Negative number handling:
+        // -1 is explicitly treated as 0 for historical reasons.
+        $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, -1);
+        $this->assertDebuggingNotCalled();
+        $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, 1, -1);
+        $this->assertDebuggingNotCalled();
+        // Any other negative values should throw debugging messages.
+        $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, -2);
+        $this->assertDebuggingCalled("Negative limitfrom parameter detected: -2, did you pass the correct arguments?");
+        $DB->get_records_sql("SELECT * FROM {{$tablename}}", null, 1, -2);
+        $this->assertDebuggingCalled("Negative limitnum parameter detected: -2, did you pass the correct arguments?");
     }
 }
 
