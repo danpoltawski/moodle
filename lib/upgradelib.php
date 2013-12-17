@@ -2068,20 +2068,17 @@ function upgrade_grade_item_fix_sortorder() {
               FROM {grade_items} g1
               JOIN {grade_items} g2 ON g1.courseid = g2.courseid
              WHERE g1.sortorder = g2.sortorder AND g1.id != g2.id
-             ORDER BY g1.courseid ASC, g1.sortorder DESC, g1.itemname DESC, g1.id DESC";
+             ORDER BY g1.courseid ASC, g1.sortorder DESC, g1.id DESC";
 
-    // Get all duplicates in course order, highest sort order first so that we can make space at the
-    // bottom higher end of the sort orders and work down.
+    // Get all duplicates in course order, highest sort order, and higest id first so that we can make space at the
+    // bottom higher end of the sort orders and work down by id.
     $rs = $DB->get_recordset_sql($sql);
 
     foreach($rs as $duplicate) {
-        // Make room to increase the sortorder of this duplicate.
         $DB->execute("UPDATE {grade_items}
                          SET sortorder = sortorder + 1
-                       WHERE courseid = ? AND sortorder > ?", array($duplicate->courseid, $duplicate->sortorder));
-
-        // Increase the sort order of this item.
-        $DB->set_field('grade_items', 'sortorder', ($duplicate->sortorder + 1), array('id' => $duplicate->id));
+                       WHERE courseid = :courseid AND sortorder >= :sortorder AND id > :id",
+            array('courseid' => $duplicate->courseid, 'sortorder' =>$duplicate->sortorder, 'id' => $duplicate->id));
     }
     $rs->close();
 

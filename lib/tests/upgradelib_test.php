@@ -91,7 +91,9 @@ class core_upgradelib_testcase extends advanced_testcase {
 
         $course4item[5] = $this->insert_fake_grade_item_sortorder($course4->id, 9);
         $course4item[6] = $this->insert_fake_grade_item_sortorder($course4->id, 10);
-
+        // Create some items with non-sequential id and sortorder relationship.
+        $course4item[7] = $this->insert_fake_grade_item_sortorder($course4->id, 7);
+        $course4item[8] = $this->insert_fake_grade_item_sortorder($course4->id, 8);
 
         $duplicatedetectionsql = "SELECT courseid, sortorder
                                     FROM {grade_items}
@@ -172,6 +174,13 @@ class core_upgradelib_testcase extends advanced_testcase {
             $afterfixgradeitems[$course4item[5]->id]->sortorder);
         $this->assertGreaterThan($afterfixgradeitems[$course4item[5]->id]->sortorder,
             $afterfixgradeitems[$course4item[6]->id]->sortorder);
+
+        // Check the items created with non-sequential id and sortorder relationship
+        // are converted correclty.
+        $this->assertGreaterThan($afterfixgradeitems[$course4item[7]->id]->sortorder,
+            $afterfixgradeitems[$course4item[5]->id]->sortorder);
+        $this->assertGreaterThan($afterfixgradeitems[$course4item[7]->id]->sortorder,
+            $afterfixgradeitems[$course4item[8]->id]->sortorder);
 
         // Verify that no other fields in course4 have been modified.
         foreach ($course4item as $originalitem) {
