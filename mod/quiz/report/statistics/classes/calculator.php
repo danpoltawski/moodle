@@ -226,7 +226,7 @@ class quiz_statistics_calculator {
             $limitoffset = $s / 2 - 1;
             $limit = 2;
         } else {
-            $limitoffset = floor($s / 2);
+            $limitoffset = intval($s / 2);
             $limit = 1;
         }
         $sql = "SELECT id, sumgrades
