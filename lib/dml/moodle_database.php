@@ -936,11 +936,10 @@ abstract class moodle_database {
     protected function normalise_limit_from_num($limitfrom, $limitnum) {
         global $CFG;
 
-        // We explicilty treat these cases as 0.
-        if ($limitfrom === null || $limitfrom === '' || $limitfrom === -1) {
+        if ($limitfrom === null) {
             $limitfrom = 0;
         }
-        if ($limitnum === null || $limitnum === '' || $limitnum === -1) {
+        if ($limitnum === null) {
             $limitnum = 0;
         }
 
