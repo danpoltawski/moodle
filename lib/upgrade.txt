@@ -5,6 +5,19 @@ information provided here is intended especially for developers.
 
 * $core_renderer->block_move_target() changed to support more verbose move-block-here descriptions.
 
+LIMIT PARAMS:
+Non-numeric LIMIT params in the dml functions now throw DEVELOPER_DEBUG messages rather than silently being
+coverted to 0. This means that the following functions have had their default method definiton adjusted to
+use 0 rather than '' for $limitfrom and $limitnum params:
+* build_mnet_logs_array
+* build_logs_array
+* get_logs
+* get_role_users
+* get_users_by_capability
+* tag_find_records
+* tag_print_tagged_users_table
+* completion_info::get_tracked_users
+
 DEPRECATIONS:
 * Abstract class \core\event\course_module_instances_list_viewed is deprecated now, use \core\event\instances_list_viewed instead.
 * mod_book\event\instances_list_viewed has been deprecated. Please use mod_book\event\course_module_instance_list_viewed instead.

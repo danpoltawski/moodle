@@ -354,7 +354,7 @@ function tag_print_search_results($query,  $page, $perpage, $return=false) {
  * @param  bool        $return if true return html string
  * @return string|null a HTML string or null if this function does the output
  */
-function tag_print_tagged_users_table($tag_object, $limitfrom='', $limitnum='', $return=false) {
+function tag_print_tagged_users_table($tag_object, $limitfrom=0, $limitnum=0, $return=false) {
 
     //List of users with this tag
     $userlist = tag_find_records($tag_object->name, 'user', $limitfrom, $limitnum);

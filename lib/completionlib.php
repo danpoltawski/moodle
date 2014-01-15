@@ -1142,7 +1142,7 @@ class completion_info {
      * @return array Array of user objects with standard user fields
      */
     public function get_tracked_users($where = '', $whereparams = array(), $groupid = 0,
-             $sort = '', $limitfrom = '', $limitnum = '', context $extracontext = null) {
+             $sort = '', $limitfrom = 0, $limitnum = 0, context $extracontext = null) {
 
         global $DB;
 

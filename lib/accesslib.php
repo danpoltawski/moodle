@@ -3697,7 +3697,7 @@ function set_role_contextlevels($roleid, array $contextlevels) {
  *               in $groups.
  * @return array of user records
  */
-function get_users_by_capability(context $context, $capability, $fields = '', $sort = '', $limitfrom = '', $limitnum = '',
+function get_users_by_capability(context $context, $capability, $fields = '', $sort = '', $limitfrom = 0, $limitnum = 0,
                                  $groups = '', $exceptions = '', $doanything_ignored = null, $view_ignored = null, $useviewallgroups = false) {
     global $CFG, $DB;
 
@@ -4042,15 +4042,15 @@ function sort_by_roleassignment_authority($users, context $context, $roles = arr
  *      null => use default sort from users_order_by_sql.
  * @param bool $all true means all, false means limit to enrolled users
  * @param string $group defaults to ''
- * @param mixed $limitfrom defaults to ''
- * @param mixed $limitnum defaults to ''
+ * @param mixed $limitfrom defaults to 0
+ * @param mixed $limitnum defaults to 0
  * @param string $extrawheretest defaults to ''
  * @param array $whereorsortparams any paramter values used by $sort or $extrawheretest.
  * @return array
  */
 function get_role_users($roleid, context $context, $parent = false, $fields = '',
         $sort = null, $all = true, $group = '',
-        $limitfrom = '', $limitnum = '', $extrawheretest = '', $whereorsortparams = array()) {
+        $limitfrom = 0, $limitnum = 0, $extrawheretest = '', $whereorsortparams = array()) {
     global $DB;
 
     if (empty($fields)) {

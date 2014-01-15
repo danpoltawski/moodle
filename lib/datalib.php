@@ -1802,12 +1802,12 @@ function user_accesstime_log($courseid=0) {
  * @param string $select SQL select criteria
  * @param array $params named sql type params
  * @param string $order SQL order by clause to sort the records returned
- * @param string $limitfrom return a subset of records, starting at this point (optional, required if $limitnum is set)
+ * @param int $limitfrom return a subset of records, starting at this point (optional, required if $limitnum is set)
  * @param int $limitnum return a subset comprising this many records (optional, required if $limitfrom is set)
  * @param int $totalcount Passed in by reference.
  * @return array
  */
-function get_logs($select, array $params=null, $order='l.time DESC', $limitfrom='', $limitnum='', &$totalcount) {
+function get_logs($select, array $params=null, $order='l.time DESC', $limitfrom=0, $limitnum=0, &$totalcount) {
     global $DB;
 
     if ($order) {

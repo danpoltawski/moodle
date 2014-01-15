@@ -702,7 +702,7 @@ function tag_display_name($tagobject, $html=TAG_RETURN_HTML) {
  * @param    int      $limitnum  (optional, required if $limitfrom is set) return a subset comprising this many records.
  * @return   array of matching objects, indexed by record id, from the table containing the type requested
  */
-function tag_find_records($tag, $type, $limitfrom='', $limitnum='') {
+function tag_find_records($tag, $type, $limitfrom=0, $limitnum=0) {
     global $CFG, $DB;
 
     if (!$tag || !$type) {

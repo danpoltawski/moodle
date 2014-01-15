@@ -1432,7 +1432,8 @@ class core_accesslib_testcase extends advanced_testcase {
         $this->assertCount(1, $users);
         $this->assertArrayHasKey($user3->id, $users);
 
-        $users = get_role_users($teacherrole->id, $coursecontext, true, 'u.id, u.email, u.idnumber, u.firstname', 'u.idnumber', null, '', '', '', 'u.firstname = :xfirstname', array('xfirstname'=>'John'));
+        $users = get_role_users($teacherrole->id, $coursecontext, true, 'u.id, u.email, u.idnumber, u.firstname',
+            'u.idnumber', null, '', 0, 0, 'u.firstname = :xfirstname', array('xfirstname' => 'John'));
         $this->assertCount(1, $users);
         $this->assertArrayHasKey($user1->id, $users);
     }
