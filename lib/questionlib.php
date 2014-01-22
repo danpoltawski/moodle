@@ -1031,13 +1031,9 @@ function question_category_select_menu($contexts, $top = false, $currentcat = 0,
  */
 function question_get_default_category($contextid) {
     global $DB;
-    $category = $DB->get_records('question_categories',
-            array('contextid' => $contextid), 'id', '*', 0, 1);
-    if (!empty($category)) {
-        return reset($category);
-    } else {
-        return false;
-    }
+
+    return $DB->get_record('question_categories',
+        array('contextid' => $contextid), '*', IGNORE_MULTIPLE);
 }
 
 /**
