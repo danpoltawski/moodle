@@ -148,18 +148,18 @@ function blog_rss_get_feed($context, $args) {
     global $CFG, $SITE, $DB;
 
     if (empty($CFG->enableblogs)) {
-        debugging('Blogging disabled on this site, RSS feeds are not available');
+        debugging('Blogging disabled on this site, RSS feeds are not available', DEBUG_NORMAL);
         return null;
     }
 
     if (empty($CFG->enablerssfeeds)) {
-        debugging('Sorry, RSS feeds are disabled on this site');
+        debugging('Sorry, RSS feeds are disabled on this site', DEBUG_NORMAL);
         return '';
     }
 
     if ($CFG->bloglevel == BLOG_SITE_LEVEL) {
         if (isguestuser()) {
-            debugging(get_string('nopermissiontoshow','error'));
+            debugging(get_string('nopermissiontoshow', 'error'), DEBUG_NORMAL);
             return '';
         }
     }

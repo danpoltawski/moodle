@@ -2794,31 +2794,21 @@ function set_debugging($level, $debugdisplay = null) {
 }
 
 /**
- * Standard Debugging Function
+ * Print a debugging message at specified level.
  *
- * Returns true if the current site debugging settings are equal or above specified level.
  * If passed a parameter it will emit a debugging notice similar to trigger_error(). The
  * routing of notices is controlled by $CFG->debugdisplay
  * eg use like this:
  *
- * 1)  debugging('a normal debug notice');
- * 2)  debugging('something really picky', DEBUG_ALL);
- * 3)  debugging('annoying debug message only for developers', DEBUG_DEVELOPER);
- * 4)  if (debugging()) { perform extra debugging operations (do not use print or echo) }
- *
- * In code blocks controlled by debugging() (such as example 4)
- * any output should be routed via debugging() itself, or the lower-level
- * trigger_error() or error_log(). Using echo or print will break XHTML
- * JS and HTTP headers.
- *
- * It is also possible to define NO_DEBUG_DISPLAY which redirects the message to error_log.
+ * 1)  debugging('A message only a developer can help fix');
+ * 2)  debugging('A message which a server administrator help with', DEBUG_NORMAL);
  *
  * @param string $message a message to print
  * @param int $level the level at which this debugging statement should show
  * @param array $backtrace use different backtrace
- * @return bool
+ * @return bool true if debugging settings are equal or above specified level
  */
-function debugging($message = '', $level = DEBUG_NORMAL, $backtrace = null) {
+function debugging($message = '', $level = DEBUG_DEVELOPER, $backtrace = null) {
     global $CFG, $USER;
 
     $forcedebug = false;

@@ -133,7 +133,7 @@ class uu_progress_tracker {
             $this->flush(); //init arrays
         }
         if (!in_array($col, $this->columns)) {
-            debugging('Incorrect column:'.$col);
+            debugging('Incorrect column:'.$col, DEBUG_NORMAL);
             return;
         }
         if ($merge) {

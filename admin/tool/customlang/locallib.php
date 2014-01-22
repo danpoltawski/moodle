@@ -254,14 +254,14 @@ class tool_customlang_utils {
         global $CFG;
 
         if ($lang !== clean_param($lang, PARAM_LANG)) {
-            debugging('Unable to dump local strings for non-installed language pack .'.s($lang));
+            debugging('Unable to dump local strings for non-installed language pack .'.s($lang), DEBUG_NORMAL);
             return false;
         }
         if ($component !== clean_param($component, PARAM_COMPONENT)) {
             throw new coding_exception('Incorrect component name');
         }
         if (!$filename = self::get_component_filename($component)) {
-            debugging('Unable to find the filename for the component '.s($component));
+            debugging('Unable to find the filename for the component '.s($component), DEBUG_NORMAL);
             return false;
         }
         if ($filename !== clean_param($filename, PARAM_FILE)) {
@@ -279,7 +279,7 @@ class tool_customlang_utils {
         }
 
         if (!$f = fopen($filepath, 'w')) {
-            debugging('Unable to write '.s($filepath));
+            debugging('Unable to write '.s($filepath), DEBUG_NORMAL);
             return false;
         }
         fwrite($f, <<<EOF
@@ -315,7 +315,7 @@ EOF
 
         foreach ($strings as $stringid => $text) {
             if ($stringid !== clean_param($stringid, PARAM_STRINGID)) {
-                debugging('Invalid string identifier '.s($stringid));
+                debugging('Invalid string identifier '.s($stringid), DEBUG_NORMAL);
                 continue;
             }
             fwrite($f, '$string[\'' . $stringid . '\'] = ');
