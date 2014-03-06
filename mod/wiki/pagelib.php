@@ -2116,10 +2116,16 @@ class page_wiki_viewversion extends page_wiki {
         $pageversion = wiki_get_version($this->version->id);
 
         if ($pageversion) {
-            $restorelink = new moodle_url('/mod/wiki/restoreversion.php', array('pageid' => $this->page->id, 'versionid' => $this->version->id));
-            echo html_writer::tag('div', get_string('viewversion', 'wiki', $pageversion->version) . '<br />' .
-                html_writer::link($restorelink->out(false), '(' . get_string('restorethis', 'wiki') .
-                ')', array('class' => 'wiki_restore')) . '&nbsp;', array('class' => 'wiki_headingtitle'));
+            $restorelink = '';
+            if (has_capability('mod/wiki:managewiki', $this->modcontext)) {
+                $restoreurl = new moodle_url('/mod/wiki/restoreversion.php',
+                    array('pageid' => $this->page->id, 'versionid' => $this->version->id));
+
+                $restorelink = '<br />' . html_writer::link($restoreurl, '('.get_string('restorethis', 'wiki').')',
+                    array('class' => 'wiki_restore'));
+            }
+            echo html_writer::tag('div', get_string('viewversion', 'wiki', $pageversion->version) .
+                $restorelink . '&nbsp;', array('class' => 'wiki_headingtitle'));
             $userinfo = wiki_get_user_info($pageversion->userid);
             $heading = '<p><strong>' . get_string('modified', 'wiki') . ':</strong>&nbsp;' . userdate($pageversion->timecreated, get_string('strftimedatetime', 'langconfig'));
             $viewlink = new moodle_url('/user/view.php', array('id' => $userinfo->id));
