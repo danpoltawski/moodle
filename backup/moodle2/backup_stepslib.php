@@ -382,7 +382,8 @@ class backup_section_structure_step extends backup_structure_step {
         // The 'availability' field needs to be renamed because it clashes with
         // the old nested element structure for availability data.
         $section->set_source_sql("
-                SELECT *, availability AS availabilityjson
+                  SELECT section, name, summary, summaryformat, sequence, visible,
+                   availability AS availabilityjson
                   FROM {course_sections} WHERE id = ?",
                 array('id' => backup::VAR_SECTIONID));
 
