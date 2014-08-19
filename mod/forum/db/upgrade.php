@@ -157,7 +157,7 @@ function xmldb_forum_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2014051201, 'forum');
     }
 
-    if ($oldversion < 2014051202) {
+    if ($oldversion < 2014081900) {
 
         // Define table forum_discussion_subs to be created.
         $table = new xmldb_table('forum_discussion_subs');
@@ -182,7 +182,7 @@ function xmldb_forum_upgrade($oldversion) {
         }
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2014051202, 'forum');
+        upgrade_mod_savepoint(true, 2014081900, 'forum');
     }
 
     return true;
