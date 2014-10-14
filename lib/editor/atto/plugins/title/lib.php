@@ -31,6 +31,7 @@ function atto_title_strings_for_js() {
                                           'h4',
                                           'h5',
                                           'pre',
-                                          'p'), 'atto_title');
+                                          'p',
+                                          'blockquote'), 'atto_title');
 }
 
