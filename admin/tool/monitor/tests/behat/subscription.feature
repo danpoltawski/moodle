@@ -98,8 +98,7 @@ Feature: tool_monitor_subscriptions
     And   I am on homepage
     And   I trigger cron
     And   I am on homepage
-    And   I expand "My profile" node
-    When  I follow "Messages"
+    When  I navigate to "Messages" node in "My profile"
     And   I follow "Do not reply to this email (1)"
     Then  I should see "The course was viewed."
 
@@ -119,8 +118,7 @@ Feature: tool_monitor_subscriptions
     And   I follow "Course 1"
     And   I trigger cron
     And   I am on homepage
-    And   I expand "My profile" node
-    When  I follow "Messages"
+    When  I navigate to "Messages" node in "My profile"
     And   I follow "Do not reply to this email (1)"
     Then  I should see "The course was viewed."
 
