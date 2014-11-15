@@ -166,6 +166,11 @@ function user_update_user($user, $updatepassword = true, $triggerevent = true) {
         unset($user->calendartype);
     }
 
+    // Unset the autosubscribe here if not specified.
+    if (empty($user->autosubscribe)) {
+        $user->autosubscribe = false;
+    }
+
     $user->timemodified = time();
     $DB->update_record('user', $user);
 

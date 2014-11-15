@@ -387,11 +387,9 @@ function useredit_shared_definition_preferences($user, &$mform, $editoroptions =
     $mform->setDefault('maildigest', $CFG->defaultpreference_maildigest);
     $mform->addHelpButton('maildigest', 'emaildigest');
 
-    $choices = array();
-    $choices['1'] = get_string('autosubscribeyes');
-    $choices['0'] = get_string('autosubscribeno');
-    $mform->addElement('select', 'autosubscribe', get_string('autosubscribe'), $choices);
+    $mform->addElement('checkbox', 'autosubscribe', get_string('autosubscribediscussion'));
     $mform->setDefault('autosubscribe', $CFG->defaultpreference_autosubscribe);
+    $mform->addHelpButton('autosubscribe', 'autosubscribediscussion');
 
     if (!empty($CFG->forum_trackreadposts)) {
         $choices = array();
