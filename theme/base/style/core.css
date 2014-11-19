@@ -2316,6 +2316,7 @@ body.lockscroll {
 .progressbar_container {
     max-width: 500px;
     margin: 0 auto;
+    max-width: 500px;
 }
 
 /* IE10 only fix for calendar titling */
