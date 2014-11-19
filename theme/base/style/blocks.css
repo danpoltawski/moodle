@@ -44,4 +44,6 @@
 .dir-rtl .block .header,
 .dir-rtl .block h2.header {text-align:right;}
 .dir-rtl .block .header .commands { text-align: left;}
-.dir-rtl .block .header .block_action { float: left; margin-left: 4px; margin-left: 0;}
+.dir-rtl .block .header .block_action { float: left; margin
+====
+<<<,
