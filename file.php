@@ -92,7 +92,7 @@ if (!$file = $fs->get_file_by_hash(sha1($fullpath))) {
     }
 }
 // do not serve dirs
-if ($file->get_filename() == '.') {
+if ($file->get_filename() == '.'){
     if (!$file = $fs->get_file_by_hash(sha1($fullpath.'index.html'))) {
         if (!$file = $fs->get_file_by_hash(sha1($fullpath.'index.htm'))) {
             if (!$file = $fs->get_file_by_hash(sha1($fullpath.'Default.htm'))) {
