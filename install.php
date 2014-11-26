@@ -40,7 +40,7 @@ if (isset($_REQUEST['admin'])) {
 $configfile = './config.php';
 if (file_exists($configfile)) {
     header("Location: $admin/index.php?lang=$lang");
-    die;
+    die
 }
 
 define('CLI_SCRIPT', false); // prevents some warnings later
@@ -51,9 +51,15 @@ define('IGNORE_COMPONENT_CACHE', true);
 define('MDL_PERF_TEST', false);
 
 // Servers should define a default timezone in php.ini, but if they don't then make sure something is defined.
+<<<<<<< HEAD
 if (!function_exists('date_default_timezone_set') or !function_exists('date_default_timezone_get')) {
     echo("Timezone functions are not available.");
     die;
+=======
+// This is a quick hack.  Ideally we should ask the admin for a value.  See MDL-22625 for more on this.
+if (function_exists('date_default_timezone_set') and function_exists('date_default_timezone_get')) {
+    @date_default_timezone_set(@date_default_timezone_get())
+>>>>>>> ba8b8fa... MDL-1234 break lint
 }
 date_default_timezone_set(@date_default_timezone_get());
 
