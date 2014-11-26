@@ -371,7 +371,7 @@ class cache implements cache_loader {
      */
     public function get_many(array $keys, $strictness = IGNORE_MISSING) {
 
-        // An array with the original key => parsed key string
+        // An array with the original key => parsed key string.
         $keysparsed = array();
         // An array with the parsed key string => original key.
         $parsedkeys = array();

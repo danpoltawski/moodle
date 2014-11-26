@@ -163,6 +163,21 @@ class cachestore_mongodb_test extends cachestore_tests {
         $this->assertEquals('B', $result['b']);
         $this->assertFalse($result['c']);
 
+        // Test the many commands with a single use.
+        $this->assertEquals(1, $cache->set_many(array('d' => 'D')));
+        $result = $cache->get_many(array('d'));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertArrayHasKey('d', $result);
+        $this->assertEquals('D', $result['d']);
+        $this->assertEquals($result, $cache->get_many(array('d')));
+        $this->assertEquals(1, $cache->delete_many(array('d')));
+        $result = $cache->get_many(array('d'));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertArrayHasKey('d', $result);
+        $this->assertFalse($result['d']);
+
         // Test non-recursive deletes.
         $this->assertTrue($cache->set('test', 'test'));
         $this->assertSame('test', $cache->get('test'));
