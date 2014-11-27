@@ -2,7 +2,6 @@
 // security - hide paths
 if (!defined('ADODB_DIR')) die();
 
-global $ADODB_INCLUDED_LIB;
 $ADODB_INCLUDED_LIB = 1;
 
 /*
