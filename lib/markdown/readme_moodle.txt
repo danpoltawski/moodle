@@ -6,5 +6,6 @@ Procedure:
 * update function markdown_to_html() in weblib.php if necessary,
   note that we require the php files manually for performance reasons
 * run phpunit tests
+* Note changes here to stop checker complaining
 
 Petr Skoda
