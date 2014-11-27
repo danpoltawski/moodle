@@ -15,6 +15,7 @@ namespace Michelf;
 
 #
 # Markdown Parser Class
+# This markdown mod shouldn't cause issues.
 #
 
 class Markdown implements MarkdownInterface {
