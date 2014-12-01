@@ -113,6 +113,18 @@ class cache_config_phpunittest extends cache_config_writer {
     }
 
     /**
+     * Create a cache store instance with the given name and configuration.
+     *
+     * Super advanced - use with care.
+     *
+     * @param string $name
+     * @param array $configuration
+     */
+    public function phpunit_add_store_with_config($name, array $configuration = array()) {
+        $this->configstores[$name] = $configuration;
+    }
+
+    /**
      * Forcefully injects a definition => store mapping.
      *
      * This function does no validation, you should only be calling if it you know

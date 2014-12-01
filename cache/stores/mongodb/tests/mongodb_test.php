@@ -81,4 +81,122 @@ class cachestore_mongodb_test extends cachestore_tests {
             2 => 'beta'
         ), $instance->get_many(array(1, 2)));
     }
+
+    /**
+     * Tests MongoDB in extended mode.
+     *
+     * @throws coding_exception
+     */
+    public function test_extended_mode() {
+        if (!defined('TEST_CACHESTORE_MONGODB_TESTSERVER')) {
+            $this->markTestSkipped('MongoDB has not been set up for testing');
+            return false;
+        }
+        /** @var cache_config_phpunittest $config */
+        $config = cache_config_phpunittest::instance();
+        // Create a mongodb store instance with the test server config.
+        $config->phpunit_add_store_with_config('mongodb_extendedmode', array(
+            'name' => 'mongodb_extendedmode',
+            'plugin' => 'mongodb',
+            'configuration' => array(
+                'extendedmode' => 1,
+                'servers' => TEST_CACHESTORE_MONGODB_TESTSERVER,
+                'usesafe' => 1
+            ),
+            'features' => cache_store::SUPPORTS_DATA_GUARANTEE + cache_store::SUPPORTS_MULTIPLE_IDENTIFIERS,
+            'modes' => cache_store::MODE_APPLICATION + cache_store::MODE_SESSION,
+            'mappingsonly' => false,
+            'class' => 'cachestore_mongodb',
+            'default' => false,
+            'lock' => 'cachelock_file_default'
+        ));
+        // Create a file store (will be used as a secondary loader for advanced testing).
+        $config->phpunit_add_file_store('file_extendedmode');
+        // Create a definition to test against.
+        $config->phpunit_add_definition('cachestore_mongodb/extendedmode', array(
+            'mode' => cache_store::MODE_APPLICATION,
+            'component' => 'cachestore_mongodb',
+            'area' => 'extendedmode'
+        ), false);
+        // Map the two stores to the definition.
+        $config->phpunit_add_definition_mapping('cachestore_mongodb/extendedmode', 'mongodb_extendedmode', 1);
+        $config->phpunit_add_definition_mapping('cachestore_mongodb/extendedmode', 'file_extendedmode', 2);
+
+        // Initialise the cache and make sure it is what we think it is.
+        $cache = cache::make('cachestore_mongodb', 'extendedmode');
+        $this->assertInstanceOf('cache_phpunit_application', $cache);
+        $this->assertSame('cachestore_mongodb', $cache->phpunit_get_store_class());
+
+        // Start by purging - important because the store may have had a failed test in the past and still have data.
+        $this->assertTrue($cache->purge());
+
+        // Test the cache.
+        $this->assertFalse($cache->get('test'));
+        $this->assertTrue($cache->set('test', 'test'));
+        $this->assertEquals('test', $cache->get('test'));
+        $this->assertTrue($cache->delete('test'));
+        $this->assertFalse($cache->get('test'));
+        $this->assertTrue($cache->set('test', 'test'));
+        $this->assertTrue($cache->purge());
+        $this->assertFalse($cache->get('test'));
+
+        // Test the many commands.
+        $this->assertEquals(3, $cache->set_many(array('a' => 'A', 'b' => 'B', 'c' => 'C')));
+        $result = $cache->get_many(array('a', 'b', 'c'));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(3, $result);
+        $this->assertArrayHasKey('a', $result);
+        $this->assertArrayHasKey('b', $result);
+        $this->assertArrayHasKey('c', $result);
+        $this->assertEquals('A', $result['a']);
+        $this->assertEquals('B', $result['b']);
+        $this->assertEquals('C', $result['c']);
+        $this->assertEquals($result, $cache->get_many(array('a', 'b', 'c')));
+        $this->assertEquals(2, $cache->delete_many(array('a', 'c')));
+        $result = $cache->get_many(array('a', 'b', 'c'));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(3, $result);
+        $this->assertArrayHasKey('a', $result);
+        $this->assertArrayHasKey('b', $result);
+        $this->assertArrayHasKey('c', $result);
+        $this->assertFalse($result['a']);
+        $this->assertEquals('B', $result['b']);
+        $this->assertFalse($result['c']);
+
+        // Test the many commands with a single use.
+        $this->assertEquals(1, $cache->set_many(array('d' => 'D')));
+        $result = $cache->get_many(array('d'));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertArrayHasKey('d', $result);
+        $this->assertEquals('D', $result['d']);
+        $this->assertEquals($result, $cache->get_many(array('d')));
+        $this->assertEquals(1, $cache->delete_many(array('d')));
+        $result = $cache->get_many(array('d'));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(1, $result);
+        $this->assertArrayHasKey('d', $result);
+        $this->assertFalse($result['d']);
+
+        // Test non-recursive deletes.
+        $this->assertTrue($cache->set('test', 'test'));
+        $this->assertSame('test', $cache->get('test'));
+        $this->assertTrue($cache->delete('test', false));
+        // We should still have it on a deeper loader.
+        $this->assertSame('test', $cache->get('test'));
+        // Test non-recusive with many functions.
+        $this->assertSame(3, $cache->set_many(array(
+            'one' => 'one',
+            'two' => 'two',
+            'three' => 'three'
+        )));
+        $this->assertSame('one', $cache->get('one'));
+        $this->assertSame(array('two' => 'two', 'three' => 'three'), $cache->get_many(array('two', 'three')));
+        $this->assertSame(3, $cache->delete_many(array('one', 'two', 'three'), false));
+        $this->assertSame('one', $cache->get('one'));
+        $this->assertSame(array('two' => 'two', 'three' => 'three'), $cache->get_many(array('two', 'three')));
+
+        // Finally purge the cache to clean up.
+        $this->assertTrue($cache->purge());
+    }
 }
