@@ -206,7 +206,6 @@ class cachestore_mongodb extends cache_store implements cache_is_configurable {
         $this->database = $this->connection->selectDB($this->databasename);
         $this->definitionhash = 'm'.$definition->generate_definition_hash();
         $this->collection = $this->database->selectCollection($this->definitionhash);
-        $this->extendedmode = $this->extendedmode && $definition->uses_simple_keys();
 
         $options = array('name' => 'idx_key');
         if ($this->legacymongo) {
@@ -281,7 +280,7 @@ class cachestore_mongodb extends cache_store implements cache_is_configurable {
         if ($this->extendedmode) {
             $query = $this->get_extendedmode_query($keys);
         } else {
-            $query = array('key' => array('$in' => array_values($keys)));
+            $query = array('key' => array('$in' => $keys));
         }
         $cursor = $this->collection->find($query);
         $results = array();
