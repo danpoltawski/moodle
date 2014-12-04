@@ -47,8 +47,12 @@ if ($hassiteconfig
         $temp->add(new admin_setting_configselect('defaultpreference_maildigest', new lang_string('emaildigest'),
             new lang_string('emaildigest_help'), 0, $choices));
 
-        $temp->add(new admin_setting_configcheckbox('defaultpreference_autosubscribe',
-            new lang_string('autosubscribediscussion'), get_string('autosubscribediscussion_help'), true));
+
+        $choices = array();
+        $choices['1'] = new lang_string('autosubscribeyes');
+        $choices['0'] = new lang_string('autosubscribeno');
+        $temp->add(new admin_setting_configselect('defaultpreference_autosubscribe', new lang_string('autosubscribe'),
+            '', 1, $choices));
 
         $choices = array();
         $choices['0'] = new lang_string('trackforumsno');
