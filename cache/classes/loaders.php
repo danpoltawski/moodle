@@ -853,8 +853,9 @@ class cache implements cache_loader {
      * @return string|array String unless the store supports multi-identifiers in which case an array if returned.
      */
     protected function parse_key($key) {
-        // First up if the store supports multiple keys we'll go with that.
-        if ($this->store->supports_multiple_identifiers()) {
+        // First up if the store supports multiple keys and the definition says its just simple keys we'll go with that.
+        // If simple keys isn't used there is no telling what the key is and it may be unsuitable. It must be hashed.
+        if ($this->definition->uses_simple_keys() && $this->store->supports_multiple_identifiers()) {
             $result = $this->definition->generate_multi_key_parts();
             $result['key'] = $key;
             return $result;
