@@ -278,7 +278,13 @@ class cachestore_mongodb extends cache_store implements cache_is_configurable {
      */
     public function get_many($keys) {
         if ($this->extendedmode) {
-            $query = $this->get_extendedmode_query($keys);
+            $query = $this->get_many_extendedmode_query($keys);
+            $keyarray = array();
+            foreach ($keys as $key) {
+                $keyarray[] = $key['key'];
+            }
+            $keys = $keyarray;
+            $query = array('key' => array('$in' => $keys));
         } else {
             $query = array('key' => array('$in' => $keys));
         }
@@ -288,33 +294,12 @@ class cachestore_mongodb extends cache_store implements cache_is_configurable {
             $id = (string)$result['key'];
             $results[$id] = unserialize($result['data']);
         }
-        foreach ($keys as $id => $key) {
-            if ($this->extendedmode) {
-                $key = $id;
-            }
+        foreach ($keys as $key) {
             if (!array_key_exists($key, $results)) {
                 $results[$key] = false;
             }
         }
         return $results;
-    }
-
-    /**
-     * Given an array of arrays for data to get from the store returns a query.
-     *
-     * @param array[] $requests
-     * @return array
-     */
-    protected function get_extendedmode_query(array $requests) {
-        $query = reset($requests);
-        if (count($requests) > 1) {
-            $keys = array();
-            foreach ($requests as $request) {
-                $keys[] = $request['key'];
-            }
-            $query['key'] = array('$in' => $keys);
-        }
-        return $query;
     }
 
     /**

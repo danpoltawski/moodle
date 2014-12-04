@@ -371,42 +371,31 @@ class cache implements cache_loader {
      */
     public function get_many(array $keys, $strictness = IGNORE_MISSING) {
 
-        // An array with the original key => parsed key string.
         $keysparsed = array();
-        // An array with the parsed key string => original key.
         $parsedkeys = array();
-        // An array of parsed key string => full key (sometimes array sometimes string).
-        $keystofind = array();
         $resultpersist = array();
         $resultstore = array();
+        $keystofind = array();
 
         // First up check the persist cache for each key.
         $isusingpersist = $this->use_static_acceleration();
-        // We do this just once here to make sure that it we don't have to type check each parsed key.
-        $multipleidentifiers = $this->store->supports_multiple_identifiers();
         foreach ($keys as $key) {
             $pkey = $this->parse_key($key);
-            if ($multipleidentifiers) {
-                // We can't use an array as an array key so we take just the vital bit (the key).
-                $pkeystr = $pkey['key'];
-            } else {
-                $pkeystr = $pkey;
-            }
-            $keysparsed[$key] = $pkeystr;
-            $parsedkeys[$pkeystr] = $key;
-            $keystofind[$pkeystr] = $pkey;
+            $keysparsed[$key] = $pkey;
+            $parsedkeys[$pkey] = $key;
+            $keystofind[$pkey] = $key;
             if ($isusingpersist) {
                 $value = $this->static_acceleration_get($pkey);
                 if ($value !== false) {
-                    $resultpersist[$pkeystr] = $value;
-                    unset($keystofind[$pkeystr]);
+                    $resultpersist[$pkey] = $value;
+                    unset($keystofind[$pkey]);
                 }
             }
         }
 
         // Next assuming we didn't find all of the keys in the persist cache try loading them from the store.
         if (count($keystofind)) {
-            $resultstore = $this->store->get_many($keystofind);
+            $resultstore = $this->store->get_many(array_keys($keystofind));
             // Process each item in the result to "unwrap" it.
             foreach ($resultstore as $key => $value) {
                 if ($value instanceof cache_ttl_wrapper) {
@@ -1133,11 +1122,6 @@ class cache implements cache_loader {
      * @return bool True on success, false otherwise.
      */
     protected function static_acceleration_delete($key) {
-        // Believe it or not casting the key to an array is quicker than an is_array() call.
-        if ($key === (array)$key) {
-            // Its an array - just take the key.
-            $key = $key['key'];
-        }
         unset($this->staticaccelerationarray[$key]);
         if ($this->staticaccelerationsize !== false) {
             $dropkey = array_search($key, $this->staticaccelerationkeys);
