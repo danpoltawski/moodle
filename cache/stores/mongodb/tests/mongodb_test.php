@@ -249,14 +249,21 @@ class cachestore_mongodb_test extends cachestore_tests {
         $this->assertFalse($cache->get('test'));
 
         // Now test with non-sense keys.
-        $key = str_repeat('what a key! ', 100);
-        $this->assertFalse($cache->get($key));
-        $this->assertTrue($cache->set($key, 'test'));
-        $this->assertEquals('test', $cache->get($key));
+        $key1 = str_repeat('what a key! ', 100);
+        $this->assertFalse($cache->get($key1));
+        $this->assertTrue($cache->set($key1, 'test'));
+        $this->assertEquals('test', $cache->get($key1));
 
-        $key = 196.6e32;
-        $this->assertFalse($cache->get($key));
-        $this->assertTrue($cache->set($key, 'test'));
-        $this->assertEquals('test', $cache->get($key));
+        $key2 = 196.6e32;
+        $this->assertFalse($cache->get($key2));
+        $this->assertTrue($cache->set($key2, 'test'));
+        $this->assertEquals('test', $cache->get($key2));
+
+        // Test get many.
+        $result = $cache->get_many(array($key1, $key2));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(2, $result);
+        $this->assertEquals('test', $result[$key1]);
+        $this->assertEquals('test', $result[$key2]);
     }
 }

@@ -383,7 +383,7 @@ class cache implements cache_loader {
         // First up check the persist cache for each key.
         $isusingpersist = $this->use_static_acceleration();
         // We do this just once here to make sure that it we don't have to type check each parsed key.
-        $multipleidentifiers = $this->store->supports_multiple_identifiers();
+        $multipleidentifiers = $this->store->supports_multiple_identifiers() && $this->definition->uses_simple_keys();
         foreach ($keys as $key) {
             $pkey = $this->parse_key($key);
             if ($multipleidentifiers) {
