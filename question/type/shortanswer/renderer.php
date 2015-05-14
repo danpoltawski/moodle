@@ -43,7 +43,7 @@ class qtype_shortanswer_renderer extends qtype_renderer {
         $inputname = $qa->get_qt_field_name('answer');
         $inputattributes = array(
             'type' => 'text',
-            'spellcheck' =>false,
+            'spellcheck' => false,
             'name' => $inputname,
             'value' => $currentanswer,
             'id' => $inputname,
