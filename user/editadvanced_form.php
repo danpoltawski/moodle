@@ -78,6 +78,9 @@ class user_editadvanced_form extends moodleform {
         $cannotchangepass = array();
         foreach ($auths as $auth => $unused) {
             $authinst = get_auth_plugin($auth);
+            if ($user->auth !== $auth && !$authinst->can_be_manually_set()) {
+                continue;
+            }
             $passwordurl = $authinst->change_password_url();
             if (!($authinst->can_change_password() && empty($passwordurl))) {
                 if ($userid < 1 and $authinst->is_internal()) {
