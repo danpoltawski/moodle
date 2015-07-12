@@ -385,6 +385,59 @@ class behat_hooks extends behat_base {
     }
 
     /**
+     * Export all steps raw HTML for external processing (validation...)
+     *
+     * @param StepEvent $event event fired after step.
+     * @AfterStep
+     */
+    public function export_step_html(StepEvent $event) {
+        global $CFG;
+
+        static $exportdir = null;
+
+        // Nothing to do.
+        if (empty($CFG->behat_export_html_path)) {
+            return;
+        }
+
+        // Calculate base dir once.
+        if (!isset($exportdir)) {
+            $exportdir = $CFG->behat_export_html_path . DIRECTORY_SEPARATOR . date('Ymd_His');
+            if (!is_dir($exportdir) && !mkdir($exportdir, $CFG->directorypermissions, true)) {
+                throw new Exception('No directories can be created inside $CFG->behat_export_html_path, check the directory permissions.');
+            }
+        }
+
+        // Verify it's writeable on every use.
+        if (!is_writeable($exportdir)) {
+            throw new Exception('Directory is not writeable (' . $exportdir . ')');
+        }
+
+
+        // Calculate some feature, scenario, step to embed in the page like HTML comments.
+        $scenario = $event->getLogicalParent();
+        $step = $event->getStep();
+        $f = '<!-- Feature: ' . str_replace($CFG->dirroot . '/', '', $step->getFile()) . ' -->';
+        $s = '<!-- Scenario: ' . $scenario->getTitle() . ':' . $scenario->getLine() . ' -->';
+        $t = '<!-- Step: ' . $step->getText() . ' -->';
+        $e = "$f\n$s\n$t\n";
+
+        // Calculate file name as feature name + content hash (to avoid dupes).
+        $content = $this->getSession()->getPage()->getContent();
+        $filename = str_replace($CFG->dirroot . '/', '', $step->getFile()) . '_' . md5($content);
+        $filename = preg_replace('/([^a-zA-Z0-9\_]+)/', '-', $filename);
+        $filename = substr($filename, 0, 250) . '.html';
+
+        // Embed metadata in the file.
+        $content = str_replace('<html ', $e . '<html ', $content);
+
+        // Finally, dump the complete html.
+        $fh = fopen($exportdir . DIRECTORY_SEPARATOR . $filename, 'w');
+        fwrite($fh, $content);
+        fclose($fh);
+    }
+
+    /**
      * Getter for self::$faildumpdirname
      *
      * @return string
