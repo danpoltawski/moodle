@@ -194,9 +194,9 @@ class core_course_renderer extends plugin_renderer_base {
         $formcontent = html_writer::start_tag('form', array('action' => new moodle_url('/course/jumpto.php'),
                 'id' => 'chooserform', 'method' => 'post'));
         $formcontent .= html_writer::start_tag('div', array('id' => 'typeformdiv'));
-        $formcontent .= html_writer::tag('input', '', array('type' => 'hidden', 'id' => 'course',
+        $formcontent .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'course',
                 'name' => 'course', 'value' => $course->id));
-        $formcontent .= html_writer::tag('input', '', array('type' => 'hidden', 'name' => 'sesskey',
+        $formcontent .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey',
                 'value' => sesskey()));
         $formcontent .= html_writer::end_tag('div');
 
@@ -225,9 +225,9 @@ class core_course_renderer extends plugin_renderer_base {
         $formcontent .= html_writer::end_tag('div'); // types
 
         $formcontent .= html_writer::start_tag('div', array('class' => 'submitbuttons'));
-        $formcontent .= html_writer::tag('input', '',
+        $formcontent .= html_writer::empty_tag('input',
                 array('type' => 'submit', 'name' => 'submitbutton', 'class' => 'submitbutton', 'value' => get_string('add')));
-        $formcontent .= html_writer::tag('input', '',
+        $formcontent .= html_writer::empty_tag('input',
                 array('type' => 'submit', 'name' => 'addcancel', 'class' => 'addcancel', 'value' => get_string('cancel')));
         $formcontent .= html_writer::end_tag('div');
         $formcontent .= html_writer::end_tag('form');
@@ -278,9 +278,11 @@ class core_course_renderer extends plugin_renderer_base {
     protected function course_modchooser_module($module, $classes = array('option')) {
         $output = '';
         $output .= html_writer::start_tag('div', array('class' => implode(' ', $classes)));
-        $output .= html_writer::start_tag('label', array('for' => 'module_' . $module->name));
+
+        $inputprinted = false;
         if (!isset($module->types)) {
-            $output .= html_writer::tag('input', '', array('type' => 'radio',
+            $inputprinted = true;
+            $output .= html_writer::empty_tag('input', array('type' => 'radio',
                     'name' => 'jumplink', 'id' => 'module_' . $module->name, 'value' => $module->link));
         }
 
@@ -291,7 +293,9 @@ class core_course_renderer extends plugin_renderer_base {
         }
         $output .= html_writer::end_tag('span');
 
+        $output .= $inputprinted ? html_writer::start_tag('label', array('for' => 'module_' . $module->name)) : '';
         $output .= html_writer::tag('span', $module->title, array('class' => 'typename'));
+        $output .= $inputprinted ? html_writer::end_tag('label') : '';
         if (!isset($module->help)) {
             // Add help if found
             $module->help = get_string('nohelpforactivityorresource', 'moodle');
@@ -307,8 +311,7 @@ class core_course_renderer extends plugin_renderer_base {
         $options->newlines = false;
         $options->overflowdiv = false;
         $module->help = format_text($module->help, FORMAT_MARKDOWN, $options);
-        $output .= html_writer::tag('span', $module->help, array('class' => 'typesummary'));
-        $output .= html_writer::end_tag('label');
+        $output .= html_writer::tag('div', $module->help, array('class' => 'typesummary'));
         $output .= html_writer::end_tag('div');
 
         return $output;
