@@ -29,6 +29,17 @@ module.exports = function(grunt) {
 
     // Project configuration.
     grunt.initConfig({
+        htmllint: {
+              all: ["built/**/*.html"],
+              options: {
+                  ignore: [
+                    // See MDL-44892 - no accesible replacement exists.
+                    /“summary” attribute on the “table” element is obsolete/,
+                    // Dan is just lazy.
+                    /Section lacks heading./
+                  ]
+              },
+          },
         jshint: {
             options: {jshintrc: '.jshintrc'},
             files: ['**/amd/src/*.js']
@@ -140,6 +151,7 @@ module.exports = function(grunt) {
     // Register NPM tasks.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-html');
 
     // Register the shifter task.
     grunt.registerTask('shifter', 'Run Shifter against the current directory', tasks.shifter);
