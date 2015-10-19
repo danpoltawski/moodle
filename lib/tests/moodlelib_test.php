@@ -67,6 +67,7 @@ class core_moodlelib_testcase extends advanced_testcase {
         $this->assertSame('1:1:0:0:0:0:0:0', cleanremoteaddr('01:1::', false));
         $this->assertSame('10:0:0:0:0:0:0:10', cleanremoteaddr('10::10', false));
         $this->assertSame('::ffff:c0a8:11', cleanremoteaddr('::ffff:192.168.1.1', true));
+        $this->fail();
     }
 
     public function test_address_in_subnet() {
