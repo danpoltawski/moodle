@@ -52,7 +52,7 @@ class core_iplookup_geoip_testcase extends advanced_testcase {
         }
 
         if (!file_exists($gzfile)) {
-            download_file_content('http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz', null, null, false, 300, 20, false, $gzfile);
+            download_file_content('http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz', null, null, false, 300, 20, false, $gzfile);
         }
 
         $this->assertTrue(file_exists($gzfile));
@@ -80,7 +80,18 @@ class core_iplookup_geoip_testcase extends advanced_testcase {
         $this->assertNull($result['error']);
         $this->assertEquals('array', gettype($result['title']));
         $this->assertEquals('Liberec', $result['title'][0]);
-        $this->assertEquals('Czech Republic', $result['title'][1]);
+        $this->assertEquals('Czech Republic', $result['title'][2]);
+
+        $result = iplookup_find_location('2a01:8900:2:3:8c6c:c0db:3d33:9ce6');
+
+        $this->assertEquals('array', gettype($result));
+        $this->assertEquals('Lancaster', $result['city']);
+        $this->assertEquals(-2.79970, $result['longitude'], '', 0.001);
+        $this->assertEquals(54.04650, $result['latitude'], '', 0.001);
+        $this->assertNull($result['error']);
+        $this->assertEquals('array', gettype($result['title']));
+        $this->assertEquals('Lancaster', $result['title'][0]);
+        $this->assertEquals('United Kingdom', $result['title'][2]);
     }
 }
 

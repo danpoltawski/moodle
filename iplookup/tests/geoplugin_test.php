@@ -55,6 +55,18 @@ class core_iplookup_geoplugin_testcase extends advanced_testcase {
         $this->assertEquals('array', gettype($result['title']));
         $this->assertEquals('Liberec', $result['title'][0]);
         $this->assertEquals('Czech Republic', $result['title'][1]);
+
+        $result = iplookup_find_location('2a01:8900:2:3:8c6c:c0db:3d33:9ce6');
+
+        $this->assertEquals('array', gettype($result));
+        $this->assertEquals('Lancaster', $result['city']);
+        $this->assertEquals(-2.79970, $result['longitude'], '', 0.001);
+        $this->assertEquals(54.04650, $result['latitude'], '', 0.001);
+        $this->assertNull($result['error']);
+        $this->assertEquals('array', gettype($result['title']));
+        $this->assertEquals('Lancaster', $result['title'][0]);
+        $this->assertEquals('Lancashire', $result['title'][1]);
+        $this->assertEquals('United Kingdom', $result['title'][2]);
     }
 }
 
