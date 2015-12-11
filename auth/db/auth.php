@@ -114,13 +114,11 @@ class auth_plugin_db extends auth_plugin_base {
                                       FROM {$this->config->table}
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
-                $authdb->Close();
                 debugging(get_string('auth_dbcantconnect','auth_db'));
                 return false;
             }
 
             if ($rs->EOF) {
-                $authdb->Close();
                 return false;
             }
 
@@ -477,7 +475,6 @@ class auth_plugin_db extends auth_plugin_base {
             $result = true;
         }
 
-        $authdb->Close();
         return $result;
     }
 
@@ -502,7 +499,6 @@ class auth_plugin_db extends auth_plugin_base {
             }
         }
 
-        $authdb->Close();
         return $result;
     }
 
