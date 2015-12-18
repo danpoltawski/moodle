@@ -44,7 +44,7 @@ class core_iplookup_geoip_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // let's store the file somewhere
-        $gzfile = "$CFG->dataroot/phpunit/geoip/GeoLiteCity.dat.gz";
+        $gzfile = "$CFG->dataroot/phpunit/geoip/GeoLiteCity2.dat.gz";
         check_dir_exists(dirname($gzfile));
         if (file_exists($gzfile) and (filemtime($gzfile) < time() - 60*60*24*30)) {
             // delete file if older than 1 month
@@ -61,7 +61,7 @@ class core_iplookup_geoip_testcase extends advanced_testcase {
         $contents = gzread($zd, 50000000);
         gzclose($zd);
 
-        $geoipfile = "$CFG->dataroot/geoip/GeoLiteCity.dat";
+        $geoipfile = "$CFG->dataroot/geoip/GeoLiteCity2.dat";
         check_dir_exists(dirname($geoipfile));
         $fp = fopen($geoipfile, 'w');
         fwrite($fp, $contents);
@@ -80,7 +80,7 @@ class core_iplookup_geoip_testcase extends advanced_testcase {
         $this->assertNull($result['error']);
         $this->assertEquals('array', gettype($result['title']));
         $this->assertEquals('Liberec', $result['title'][0]);
-        $this->assertEquals('Czech Republic', $result['title'][2]);
+        $this->assertEquals('Czech Republic', $result['title'][1]);
 
         $result = iplookup_find_location('2a01:8900:2:3:8c6c:c0db:3d33:9ce6');
 
@@ -91,7 +91,7 @@ class core_iplookup_geoip_testcase extends advanced_testcase {
         $this->assertNull($result['error']);
         $this->assertEquals('array', gettype($result['title']));
         $this->assertEquals('Lancaster', $result['title'][0]);
-        $this->assertEquals('United Kingdom', $result['title'][2]);
+        $this->assertEquals('United Kingdom', $result['title'][1]);
     }
 }
 
