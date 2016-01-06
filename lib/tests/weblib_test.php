@@ -613,4 +613,27 @@ EXPECTED;
 
     }
 
+    /**
+     * Tests the deprecated function deprecated_get_host_from_url.
+     *
+     * @dataProvider data_for_deprecated_get_host_from_url
+     * @param string $urlstring the url string to test
+     * @param string $expectedhost the host value expected
+     */
+    public function test_deprecated_get_host_from_url($urlstring, $expectedhost) {
+        $this->assertEquals($expectedhost, get_host_from_url($urlstring));
+        $this->assertDebuggingCalled('get_host_from_url is deprecated, please use moodle_url::get_host instead');
+    }
+
+    /**
+     * Test cases for test_deprecated_get_host_from_url()
+     */
+    public function data_for_deprecated_get_host_from_url() {
+        return array(
+            array('http://www.example.org', 'www.example.org'),
+            array('https://moodle.org/course/view.php?id=0', 'moodle.org'),
+            array('this-is-not-a-url', null),
+        );
+    }
+
 }
