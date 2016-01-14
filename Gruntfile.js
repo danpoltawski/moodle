@@ -107,6 +107,7 @@ module.exports = function(grunt) {
             },
             shifter;
 
+            grunt.log.ok("Running shifter on " + cwd);
             args.push( path.normalize(__dirname + '/node_modules/shifter/bin/shifter'));
 
             // Determine the most appropriate options to run with based upon the current location.
@@ -267,6 +268,12 @@ module.exports = function(grunt) {
     grunt.event.on('watch', function(action, filepath) {
       grunt.config('jshint.amd.src', filepath);
       grunt.config('uglify.amd.files', [{ expand: true, src: filepath, rename: uglify_rename }]);
+      if (filepath.match('yui')) {
+          // Set the cwd to the base directory for yui modules which have changed.
+          cwd = filepath.split(path.sep + 'yui' + path.sep + 'src').shift();
+      } else {
+          cwd = process.env.PWD || process.cwd();
+      }
     });
 
     // Register NPM tasks.
