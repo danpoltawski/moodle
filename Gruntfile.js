@@ -262,15 +262,22 @@ module.exports = function(grunt) {
     };
 
 
-    // On watch, we dynamically modify config to build only affected files.
-    grunt.event.on('watch', function(action, filepath) {
-      grunt.config('jshint.amd.src', filepath);
-      grunt.config('uglify.amd.files', [{ expand: true, src: filepath, rename: uglify_rename }]);
-      if (filepath.match('yui')) {
-          // Set the cwd to the base directory for yui modules which have changed.
+    // On watch, we dynamically modify config to build only affected files. This
+    // method is slightly complicated to deal with multiple changed files at once (copied
+    // from the grunt-contrib-watch readme).
+    var changedFiles = Object.create(null);
+    var onChange = grunt.util._.debounce(function() {
+          var filepath = Object.keys(changedFiles);
+          grunt.config('jshint.amd.src', filepath);
+          grunt.config('uglify.amd.files', [{ expand: true, src: filepath, rename: uglify_rename }]);
           grunt.config('shifter.options.recursive', false);
           grunt.config('shifter.options.path',  path.dirname(path.dirname(filepath)));
-      }
+          changedFiles = Object.create(null);
+    }, 200);
+
+    grunt.event.on('watch', function(action, filepath) {
+          changedFiles[filepath] = action;
+          onChange();
     });
 
     // Register NPM tasks.
