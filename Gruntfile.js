@@ -93,6 +93,15 @@ module.exports = function(grunt) {
                 files: ['**/yui/src/**/*.js'],
                 tasks: ['shifter']
             },
+        },
+        shifter: {
+            options: {
+                recursive: true,
+                watch: false,
+                walk: false,
+                module: false,
+                path: cwd
+            }
         }
     });
 
@@ -100,39 +109,27 @@ module.exports = function(grunt) {
        var  exec = require('child_process').spawn,
             done = this.async(),
             args = [],
-            options = {
-                recursive: true,
-                watch: false,
-                walk: false,
-                module: false
-            },
+            options = grunt.config('shifter.options'),
             shifter;
 
-            grunt.log.ok("Running shifter on " + cwd);
+
+            grunt.log.ok("Running shifter on " + options.path);
             args.push( path.normalize(__dirname + '/node_modules/shifter/bin/shifter'));
 
             // Determine the most appropriate options to run with based upon the current location.
-            if (path.basename(cwd) === 'src') {
+            if (path.basename(options.path) === 'src') {
                 // Detect whether we're in a src directory.
                 grunt.log.debug('In a src directory');
                 args.push('--walk');
                 options.walk = true;
-            } else if (path.basename(path.dirname(cwd)) === 'src') {
+            } else if (path.basename(path.dirname(options.path)) === 'src') {
                 // Detect whether we're in a module directory.
                 grunt.log.debug('In a module directory');
                 options.module = true;
             }
 
             if (grunt.option('watch')) {
-                if (!options.walk && !options.module) {
-                    grunt.fail.fatal('Unable to watch unless in a src or module directory');
-                }
-
-                // It is not advisable to run with recursivity and watch - this
-                // leads to building the build directory in a race-like fashion.
-                grunt.log.debug('Detected a watch - disabling recursivity');
-                options.recursive = false;
-                args.push('--watch');
+                grunt.fail.fatal('The --watch option has been removed, please use `grunt watch` instead');
             }
 
             if (options.recursive) {
@@ -154,7 +151,7 @@ module.exports = function(grunt) {
             var execShifter = function() {
 
                 shifter = exec("node", args, {
-                    cwd: cwd,
+                    cwd: options.path,
                     stdio: 'inherit',
                     env: process.env
                 });
@@ -235,7 +232,7 @@ module.exports = function(grunt) {
                     });
                 };
 
-                hasYuiModules(cwd, function(err, result) {
+                hasYuiModules(options.path, function(err, result) {
                     if (err) {
                         grunt.fail.fatal(err.message);
                     }
@@ -271,9 +268,8 @@ module.exports = function(grunt) {
       grunt.config('uglify.amd.files', [{ expand: true, src: filepath, rename: uglify_rename }]);
       if (filepath.match('yui')) {
           // Set the cwd to the base directory for yui modules which have changed.
-          cwd = filepath.split(path.sep + 'yui' + path.sep + 'src').shift();
-      } else {
-          cwd = process.env.PWD || process.cwd();
+          grunt.config('shifter.options.recursive', false);
+          grunt.config('shifter.options.path',  path.dirname(path.dirname(filepath)));
       }
     });
 
