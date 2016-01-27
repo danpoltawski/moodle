@@ -1458,7 +1458,7 @@ class admin_settingpage implements part_of_admin_tree {
             return false;
         }
 
-        $this->settings->{$setting->name} = $setting;
+        $this->settings->{$setting->plugin . $setting->name} = $setting;
         return true;
     }
 

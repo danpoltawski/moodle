@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace report_search\output;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -31,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_search_renderer extends plugin_renderer_base {
+class renderer extends \plugin_renderer_base {
 
     /**
      * Renders the global search admin interface.
@@ -44,13 +46,15 @@ class report_search_renderer extends plugin_renderer_base {
     public function render_report($form, $searchcomponents, $componentsconfig) {
 
         $table = new \html_table();
-        $table->head = array(get_string('component', 'search'), get_string('newestdocindexed', 'report_search'), get_string('lastrun', 'report_search'));
+        $table->head = array(get_string('component', 'search'), get_string('newestdocindexed', 'report_search'),
+            get_string('lastrun', 'report_search'));
 
         foreach ($searchcomponents as $componentname => $componentsearch) {
             $cname = new \html_table_cell($componentsearch->get_component_visible_name());
             $clastrun = new \html_table_cell($componentsconfig[$componentname]->lastindexrun);
             if ($componentsconfig[$componentname]->indexingstart) {
-                $ctimetaken = new \html_table_cell($componentsconfig[$componentname]->indexingend - $componentsconfig[$componentname]->indexingstart . ' , ' .
+                $timediff = $componentsconfig[$componentname]->indexingend - $componentsconfig[$componentname]->indexingstart;
+                $ctimetaken = new \html_table_cell($timediff . ' , ' .
                                                   $componentsconfig[$componentname]->docsprocessed . ' , ' .
                                                   $componentsconfig[$componentname]->recordsprocessed . ' , ' .
                                                   $componentsconfig[$componentname]->docsignored);

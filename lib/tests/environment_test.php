@@ -50,6 +50,14 @@ class core_environment_testcase extends advanced_testcase {
                 $this->markTestSkipped('OPCache extension is not necessary for unit testing.');
                 continue;
             }
+            if ($environment_result->part === 'php_extension'
+                and $environment_result->info === 'solr'
+                and $environment_result->getLevel() === 'optional'
+                and $environment_result->getStatus() === false
+            ) {
+                $this->markTestSkipped('Solr extension is not necessary for unit testing.');
+                continue;
+            }
             $this->assertTrue($environment_result->getStatus(), "Problem detected in environment ($environment_result->part:$environment_result->info), fix all warnings and errors!");
         }
     }

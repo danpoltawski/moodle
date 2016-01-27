@@ -37,7 +37,8 @@ if ($ADMIN->fulltree) {
             $settings->add(new admin_setting_configtext('search_solr/collectionname', new lang_string('solrcollectionname', 'search_solr'), new lang_string('solrcollectionname_desc', 'search_solr'), 'moodle', PARAM_TEXT));
             $settings->add(new admin_setting_configcheckbox('search_solr/secure', new lang_string('solrsecuremode', 'search_solr'), new lang_string('solrsecuremode_desc', 'search_solr'), 0, 1, 0));
 
-            $defaultport = !empty(get_config('search_solr', 'secure')) ? 8443 : 8983;
+            $secure = get_config('search_solr', 'secure');
+            $defaultport = !empty($secure) ? 8443 : 8983;
             $settings->add(new admin_setting_configtext('search_solr/server_port', new lang_string('solrhttpconnectionport', 'search_solr'), new lang_string('solrhttpconnectionport_desc', 'search_solr'), $defaultport, PARAM_INT));
             $settings->add(new admin_setting_configtext('search_solr/server_username', new lang_string('solrauthuser', 'search_solr'), new lang_string('solrauthuser_desc', 'search_solr'), '', PARAM_RAW));
             $settings->add(new admin_setting_configtext('search_solr/server_password', new lang_string('solrauthpassword', 'search_solr'), new lang_string('solrauthpassword_desc', 'search_solr'), '', PARAM_RAW));

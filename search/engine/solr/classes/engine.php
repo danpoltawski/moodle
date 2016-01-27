@@ -58,18 +58,20 @@ class engine extends \core_search\engine {
     /**
      * @var array Fields that can be highlighted.
      */
-    protected $highlightfields = array('title', 'content', 'userfullname', 'name', 'intro');
+    protected $highlightfields = array('content', 'userfullname', 'name', 'intro');
 
     /**
      * Prepares a Solr query, applies filters and executes it returning its results.
      *
      * @throws \core_search\engine_exception
-     * @param stdClass $data containing query and filters.
-     * @param array $usercontexts Context where the user has access. Empty if can access all contexts.
+     * @param  stdClass     $filters Containing query and filters.
+     * @param  array        $usercontexts Contexts where the user has access. True if the user can access all contexts.
      * @return \core_search\document[] Results or false if no results
      */
-    public function execute_query($data, $usercontexts) {
-        global $USER, $CFG;
+    public function execute_query($filters, $usercontexts) {
+
+        // Let's keep these changes internal.
+        $data = clone $filters;
 
         // If there is any problem we trigger the exception as soon as possible.
         $this->client = $this->get_search_client();
@@ -82,15 +84,17 @@ class engine extends \core_search\engine {
         $this->set_query($query, $data->queryfield);
         $this->add_fields($query);
 
-        // Search filters applied.
+        // Search filters applied, we don't cache these filters as we don't want to pollute the cache with tmp filters
+        // we are really interested in caching contexts filters instead.
         if (!empty($data->title)) {
-            $query->addFilterQuery('title:' . $data->title);
+            $query->addFilterQuery('{!field cache=false f=title}' . $data->title);
         }
         if (!empty($data->author)) {
-            $query->addFilterQuery('userfullname:' . $data->author);
+            $query->addFilterQuery('{!field cache=false f=userfullname}' . $data->author);
         }
         if (!empty($data->component)) {
-            $query->addFilterQuery('component:' . $data->component);
+            // Even if it is only supposed to contain PARAM_ALPHANUMEXT, better to prevent.
+            $query->addFilterQuery('{!field cache=false f=component}' . $data->component);
         }
 
         if (!empty($data->timestart) or !empty($data->timeend)) {
@@ -105,11 +109,14 @@ class engine extends \core_search\engine {
                 $data->timeend = \search_solr\document::format_time_for_engine($data->timeend);
             }
 
-            $query->addFilterQuery('modified:[' . $data->timestart . ' TO ' . $data->timeend . ']');
+            // No cache.
+            $query->addFilterQuery('{!cache=false}modified:[' . $data->timestart . ' TO ' . $data->timeend . ']');
         }
 
-        // And finally restrict it to the context where the user can access.
-        if ($usercontexts) {
+        // And finally restrict it to the context where the user can access, we want this one cached.
+        // If the user can access all contexts $usercontexts value is just true, we don't need to filter
+        // in that case.
+        if ($usercontexts && is_array($usercontexts)) {
             if (!empty($data->component)) {
                 $query->addFilterQuery('contextid:(' . implode(' OR ', $usercontexts[$data->component]) . ')');
             } else {
@@ -149,7 +156,7 @@ class engine extends \core_search\engine {
         $query->setHighlightSimplePre('<span class="highlight">');
         $query->setHighlightSimplePost('</span>');
 
-        $query->setQuery($queryfield);
+        $query->setQuery($this->escape_string($queryfield));
 
         // A reasonable max.
         $query->setRows(\core_search\manager::MAX_RESULTS);
@@ -158,13 +165,11 @@ class engine extends \core_search\engine {
     /**
      * Sets fields to be returned in the result.
      *
-     * These fields should be the same fields specified as 'stored'.
-     *
      * @param SolrQuery $query object.
      */
     public function add_fields($query) {
-        $fields = array('id', 'itemid', 'title', 'content', 'userfullname', 'contextid', 'component', 'type', 'courseid', 'userid', 'created', 'modified', 'name', 'intro');
-
+        $documentclass = $this->get_document_classname();
+        $fields = array_keys($documentclass::get_default_fields_definition());
         foreach ($fields as $field) {
             $query->addField($field);
         }
@@ -204,13 +209,12 @@ class engine extends \core_search\engine {
                     default:
                         if (!empty($highlighteddoc->$field)) {
                             // Replace by the highlighted result.
-                            $doc->$field = $highlighteddoc->$field;
+                            $doc->$field = reset($highlighteddoc->$field);
                         } else {
                             // Returned field value.
 
                             // No way we can make this work if there is any multivalue field.
                             if (is_array($doc->{$field})) {
-                                // Triggering it here as it is the first time we inspect the returned field's contents.
                                 throw new \core_search\engine_exception('multivaluedfield', 'search_solr', '', $field);
                             }
                             $doc->$field = substr($doc->{$field}, 0, static::SET_FRAG_SIZE);
@@ -232,7 +236,10 @@ class engine extends \core_search\engine {
         $response = $queryresponse->getResponse();
         $numgranted = 0;
 
-        $docs = $response->response->docs;
+        if (!$docs = $response->response->docs) {
+            return array();
+        }
+
         if (!empty($response->response->numFound)) {
             $this->add_highlight_content($response);
 
@@ -438,5 +445,15 @@ class engine extends \core_search\engine {
         }
 
         return $this->client;
+    }
+
+    /**
+     * Escapes the submitted query string.
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function escape_string($value) {
+        return \SolrUtils::escapeQueryChars($value);
     }
 }

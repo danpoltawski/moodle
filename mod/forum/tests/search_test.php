@@ -18,7 +18,7 @@
  * Forum search unit tests.
  *
  * @package     mod_forum
- * @category    phpunit
+ * @category    test
  * @copyright   2015 David Monllao {@link http://www.davidmonllao.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
  * Provides the unit tests for forum search.
  *
  * @package     mod_forum
- * @category    phpunit
+ * @category    test
  * @copyright   2015 David Monllao {@link http://www.davidmonllao.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -114,7 +114,7 @@ class mod_forum_search_testcase extends advanced_testcase {
         $recordset = $forumsearch->get_recordset(0);
         $this->assertTrue($recordset->valid());
         $nrecords = 0;
-        foreach($recordset as $record) {
+        foreach ($recordset as $record) {
             $this->assertInstanceOf('stdClass', $record);
             $doc = $forumsearch->get_document($record);
             $this->assertInstanceOf('\core_search\document', $doc);
@@ -126,11 +126,12 @@ class mod_forum_search_testcase extends advanced_testcase {
             $this->assertInstanceOf('\core_search\document', $doc);
             $nrecords++;
         }
+        // If there would be an error/failure in the foreach above the recordset would be closed on shutdown.
         $recordset->close();
         $this->assertEquals(2, $nrecords);
 
         // +1 to prevent race conditions.
-        $recordset = $forumsearch->get_recordset(time() + 1);
+        $recordset = $forumsearch->get_recordset(time() + 2);
 
         // No new records.
         $this->assertFalse($recordset->valid());
@@ -183,6 +184,7 @@ class mod_forum_search_testcase extends advanced_testcase {
         $post1->courseid = $forum1->course;
         $post1->forumname = $forum1->name;
         $post1->forumintro = $forum1->intro;
+        $post1->forumintroformat = $forum1->introformat;
 
         $doc = $forumsearch->get_document($post1);
         $this->assertInstanceOf('\core_search\document', $doc);
@@ -192,8 +194,10 @@ class mod_forum_search_testcase extends advanced_testcase {
         $this->assertEquals($user->id, $doc->get('userid'));
         $this->assertEquals($discussion1reply1->subject, $doc->get('title'));
         $this->assertEquals($discussion1reply1->message, $doc->get('content'));
+        $this->assertEquals($discussion1reply1->messageformat, $doc->get('contentformat'));
         $this->assertEquals($forum1->name, $doc->get('name'));
         $this->assertEquals($forum1->intro, $doc->get('intro'));
+        $this->assertEquals($forum1->introformat, $doc->get('introformat'));
     }
 
     /**

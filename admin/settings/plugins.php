@@ -440,11 +440,11 @@ if ($hassiteconfig) {
 // Now add reports
 $pages = array();
 foreach (core_component::get_plugin_list('report') as $report => $plugindir) {
-    $settings_path = "$plugindir/settings.php";
-    if (file_exists($settings_path)) {
+    $settingspath = "$plugindir/settings.php";
+    if (file_exists($settingspath)) {
         $settings = new admin_settingpage('report' . $report,
                 new lang_string('pluginname', 'report_' . $report), 'moodle/site:config');
-        include($settings_path);
+        include($settingspath);
         if ($settings) {
             $pages[] = $settings;
         }
@@ -455,6 +455,51 @@ $ADMIN->add('reportplugins', new admin_externalpage('managereports', new lang_st
                                                     $CFG->wwwroot . '/' . $CFG->admin . '/reports.php'));
 foreach ($pages as $page) {
     $ADMIN->add('reportplugins', $page);
+}
+
+// Global Search engine plugins.
+$ADMIN->add('modules', new admin_category('searchplugins', new lang_string('search', 'admin')));
+$temp = new admin_settingpage('manageglobalsearch', new lang_string('globalsearchmanage', 'admin'));
+
+$temp->add(new admin_setting_configcheckbox('enableglobalsearch', new lang_string('enableglobalsearch', 'admin'),
+        new lang_string('enableglobalsearch_desc', 'admin'), 0, 1, 0));
+
+$pages = array();
+$engines = array();
+foreach (core_component::get_plugin_list('search') as $engine => $plugindir) {
+    $engines[$engine] = new lang_string('pluginname', 'search_' . $engine);
+    $settingspath = "$plugindir/settings.php";
+    if (file_exists($settingspath)) {
+        $settings = new admin_settingpage('search' . $engine,
+                new lang_string('pluginname', 'search_' . $engine), 'moodle/site:config');
+        include($settingspath);
+        if ($settings) {
+            $pages[] = $settings;
+        }
+    }
+}
+
+$temp->add(new admin_setting_configselect('searchengine',
+                            new lang_string('choosesearchengine', 'admin'),
+                            new lang_string('choosesearchengine_desc', 'admin'),
+                            'solr', $engines));
+
+$temp->add(new admin_setting_heading('searchcomponentsheading', new lang_string('availablesearchcomponents', 'admin'), ''));
+
+$components = \core_search\manager::get_search_components_list();
+foreach ($components as $componentname => $search) {
+    $a = new stdClass();
+    $a->componentname = $search->get_component_visible_name(true);
+    $a->componenttype = $search->get_component_type_visible_name(true);
+
+    list($plugin, $varname) = $search->get_config_var_name();
+    $temp->add(new admin_setting_configcheckbox($plugin . '/enable' . $varname, $search->get_component_visible_name(true),
+        new lang_string('globalsearchsupported_desc', 'admin', $a), 1, 1, 0));
+}
+$ADMIN->add('searchplugins', $temp);
+
+foreach ($pages as $page) {
+    $ADMIN->add('searchplugins', $page);
 }
 
 /// Add all admin tools

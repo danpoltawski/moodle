@@ -1,0 +1,91 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_search/result
+
+    Template which shows a search result.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * courseurl
+    * coursefullname
+    * userurl
+    * userfullname
+    * modified
+    * created
+    * title
+    * docurl
+    * content
+    * contexturl
+
+    Optional context variables for this template:
+    * intro
+    * name
+
+    Example context (json):
+    {
+        "courseurl": "https://example.com/course/view.php?id=2",
+        "coursefullname": "Example course",
+        "userurl": "https://example.com/user/profile.php?id=3",
+        "userfullname": "Example User Full Name",
+        "modified": "Sunday, 20 September 2015, 10:10 PM",
+        "created": "Sunday, 20 September 2015, 10:08 PM",
+        "title": "Example title",
+        "docurl": "https://example.com/mod/example/view.php?id=4",
+        "content": "I am content",
+        "contexturl": "https://example.com/mod/example/view.php?id=2"
+    }
+}}
+<div class="result">
+    <ul class="breadcrumb">
+        <li>
+            <a href="{{{courseurl}}}">{{coursefullname}}</a>
+            <span class="divider">{{{separator}}}</span>
+        </li>
+        <li>
+            <a href="{{{docurl}}}">{{title}}</a>
+        </li>
+    </ul>
+    <div class="result-contents">
+        <div class="result-content">{{{content}}}</div>
+        {{#name}}
+            <div>
+                <strong>{{#str}}name{{/str}}:</strong> {{name}}
+            </div>
+        {{/name}}
+        {{#intro}}
+            <div>
+                <strong>{{#str}}moduleintro{{/str}}:</strong> {{{intro}}}
+            </div>
+        {{/intro}}
+        <div>
+            <strong>{{#str}}author, search{{/str}}:</strong> <a href="{{{userurl}}}">{{userfullname}}</a>
+        </div>
+        <div>
+            {{#str}}doccreatedon, search, {{created}}{{/str}}
+            {{#modified}}
+                - {{#str}}docmodifiedon, search, {{modified}}{{/str}}
+            {{/modified}}
+        </div>
+        <div><a href="{{{contexturl}}}">{{#str}}viewresultincontext, search{{/str}}</a></div>
+    </div>
+</div>

@@ -15,48 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A scheduled task for global search.
+ * Defines classes used for plugin info.
  *
  * @package    core
- * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
+ * @copyright  2015 Daniel Neis
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace core\task;
+namespace core\plugininfo;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * Runs global search indexing.
+ * Class for search plugins
  *
  * @package    core
- * @copyright  2015 David Monllao {@link http://www.davidmonllao.com}
+ * @copyright  2015 Daniel Neis
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class global_search_task extends scheduled_task {
+class search extends base {
 
     /**
-     * Get a descriptive name for this task (shown to admins).
+     * Is uninstall allowed or not.
      *
-     * @return string
+     * @return bool
      */
-    public function get_name() {
-        return get_string('taskglobalsearch', 'admin');
+    public function is_uninstall_allowed() {
+        return true;
     }
 
     /**
-     * Do the job.
-     * Throw exceptions on errors (the job will be retried).
+     * Returns the node name used in admin settings menu for this plugin settings (if applicable).
+     *
+     * @return null|string node name or null if plugin does not create settings node (default)
      */
-    public function execute() {
-        global $DB;
-
-        if (!\core_search\manager::is_global_search_enabled()) {
-            return;
-        }
-        $globalsearch = \core_search\manager::instance();
-
-        // Indexing database records for modules + rich documents of forum.
-        $globalsearch->index();
-
-        // Optimize index at last.
-        $globalsearch->optimize_index();
+    public function get_settings_section_name() {
+        return 'searchsetting' . $this->name;
     }
 }

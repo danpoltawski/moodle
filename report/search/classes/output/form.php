@@ -17,12 +17,12 @@
 /**
  * Global Search admin form definition
  *
- * @package   core_search
+ * @package   report_search
  * @copyright Prateek Sachan {@link http://prateeksachan.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace report_search;
+namespace report_search\output;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,7 +31,7 @@ require_once("$CFG->libdir/formslib.php");
 /**
  * Search report form.
  *
- * @package    core_search
+ * @package    report_search
  * @copyright  Prateek Sachan {@link http://prateeksachan.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -42,9 +42,9 @@ class form extends \moodleform {
      *
      * @return void
      */
-    function definition() {
+    public function definition() {
 
-        $mform = & $this->_form;
+        $mform = $this->_form;
 
         $checkboxarray = array();
         $checkboxarray[] =& $mform->createElement('checkbox', 'reindex', '', get_string('reindex', 'report_search'));
@@ -58,11 +58,13 @@ class form extends \moodleform {
 
         // Only available if delete checked.
         $componentcheckboxarray = array();
-        $componentcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', get_string('entireindex', 'report_search'), array('group' => 1));
+        $componentcheckboxarray[] =& $mform->createElement('advcheckbox', 'all', '', get_string('entireindex', 'report_search'),
+            array('group' => 1));
         $mform->setDefault('all', true);
 
         foreach ($this->_customdata['searchcomponents'] as $key => $searchcomponent) {
-            $componentcheckboxarray[] =& $mform->createElement('advcheckbox', $key, '', $searchcomponent->get_component_visible_name(), array('group' => 2));
+            $componentcheckboxarray[] =& $mform->createElement('advcheckbox', $key, '',
+                $searchcomponent->get_component_visible_name(), array('group' => 2));
         }
         $mform->addGroup($componentcheckboxarray, 'componentsadvcheckbox', '', array(' '), false);
         $mform->closeHeaderBefore('componentsadvcheckbox');

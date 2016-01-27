@@ -123,7 +123,9 @@ class search_solr_engine_testcase extends advanced_testcase {
      * @return void
      */
     public function test_search() {
-        global $USER;
+        global $USER, $DB;
+
+        $noneditingteacherid = $DB->get_field('role', 'id', array('shortname' => 'teacher'));
 
         $this->search->index();
 
@@ -137,6 +139,35 @@ class search_solr_engine_testcase extends advanced_testcase {
         $this->assertEquals('the intro', $results[0]->get('intro'));
         $this->assertEquals($USER->id, $results[0]->get('userid'));
         $this->assertEquals(\context_system::instance()->id, $results[0]->get('contextid'));
+
+        // Testing filters we don't purge cache in between assertions because cache key depends on the whole filters set
+        // and they are different.
+        sleep(1);
+        $beforeadding = time();
+        sleep(1);
+        assign_capability('moodle/course:renameroles', CAP_ALLOW, $noneditingteacherid, context_system::instance()->id);
+        accesslib_clear_all_caches_for_unit_testing();
+        $this->search->index();
+
+        // Timestart.
+        $querydata->timestart = $beforeadding;
+        $this->assertCount(1, $this->search->search($querydata));
+
+        // Timeend.
+        unset($querydata->timestart);
+        $querydata->timeend = $beforeadding;
+        $this->assertCount(2, $this->search->search($querydata));
+
+        // Author.
+        unset($querydata->timeend);
+        $querydata->author = fullname($USER);
+        $this->assertCount(3, $this->search->search($querydata));
+        $querydata->author = 'Laia Carmensita';
+        $this->assertCount(0, $this->search->search($querydata));
+
+        unset($querydata->author);
+        $querydata->title = 'moodle/course:renameroles roleid 1';
+        $this->assertCount(1, $this->search->search($querydata));
     }
 
     public function test_delete() {
@@ -144,12 +175,11 @@ class search_solr_engine_testcase extends advanced_testcase {
 
         $querydata = new stdClass();
         $querydata->queryfield = 'message';
+
         $this->assertCount(2, $this->search->search($querydata));
 
         $this->search->delete_index('core_mocksearch');
-
         cache_helper::purge_by_definition('core', 'search_results');
-        $this->assertFalse($this->search->search($querydata));
+        $this->assertCount(0, $this->search->search($querydata));
     }
-
 }

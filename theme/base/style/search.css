@@ -1,0 +1,24 @@
+.search-results ul.breadcrumb {
+    margin-bottom: 5px;
+    display: inline-block;
+    float: none;
+}
+
+.search-results .result {
+    margin: 10px 0 20px 0;
+}
+
+.search-results .result-content {
+    margin: 7px 0;
+}
+
+/* Same margin than .breadcrumb's padding */
+.search-results .result .result-contents {
+    margin-left: 2em;
+    margin-right: 0px;
+}
+
+.dir-rtl .search-results .result .result-contents {
+    margin-right: 2em;
+    margin-left: 0px;
+}

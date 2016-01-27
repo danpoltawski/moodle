@@ -21,6 +21,16 @@
  * @copyright  Prateek Sachan {@link http://prateeksachan.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Global search block.
+ *
+ * @package    block_globalsearch
+ * @copyright  Prateek Sachan {@link http://prateeksachan.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_globalsearch extends block_base {
 
     /**
@@ -35,15 +45,18 @@ class block_globalsearch extends block_base {
     /**
      * Gets the block contents.
      *
+     * If we can avoid it better not check the server status here as connecting
+     * to the server will slow down the whole page load.
+     *
      * @return string The block HTML.
      */
     public function get_content() {
-        global $CFG, $OUTPUT;
+        global $OUTPUT;
         if ($this->content !== null) {
             return $this->content;
         }
 
-        $this->content =  new stdClass;
+        $this->content = new stdClass();
         $this->content->footer = '';
 
         if (\core_search\manager::is_global_search_enabled() === false) {
@@ -51,17 +64,8 @@ class block_globalsearch extends block_base {
             return $this->content;
         }
 
-        // We don't want the whole system to stop working because the search engine is not available.
-        try {
-            $search = \core_search\manager::instance();
-        } catch (\core_search\engine_exception $e) {
-            // The exception is returning an i18n string so it is fine to show it on screen.
-            $this->content->text = $e->getMessage();
-            return $this->content;
-        }
-
         // Getting the global search enabled components.
-        $components = $search::get_search_components_list(true);
+        $components = \core_search\manager::get_search_components_list(true);
 
         $url = new moodle_url('/search/index.php');
         $this->content->footer .= html_writer::link($url, get_string('advancedsearch', 'search'));
@@ -69,18 +73,24 @@ class block_globalsearch extends block_base {
         $this->content->text  = html_writer::start_tag('div', array('class' => 'searchform'));
         $this->content->text .= html_writer::start_tag('form', array('action' => $url->out()));
         $this->content->text .= html_writer::start_tag('fieldset', array('action' => 'invisiblefieldset'));
-        $this->content->text .= html_writer::tag('label', get_string('search', 'search'), array('for' => 'searchform_search', 'class' => 'accesshide'));
-        $this->content->text .= html_writer::empty_tag('input', array('id' => 'searchform_search', 'name' => 'queryfield', 'type' => 'text', 'size' => '15'));
-        $this->content->text .= $OUTPUT->help_icon('searchinfo', $search->get_engine()->get_plugin_name());
+
+        // Input.
+        $this->content->text .= html_writer::tag('label', get_string('search', 'search'),
+            array('for' => 'searchform_search', 'class' => 'accesshide'));
+        $inputoptions = array('id' => 'searchform_search', 'name' => 'queryfield', 'type' => 'text', 'size' => '15');
+        $this->content->text .= html_writer::empty_tag('input', $inputoptions);
+
+        // Components.
         $this->content->text .= html_writer::tag('label', get_string('searchin', 'block_globalsearch'),
             array('for' => 'id_globalsearch_component'));
-
         $options = array();
         foreach ($components as $componentname => $componentsearch) {
             $options[$componentname] = $componentsearch->get_component_visible_name();
         }
         $this->content->text .= html_writer::select($options, 'component', '',
             array('' => get_string('allcomponents', 'search')), array('id' => 'id_globalsearch_component'));
+
+        // Search button.
         $this->content->text .= html_writer::tag('button', get_string('search', 'search'),
             array('id' => 'searchform_button', 'type' => 'submit', 'title' => 'globalsearch'));
         $this->content->text .= html_writer::end_tag('fieldset');

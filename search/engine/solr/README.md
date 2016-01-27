@@ -10,8 +10,9 @@ You can download the official latest versions from [http://pecl.php.net/package/
 
 ### Linux
 
-    sudo apt-get install libxml2-dev libcurl4-openssl-dev
-    sudo service apache2ctl restart
+    sudo apt-get install libpcre3-dev libxml2-dev libcurl4-openssl-dev
+    sudo pecl install solr
+    sudo service apache2 restart
     sudo echo `"extension=solr.so" > /etc/php5/apache2/conf.d/solr.ini`
     sudo echo `"extension=solr.so" > /etc/php5/cli/conf.d/solr.ini`
 
@@ -27,9 +28,7 @@ Install the pecl package as usual. Sorry it has not been tested yet.
 
 ## Solr server
 
-The following snippet (feel free to copy & paste into a .sh script with execution permissions) will download Apache Solr 5.4.1
-in the current directory and create an index in it named 'moodle'. It basically downloads it, starts the server and creates an
-index to add data to.
+The following snippet (feel free to copy & paste into a .sh script with execution permissions) will download Apache Solr 5.4.1 in the current directory, start the solr server and create an index in it named 'moodle' to add moodle data to it.
 
 
     #!/bin/bash
@@ -57,14 +56,16 @@ index to add data to.
     bin/solr start
     bin/solr create -c $CORENAME
 
-    After setting it up and creating the index use "/yourdirectory/solrdir/bin/solr start" and "/yourdirectory/solrdir/bin/solr stop" from CLI to start and stop the server.
+    # After setting it up and creating the index use:
+    # - "/yourdirectory/solrdir/bin/solr start" from CLI to start the server
+    # - "/yourdirectory/solrdir/bin/solr stop" from CLI to stop the server.
 
 # Setup
 
 1. Go to __Site administration -> Plugins -> Search -> Manage global search__
 2. Enable global search, select 'Solr' as search engine and tick all search components checkboxes
 3. Go to __Site administration -> Plugins -> Search -> Solr__
-4. Set 'Host name' to localhost and 'Collection name' to 'moodle' (the name of the index in Solr)
+4. Set 'Host name' to localhost, 'Port' to 8983 and 'Collection name' to 'moodle' (the name of the index in Solr)
 5. The following script will add the required fields used by Moodle to the Solr index you just created.
 
 `
@@ -75,15 +76,15 @@ index to add data to.
 
 Once global search is enabled a new task will be running through cron, although you can force documents indexing by:
 
-* Go to __Reports -> Search__
-* Tick 'Recreate index' checkbox and press 'Save changes'
+* Going to __Reports -> Search__
+* Tick 'Recreate index' and 'Delete' checkboxes and press 'Save changes'
 
 or
 
-* Execute the following task from CLI
+* Executing the following task from CLI
 
 `
-    php admin/tool/task/cli/schedule_task.php --execute="\\core\\task\\global_search_task"
+    php admin/tool/task/cli/schedule_task.php --execute="\\core\\task\\search_task"
 `
 
 # Querying

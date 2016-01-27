@@ -38,6 +38,11 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
 class indexer extends \core_search\base_mod {
 
     /**
+     * @var string Forum posts filearea.
+     */
+    protected static $filearea = 'post';
+
+    /**
      * @var array Internal quick static cache.
      */
     protected $forumsdata = array();
@@ -55,18 +60,18 @@ class indexer extends \core_search\base_mod {
     /**
      * Returns recordset containing required data for indexing forum posts.
      *
-     * @param int $from timestamp
+     * @param int $modifiedfrom timestamp
      * @return moodle_recordset
      */
-    public function get_recordset($from = 0) {
+    public function get_recordset($modifiedfrom = 0) {
         global $DB;
 
-        $sql = "SELECT fp.*, f.id AS forumid, f.course AS courseid, f.name AS forumname, f.intro AS forumintro " .
-                 "FROM {forum_posts} fp " .
+        $sql = "SELECT fp.*, f.id AS forumid, f.course AS courseid, f.name AS forumname, f.intro AS forumintro, " .
+                "f.introformat AS forumintroformat FROM {forum_posts} fp " .
                  "JOIN {forum_discussions} fd ON fd.id = fp.discussion " .
                  "JOIN {forum} f ON f.id = fd.forum " .
-                "WHERE fp.modified > ? ORDER BY fp.modified ASC";
-        return $DB->get_recordset_sql($sql, array($from));
+                "WHERE fp.modified >= ? ORDER BY fp.modified ASC";
+        return $DB->get_recordset_sql($sql, array($modifiedfrom));
     }
 
     /**
@@ -83,7 +88,8 @@ class indexer extends \core_search\base_mod {
             $user = self::get_user_names_data($post->userid);
         } catch (\dml_missing_record_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
-            debugging('Error retrieving mod_forum ' . $post->id . ' document, not all required data is available: ' . $ex->getMessage(), DEBUG_DEVELOPER);
+            debugging('Error retrieving mod_forum ' . $post->id . ' document, not all required data is available: ' .
+                $ex->getMessage(), DEBUG_DEVELOPER);
             return false;
         } catch (\dml_exception $ex) {
             // Notify it as we run here as admin, we should see everything.
@@ -95,6 +101,7 @@ class indexer extends \core_search\base_mod {
         $doc = \core_search\document_factory::instance($post->id, $this->componentname);
         $doc->set('title', $post->subject);
         $doc->set('content', $post->message);
+        $doc->set('contentformat', $post->messageformat);
         $doc->set('userfullname', fullname($user));
         $doc->set('contextid', $context->id);
         $doc->set('type', \core_search\manager::TYPE_TEXT);
@@ -104,6 +111,7 @@ class indexer extends \core_search\base_mod {
         $doc->set('modified', $post->modified);
         $doc->set('name', $post->forumname);
         $doc->set('intro', $post->forumintro);
+        $doc->set('introformat', $post->forumintroformat);
 
         return $doc;
     }

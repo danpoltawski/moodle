@@ -45,4 +45,4 @@ if ($CFG->searchengine !== 'solr') {
 $schema = new \search_solr\schema();
 $schema->setup();
 
-echo get_string('fieldsadded', 'search_solr') . "\n";
+echo get_string('setupok', 'search_solr') . "\n";

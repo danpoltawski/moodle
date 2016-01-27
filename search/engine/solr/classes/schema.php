@@ -136,11 +136,30 @@ class schema {
                 // The field should not exist so we only accept 404 errors.
                 if (empty($results->error) || (!empty($results->error) && $results->error->code !== 404)) {
                     if (!empty($results->error)) {
-                        $errormsg = $results->error->msg;
+                        throw new \moodle_exception('errorcreatingschema', 'search_solr', '', $results->error->msg);
                     } else {
-                        $errormsg = get_string('schemafieldalreadyexists', 'search_solr', $fieldname);
+                        // All these field attributes are set when fields are added through this script and should
+                        // be returned and match the defined field's values.
+
+                        if (empty($results->field) || !isset($results->field->type) ||
+                                !isset($results->field->multiValued) || !isset($results->field->indexed) ||
+                                !isset($results->field->stored)) {
+
+                            throw new \moodle_exception('errorcreatingschema', 'search_solr', '',
+                                get_string('schemafieldautocreated', 'search_solr', $fieldname));
+
+                        } else if ($results->field->type !== $data['type'] ||
+                                    $results->field->multiValued !== false ||
+                                    $results->field->indexed !== $data['indexed'] ||
+                                    $results->field->stored !== $data['stored']) {
+
+                                throw new \moodle_exception('errorcreatingschema', 'search_solr', '',
+                                    get_string('schemafieldautocreated', 'search_solr', $fieldname));
+                        } else {
+                            // The field already exists and it is properly defined, no need to create it.
+                            unset($fields[$fieldname]);
+                        }
                     }
-                    throw new \moodle_exception('errorcreatingschema', 'search_solr', '', $errormsg);
                 }
             }
         }

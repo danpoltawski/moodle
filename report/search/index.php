@@ -47,7 +47,7 @@ $search = \core_search\manager::instance();
 // All enabled components.
 $searchcomponents = $search->get_search_components_list(true);
 
-$mform = new \report_search\form(null, array('searchcomponents' => $searchcomponents));
+$mform = new \report_search\output\form(null, array('searchcomponents' => $searchcomponents));
 if ($data = $mform->get_data()) {
 
     if (!empty($data->delete)) {
@@ -66,6 +66,10 @@ if ($data = $mform->get_data()) {
 
         if (!empty($data->all) || $anydelete) {
             echo $OUTPUT->notification(get_string('deleted', 'report_search'), 'notifysuccess');
+
+            // Purge the cache.
+            $cache = \cache::make('core', 'search_results');
+            $cache->purge();
         }
     }
 
