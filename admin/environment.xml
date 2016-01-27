@@ -1517,6 +1517,11 @@
       <PHP_EXTENSION name="json" level="required">
       </PHP_EXTENSION>
       <PHP_EXTENSION name="hash" level="required"/>
+      <PHP_EXTENSION name="solr" level="optional">
+        <FEEDBACK>
+          <ON_CHECK message="solroptional" />
+        </FEEDBACK>
+      </PHP_EXTENSION>
     </PHP_EXTENSIONS>
     <PHP_SETTINGS>
       <PHP_SETTING name="memory_limit" value="96M" level="required">
