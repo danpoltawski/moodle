@@ -436,7 +436,7 @@ class document implements \renderable, \templatable {
         foreach (static::$requiredfields as $fieldname => $field) {
 
             // We also check that we have everything we need; they all need a value, !isset is not enough.
-            if (empty($data[$fieldname])) {
+            if (!isset($data[$fieldname])) {
                 throw new \coding_exception('Missing "' . $fieldname . '" field in document with id "' . $this->data['id'] . '"');
             }
 
