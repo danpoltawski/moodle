@@ -461,9 +461,6 @@ foreach ($pages as $page) {
 $ADMIN->add('modules', new admin_category('searchplugins', new lang_string('search', 'admin')));
 $temp = new admin_settingpage('manageglobalsearch', new lang_string('globalsearchmanage', 'admin'));
 
-$temp->add(new admin_setting_configcheckbox('enableglobalsearch', new lang_string('enableglobalsearch', 'admin'),
-        new lang_string('enableglobalsearch_desc', 'admin'), 0, 1, 0));
-
 $pages = array();
 $engines = array();
 foreach (core_component::get_plugin_list('search') as $engine => $plugindir) {
