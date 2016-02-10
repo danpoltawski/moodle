@@ -61,7 +61,7 @@ abstract class base_mod extends base {
      * @param string $modulename The module name
      * @param int $instanceid Module instance id (depends on the module)
      * @param int $courseid Helps speeding up things
-     * @return cm_info
+     * @return \cm_info
      */
     protected function get_cm($modulename, $instanceid, $courseid) {
 

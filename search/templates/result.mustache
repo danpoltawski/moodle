@@ -28,10 +28,7 @@
     Context variables required for this template:
     * courseurl
     * coursefullname
-    * userurl
-    * userfullname
     * modified
-    * created
     * title
     * docurl
     * content
@@ -40,6 +37,9 @@
     Optional context variables for this template:
     * intro
     * name
+    * userurl
+    * userfullname
+    * created
 
     Example context (json):
     {
@@ -77,11 +77,15 @@
                 <strong>{{#str}}moduleintro{{/str}}:</strong> {{{intro}}}
             </div>
         {{/intro}}
+        {{#userfullname}}
         <div>
             <strong>{{#str}}author, search{{/str}}:</strong> <a href="{{{userurl}}}">{{userfullname}}</a>
         </div>
+        {{/userfullname}}
         <div>
-            {{#str}}doccreatedon, search, {{created}}{{/str}}
+            {{#created}}
+                - {{#str}}doccreatedon, search, {{created}}{{/str}}
+            {{/created}}
             {{#modified}}
                 - {{#str}}docmodifiedon, search, {{modified}}{{/str}}
             {{/modified}}

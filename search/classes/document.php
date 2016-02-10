@@ -97,11 +97,6 @@ class document implements \renderable, \templatable {
             'stored' => true,
             'indexed' => false
         ),
-        'userfullname' => array(
-            'type' => 'string',
-            'stored' => true,
-            'indexed' => true
-        ),
         'contextid' => array(
             'type' => 'int',
             'stored' => true,
@@ -122,16 +117,6 @@ class document implements \renderable, \templatable {
             'stored' => true,
             'indexed' => false
         ),
-        'userid' => array(
-            'type' => 'int',
-            'stored' => true,
-            'indexed' => false
-        ),
-        'created' => array(
-            'type' => 'tdate',
-            'stored' => true,
-            'indexed' => true
-        ),
         'modified' => array(
             'type' => 'tdate',
             'stored' => true,
@@ -149,6 +134,16 @@ class document implements \renderable, \templatable {
      * @var array
      */
     protected static $optionalfields = array(
+        'userid' => array(
+            'type' => 'int',
+            'stored' => true,
+            'indexed' => false
+        ),
+        'userfullname' => array(
+            'type' => 'string',
+            'stored' => true,
+            'indexed' => true
+        ),
         'name' => array(
             'type' => 'string',
             'stored' => true,
@@ -163,6 +158,11 @@ class document implements \renderable, \templatable {
             'type' => 'int',
             'stored' => true,
             'indexed' => false
+        ),
+        'created' => array(
+            'type' => 'tdate',
+            'stored' => true,
+            'indexed' => true
         ),
     );
 
@@ -242,12 +242,10 @@ class document implements \renderable, \templatable {
     /**
      * Getter.
      *
-     * Use self::is_set if you are not sure if this field is set or not
-     * as otherwise it will trigger a \coding_exception
      *
      * @throws \coding_exception
      * @param string $field
-     * @return string|int
+     * @return string|null if not set
      */
     public function get($field) {
 
@@ -260,7 +258,7 @@ class document implements \renderable, \templatable {
             return $this->extradata[$field];
         }
 
-        throw new \coding_exception('Field "' . $field . '" is not set in the document');
+        return null;
     }
 
     /**
@@ -450,6 +448,9 @@ class document implements \renderable, \templatable {
         }
 
         foreach (static::$optionalfields as $fieldname => $field) {
+            if (!isset($data[$fieldname])) {
+                continue;
+            }
             if ($field['type'] === 'tdate') {
                 // Overwrite the timestamp with the engine dependant format.
                 $data[$fieldname] = static::format_time_for_engine($data[$fieldname]);
@@ -469,26 +470,28 @@ class document implements \renderable, \templatable {
      * @return array
      */
     public function export_for_template(\renderer_base $output) {
-
-        $intro = null;
-        if ($this->is_set('intro')) {
-            $intro = $this->format_text($this->get('intro'), $this->get('introformat'), 'intro', null);
+        $created = null;
+        if ($this->get('created')) {
+            $created = userdate($this->get('modified'));
         }
-
+        $modified = null;
+        if ($this->get('modified')) {
+            $modified = userdate($this->get('modified'));
+        }
         // Pity that we have to include the separator this way.
         return [
             'courseurl' => new \moodle_url('/course/view.php?id=' . $this->get('courseid')),
             'coursefullname' => $this->format_string($this->get('coursefullname')),
             'userurl' => new \moodle_url('/user/view.php', array('id' => $this->get('userid'), 'course' => $this->get('courseid'))),
             'userfullname' => $this->format_string($this->get('userfullname')),
-            'modified' => userdate($this->get('modified')),
-            'created' => userdate($this->get('created')),
+            'modified' => $modified,
+            'created' => $created,
             'title' => $this->format_string($this->get('title')),
             'docurl' => $this->get_doc_url(),
             'content' => $this->format_text($this->get('content'), $this->get('contentformat'),
                 $this->get_filearea(), $this->get('itemid')),
             'contexturl' => $this->get_context_url(),
-            'name' => $this->is_set('name') ? $this->format_string($this->get('name')) : null,
+            'name' => $this->format_string($this->get('name')),
             'intro' => $intro,
             'separator' => get_separator(),
         ];
