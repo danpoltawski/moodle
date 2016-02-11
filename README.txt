@@ -1,29 +1,31 @@
-QUICK INSTALL
-=============
+                                 .-..-.
+   _____                         | || |
+  /____/-.---_  .---.  .---.  .-.| || | .---.
+  | |  _   _  |/  _  \/  _  \/  _  || |/  __ \
+  * | | | | | || |_| || |_| || |_| || || |___/
+    |_| |_| |_|\_____/\_____/\_____||_|\_____)
 
-For the impatient, here is a basic outline of the
-installation process, which normally takes me only
-a few minutes:
-
-1) Move the Moodle files into your web directory.
-
-2) Create a single database for Moodle to store all
-   its tables in (or choose an existing database).
-
-3) Visit your Moodle site with a browser, you should
-   be taken to the install.php script, which will lead
-   you through creating a config.php file and then
-   setting up Moodle, creating an admin account etc.
-
-4) Set up a cron task to call the file admin/cron.php
-   every five minutes or so.
+Moodle - the world's open source learning platform
 
 
-For more information, see the INSTALL DOCUMENTATION:
+Moodle <https://moodle.org> is a learning platform designed to provide
+educators, administrators and learners with a single robust, secure and
+integrated system to create personalised learning environments. You can
+download Moodle to run it on your own web server, ask one of our Moodle
+Partners to assist you at <https://moodle.com>, or have a site set up for you
+at <https://moodlecloud.com/>.
 
-   http://docs.moodle.org/en/Installing_Moodle
+Moodle is trusted by institutions and organisations around the world. It has
+been adapted for use across education, business, non-profit, government, and
+community contexts, both large and small.
 
+Moodle is provided freely as open source software, under the GNU General Public
+License. Anyone can adapt, extend or modify Moodle for both commercial and
+non-commercial projects without any licensing fees and benefit from the
+cost-efficiencies, flexibility and other advantages.
 
-Good luck and have fun!
-Martin Dougiamas, Lead Developer
+Moodle is written in PHP and Javascript and uses an SQL database for storing
+the data. MySQL, PostgreSQL and MSSQL are natively supported.
 
+See <https://docs.moodle.org/> for an overview of features, quick guides and
+detailed description of all the provided functionality.
