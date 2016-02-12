@@ -63,6 +63,7 @@ class core_dml_testcase extends database_driver_testcase {
         $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('description', $result);
         $this->assertArrayHasKey('version', $result);
+        $this->fail();
     }
 
     public function test_get_in_or_equal() {
