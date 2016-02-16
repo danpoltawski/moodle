@@ -46,6 +46,7 @@ install:
     - IF %PHP%==1 appveyor DownloadFile https://dl.dropboxusercontent.com/u/5403781/php-sqlsrv.zip
     - IF %PHP%==1 7z x php-sqlsrv.zip >nul
     - IF %PHP%==1 copy SQLSRV\php_sqlsrv_56_nts.dll ext\php_sqlsrv_56_nts.dll
+    - IF %PHP%==1 echo extension=php_sqlsrv_56_nts.dll >> php.ini
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
     - cd c:\projects\moodle
     - appveyor DownloadFile https://getcomposer.org/composer.phar
