@@ -3830,7 +3830,6 @@ class core_dml_testcase extends database_driver_testcase {
     }
 
     public function test_sql_binary_equal() {
-        return;
         $DB = $this->tdb;
         $dbman = $DB->get_manager();
 
