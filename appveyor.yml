@@ -5,7 +5,7 @@ platform: x86
 clone_folder: c:\projects\moodle
 
 services:
-  - mssql2014
+  - postgresql
 
 cache:
     - c:\php -> appveyor.yml
@@ -13,10 +13,12 @@ cache:
     - vendor # composer dirs..
 
 init:
-    - SET PATH=c:\php;%PATH%
+    - SET PATH=C:\Program Files\PostgreSQL\9.3\bin\;c:\php;%PATH%
     - SET COMPOSER_NO_INTERACTION=1
     - SET PHP=1
     - SET ANSICON=121x90 (121x90)
+    - SET PGUSER=postgres
+    - SET PGPASSWORD=Password12!
 
 install:
     - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
@@ -47,12 +49,12 @@ install:
     - mkdir c:\projects\moodledata
     - mkdir c:\projects\phpunit_moodledata
     - cd c:\projects\moodle
-    - appveyor DownloadFile https://github.com/danpoltawski/moodle-local_ci/raw/appveyor/configs/appveyor.cfg -FileName config.php
+    - appveyor DownloadFile https://github.com/danpoltawski/moodle-local_ci/raw/appveyor/configs/appveyor-postgres.cfg -FileName config.php
     - appveyor DownloadFile https://getcomposer.org/composer.phar
 
 before_test:
     # Services are started after install..
-    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle] COLLATE Latin1_General_CS_AS; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
+    - createdb moodle -E utf8
     - cd c:\projects\moodle
     - php admin\tool\phpunit\cli\init.php
 
