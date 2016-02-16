@@ -1,6 +1,5 @@
 build: false
 shallow_clone: true
-clone_depth: 1
 
 platform: x86
 clone_folder: c:\projects\moodle
@@ -51,16 +50,14 @@ install:
     - cd c:\projects\moodle
     - appveyor DownloadFile https://github.com/danpoltawski/moodle-local_ci/raw/appveyor/configs/appveyor.cfg -FileName config.php
     - appveyor DownloadFile https://getcomposer.org/composer.phar
-    - composer install --prefer-dist --no-interaction --ansi --no-progress
+    - composer install --prefer-source --no-interaction --ansi --no-progress
 
-before_test:
-    # Services are started after install..
-    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle]; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
-    - cd c:\projects\moodle
-    #- php admin\cli\install.php --wwwroot="http://127.0.0.1" --dbtype=sqlsrv --dbuser=sa --dbhost="(local)\SQL2014" --dbpass="Password12!" --dbname=appveyor --fullname=CI --shortname="ci" --adminpass=test --agree-license --allow-unstable --non-interactive
-    - cat config.php
-    - php admin\tool\phpunit\cli\init.php
+# before_test:
+#     # Services are started after install..
+#     - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle]; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
+#     - cd c:\projects\moodle
+#     - php admin\tool\phpunit\cli\init.php
 
 test_script:
     - cd c:\projects\moodle
-    - vendor\bin\phpunit
+    #- vendor\bin\phpunit --stop-on-failure
