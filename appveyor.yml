@@ -52,7 +52,7 @@ install:
 
 before_test:
     # Services are started after install..
-    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle]; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
+    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle] COLLATE Latin1_General_CS_AS; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
     - cd c:\projects\moodle
     - php admin\tool\phpunit\cli\init.php
 
