@@ -1,5 +1,7 @@
 build: false
 shallow_clone: true
+clone_depth: 1
+
 platform: x86
 clone_folder: c:\projects\moodle
 
@@ -13,13 +15,10 @@ cache:
     - node_modules
 
 init:
-    - SET PATH=C:\Program Files\PostgreSQL\9.3\bin\;c:\php;%PATH%
+    - SET PATH=c:\php;%PATH%
     - SET COMPOSER_NO_INTERACTION=1
     - SET PHP=1
     - SET ANSICON=121x90 (121x90)
-    - SET PGUSER=postgres
-    - SET PGPASSWORD=Password12!
-
 
 install:
     - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
@@ -56,7 +55,7 @@ install:
 
 before_test:
     # Services are started after install..
-    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle]"
+    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle]; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
     - cd c:\projects\moodle
     #- php admin\cli\install.php --wwwroot="http://127.0.0.1" --dbtype=sqlsrv --dbuser=sa --dbhost="(local)\SQL2014" --dbpass="Password12!" --dbname=appveyor --fullname=CI --shortname="ci" --adminpass=test --agree-license --allow-unstable --non-interactive
     - cat config.php
