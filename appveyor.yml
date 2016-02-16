@@ -1,0 +1,60 @@
+build: false
+shallow_clone: true
+
+platform: x86
+clone_folder: c:\projects\moodle
+
+services:
+  - mssql2014
+
+cache:
+    - c:\php -> appveyor.yml
+    - '%LOCALAPPDATA%\Composer'
+    - vendor # composer dirs..
+
+init:
+    - SET PATH=c:\php;%PATH%
+    - SET COMPOSER_NO_INTERACTION=1
+    - SET PHP=1
+    - SET ANSICON=121x90 (121x90)
+
+install:
+    - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
+    - cd c:\php
+    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/php-7.0.8-nts-Win32-VC14-x86.zip
+    - IF %PHP%==1 7z x php-7.0.8-nts-Win32-VC14-x86.zip -y >nul
+    - IF %PHP%==1 del /Q *.zip
+    - IF %PHP%==1 copy /Y php.ini-production php.ini
+    - IF %PHP%==1 echo max_execution_time=1200 >> php.ini
+    - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
+    - IF %PHP%==1 echo extension_dir=ext >> php.ini
+    - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_intl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_mbstring.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_xmlrpc.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_pgsql.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_soap.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_gd2.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_bz2.dll >> php.ini
+    - IF %PHP%==1 appveyor DownloadFile https://github.com/Azure/msphpsql/releases/download/v4.0.0/php_sqlsrv_7_nts.dll -FileName ext\php_sqlsrv_7_nts.dll
+    - IF %PHP%==1 echo extension=php_sqlsrv_7_nts.dll >> php.ini
+    - IF %PHP%==1 echo zend_extension=php_opcache.dll >> php.ini
+    - IF %PHP%==1 echo opcache.enable=1 >> php.ini
+    - IF %PHP%==1 echo opcache.enable_cli=1 >> php.ini
+    - IF %PHP%==1 echo @php composer.phar %%* > composer.bat
+    - mkdir c:\projects\moodledata
+    - mkdir c:\projects\phpunit_moodledata
+    - cd c:\projects\moodle
+    - appveyor DownloadFile https://github.com/danpoltawski/moodle-local_ci/raw/appveyor/configs/appveyor.cfg -FileName config.php
+    - appveyor DownloadFile https://getcomposer.org/composer.phar
+
+before_test:
+    - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle] COLLATE Latin1_General_CS_AS; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
+    - cd c:\projects\moodle
+    - php admin\tool\phpunit\cli\init.php
+
+test_script:
+    - cd c:\projects\moodle
+    - vendor\bin\phpunit
