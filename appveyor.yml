@@ -37,6 +37,9 @@ install:
     - IF %PHP%==1 echo extension=php_fileinfo.dll >> php.ini
     - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
     - IF %PHP%==1 echo extension=php_xmlrpc.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_pgsql.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_mysqli.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_soap.dll >> php.ini
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
     - cd c:\projects\moodle
     - appveyor DownloadFile https://getcomposer.org/composer.phar
