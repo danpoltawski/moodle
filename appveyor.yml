@@ -49,6 +49,7 @@ install:
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
     - cd c:\projects\moodle
     - appveyor DownloadFile https://getcomposer.org/composer.phar
+    - php -i
     #- composer install --prefer-dist --no-interaction --ansi --no-progress
 
 before_test:
