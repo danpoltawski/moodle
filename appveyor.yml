@@ -49,7 +49,7 @@ install:
     - cd c:\projects\moodle
     - appveyor DownloadFile https://github.com/danpoltawski/moodle-local_ci/raw/appveyor/configs/appveyor.cfg -FileName config.php
     - appveyor DownloadFile https://getcomposer.org/composer.phar
-    - composer install --prefer-source --no-interaction --ansi --no-progress
+    #- composer install --prefer-source --no-interaction --ansi --no-progress
 
 before_test:
 #     # Services are started after install..
