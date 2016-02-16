@@ -13,7 +13,7 @@ cache:
     - vendor # composer dirs..
 
 init:
-    - SET PATH=C:\Program Files\PostgreSQL\9.3\bin\;c:\php;%PATH%
+    - SET PATH=C:\Program Files\PostgreSQL\9.4\bin\;c:\php;%PATH%
     - SET COMPOSER_NO_INTERACTION=1
     - SET PHP=1
     - SET ANSICON=121x90 (121x90)
@@ -54,7 +54,7 @@ install:
 
 before_test:
     # Services are started after install..
-    - createdb moodle -E utf8
+    - createdb moodle
     - cd c:\projects\moodle
     - php admin\tool\phpunit\cli\init.php
 
