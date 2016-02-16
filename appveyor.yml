@@ -46,7 +46,7 @@ before_test:
     # Services are started after install..
     - createdb moodle
     - cd c:\projects\moodle
-    - php admin\cli\install.php --wwwroot='http://127.0.0.1' --dbtype=pgsql --dbhost=127.0.0.1 --dbuser=postgres --dbpass='Password12!' --dbname=moodle --fullname='CI Site' --shortname='ci' --adminpass=test --agree-license --allow-unstable --non-interactive
+    - php admin\cli\install.php --wwwroot="http://127.0.0.1" --dbtype=pgsql --dbhost="127.0.0.1" --dbuser=postgres --dbpass="Password12!" --dbname=moodle --fullname=CI --shortname="ci" --adminpass=test --agree-license --allow-unstable --non-interactive
     - php admin\tool\phpunit\cli\init.php
 
 test_script:
