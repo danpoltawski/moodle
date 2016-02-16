@@ -38,7 +38,7 @@ install:
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
     - cd c:\projects\moodle
     - appveyor DownloadFile https://getcomposer.org/composer.phar
-    - composer install --prefer-dist --no-interaction --ansi --no-progress
+    #- composer install --prefer-dist --no-interaction --ansi --no-progress
     - createdb moodle
     - php admin\cli\install.php --wwwroot='http://127.0.0.1' --dbtype=pgsql --dbhost=127.0.0.1 --dbuser=postgres --dbpass='Password12!' --dbname=moodle --fullname='CI Site' --shortname='ci' --adminpass=test --agree-license --allow-unstable --non-interactive
     - php admin\tool\phpunit\cli\init.php
