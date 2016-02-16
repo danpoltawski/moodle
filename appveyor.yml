@@ -29,9 +29,9 @@ install:
     - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
     - IF %PHP%==1 echo extension=php_xmlrpc.dll >> php.ini
     - IF %PHP%==1 echo @php %%~dp0composer.phar %%* > composer.bat
-    - appveyor DownloadFile https://getcomposer.org/composer.phar
     - cd c:\projects\moodle
-    - composer install --prefer-source --no-progress
+    - appveyor DownloadFile https://getcomposer.org/composer.phar
+    #- composer install --prefer-source --no-progress
     - php admin\tool\phpunit\cli\init.php
 
 test_script:
