@@ -22,7 +22,7 @@ install:
     - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
     - cd c:\php
     - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/php-7.0.3-nts-Win32-VC14-x86.zip
-    - IF %PHP%==1 7z x php-7.0.3-nts-Win32-VC14-x86.zip -y
+    - IF %PHP%==1 7z x php-7.0.3-nts-Win32-VC14-x86.zip -y >nul
     - IF %PHP%==1 del /Q *.zip
     - IF %PHP%==1 copy /Y php.ini-development php.ini
     - IF %PHP%==1 echo max_execution_time=1200 >> php.ini
@@ -42,7 +42,6 @@ install:
     - IF %PHP%==1 appveyor DownloadFile https://github.com/Azure/msphpsql/releases/download/v4.0.0/php_sqlsrv_7_nts.dll -FileName ext\php_sqlsrv_7_nts.dll
     - IF %PHP%==1 echo extension=php_sqlsrv_7_nts.dll >> php.ini
     - IF %PHP%==1 echo @php composer.phar %%* > composer.bat
-    - php -i
     - mkdir c:\projects\moodledata
     - mkdir c:\projects\phpunit_moodledata
     - cd c:\projects\moodle
@@ -50,11 +49,10 @@ install:
     - appveyor DownloadFile https://getcomposer.org/composer.phar
 
 before_test:
-    # Services are started after install..
     - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [moodle] COLLATE Latin1_General_CS_AS; ALTER DATABASE [moodle] SET READ_COMMITTED_SNAPSHOT ON"
     - cd c:\projects\moodle
     - php admin\tool\phpunit\cli\init.php
 
 test_script:
     - cd c:\projects\moodle
-    - vendor\bin\phpunit --stop-on-failure --filter core
+    - vendor\bin\phpunit --stop-on-failure
