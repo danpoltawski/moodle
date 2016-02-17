@@ -40,8 +40,9 @@ install:
     - IF %PHP%==1 echo extension=php_gd2.dll >> php.ini
     - IF %PHP%==1 echo extension=php_bz2.dll >> php.ini
     - IF %PHP%==1 appveyor DownloadFile https://github.com/Azure/msphpsql/releases/download/v4.0.0/php_sqlsrv_7_nts.dll -FileName ext\php_sqlsrv_7_nts.dll
-    - IF %PHP%==1 echo extension=php_sqlsrv_56_nts.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_sqlsrv_7_nts.dll >> php.ini
     - IF %PHP%==1 echo @php composer.phar %%* > composer.bat
+    - php -i
     - mkdir c:\projects\moodledata
     - mkdir c:\projects\phpunit_moodledata
     - cd c:\projects\moodle
