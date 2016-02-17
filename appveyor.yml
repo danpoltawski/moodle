@@ -21,8 +21,8 @@ init:
 install:
     - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
     - cd c:\php
-    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/php-5.6.18-nts-Win32-VC11-x86.zip
-    - IF %PHP%==1 7z x php-5.6.18-nts-Win32-VC11-x86.zip -y >nul
+    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/php-7.0.3-nts-Win32-VC14-x86.zip
+    - IF %PHP%==1 7z x php-7.0.3-nts-Win32-VC14-x86.zip -y
     - IF %PHP%==1 del /Q *.zip
     - IF %PHP%==1 copy /Y php.ini-development php.ini
     - IF %PHP%==1 echo max_execution_time=1200 >> php.ini
@@ -39,9 +39,7 @@ install:
     - IF %PHP%==1 echo extension=php_soap.dll >> php.ini
     - IF %PHP%==1 echo extension=php_gd2.dll >> php.ini
     - IF %PHP%==1 echo extension=php_bz2.dll >> php.ini
-    - IF %PHP%==1 appveyor DownloadFile https://dl.dropboxusercontent.com/u/5403781/php-sqlsrv.zip
-    - IF %PHP%==1 7z x php-sqlsrv.zip >nul
-    - IF %PHP%==1 copy SQLSRV\php_sqlsrv_56_nts.dll ext\php_sqlsrv_56_nts.dll
+    - IF %PHP%==1 appveyor DownloadFile https://github.com/Azure/msphpsql/releases/download/v4.0.0/php_sqlsrv_7_nts.dll -FileName ext\php_sqlsrv_7_nts.dll
     - IF %PHP%==1 echo extension=php_sqlsrv_56_nts.dll >> php.ini
     - IF %PHP%==1 echo @php composer.phar %%* > composer.bat
     - mkdir c:\projects\moodledata
@@ -58,4 +56,4 @@ before_test:
 
 test_script:
     - cd c:\projects\moodle
-    - vendor\bin\phpunit --stop-on-failure
+    - vendor\bin\phpunit --stop-on-failure --filter core
