@@ -57,4 +57,4 @@ before_test:
 
 test_script:
     - cd c:\projects\moodle
-    - vendor\bin\phpunit --stop-on-failure
+    - vendor\bin\phpunit
