@@ -24,7 +24,7 @@ install:
     - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/php-7.0.3-nts-Win32-VC14-x86.zip
     - IF %PHP%==1 7z x php-7.0.3-nts-Win32-VC14-x86.zip -y >nul
     - IF %PHP%==1 del /Q *.zip
-    - IF %PHP%==1 copy /Y php.ini-development php.ini
+    - IF %PHP%==1 copy /Y php.ini-production php.ini
     - IF %PHP%==1 echo max_execution_time=1200 >> php.ini
     - IF %PHP%==1 echo date.timezone="UTC" >> php.ini
     - IF %PHP%==1 echo extension_dir=ext >> php.ini
@@ -35,12 +35,14 @@ install:
     - IF %PHP%==1 echo extension=php_curl.dll >> php.ini
     - IF %PHP%==1 echo extension=php_xmlrpc.dll >> php.ini
     - IF %PHP%==1 echo extension=php_pgsql.dll >> php.ini
-    - IF %PHP%==1 echo extension=php_mysqli.dll >> php.ini
     - IF %PHP%==1 echo extension=php_soap.dll >> php.ini
     - IF %PHP%==1 echo extension=php_gd2.dll >> php.ini
     - IF %PHP%==1 echo extension=php_bz2.dll >> php.ini
     - IF %PHP%==1 appveyor DownloadFile https://github.com/Azure/msphpsql/releases/download/v4.0.0/php_sqlsrv_7_nts.dll -FileName ext\php_sqlsrv_7_nts.dll
     - IF %PHP%==1 echo extension=php_sqlsrv_7_nts.dll >> php.ini
+    - IF %PHP%==1 echo extension=php_opcache.dll >> php.ini
+    - IF %PHP%==1 echo opcache.enable=1 >> php.ini
+    - IF %PHP%==1 echo opcache.enable_cli=1 >> php.ini
     - IF %PHP%==1 echo @php composer.phar %%* > composer.bat
     - mkdir c:\projects\moodledata
     - mkdir c:\projects\phpunit_moodledata
