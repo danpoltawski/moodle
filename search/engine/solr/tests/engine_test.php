@@ -30,7 +30,7 @@
  * - define('TEST_SEARCH_SOLR_KEYPASSWORD', '');
  * - define('TEST_SEARCH_SOLR_CAINFOCERT', '');
  *
- * @package     core_search
+ * @package     search_solr
  * @category    phpunit
  * @copyright   2015 David Monllao {@link http://www.davidmonllao.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/search/tests/fixtures/mock_search_area.php');
 /**
  * Solr search engine base unit tests.
  *
- * @package     core_search
+ * @package     search_solr
  * @category    phpunit
  * @copyright   2015 David Monllao {@link http://www.davidmonllao.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
