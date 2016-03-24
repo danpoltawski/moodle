@@ -1639,6 +1639,7 @@ class external extends external_api {
         $coursemodules = api::list_course_modules_using_competency($params['competencyid'], $params['courseid']);
         $result = array();
 
+        // FIXME: Test this code and find it broken.
         $fastmodinfo = get_fast_modinfo($cm->course);
 
         foreach ($coursemodules as $cmid) {

@@ -222,6 +222,7 @@ class plan extends persistent {
             $competencies = user_competency_plan::list_competencies($this->get_id(), $this->get_userid());
         } else if ($this->is_based_on_template()) {
             // Get the competencies from the template.
+            // FIXME: why are you passing a second param?
             $competencies = template_competency::list_competencies($this->get_templateid(), true);
         } else {
             // Get the competencies from the plan.
