@@ -97,9 +97,6 @@ class user_competency_course_navigation implements renderable, templatable {
             $showonlyactiveenrol = get_user_preferences('grade_report_showonlyactiveenrol', $defaultgradeshowactiveenrol);
             $showonlyactiveenrol = $showonlyactiveenrol || !has_capability('moodle/course:viewsuspendedusers', $context);
 
-            // Fetch current active group.
-            $groupmode = groups_get_course_groupmode($course);
-
             $users = get_enrolled_users($context, 'tool/lp:coursecompetencygradable', $currentgroup,
                                         'u.*', null, 0, 0, $showonlyactiveenrol);
 
