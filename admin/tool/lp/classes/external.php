@@ -2606,7 +2606,6 @@ class external extends external_api {
      * @return int
      */
     public static function count_competencies_in_template($templateid) {
-        global $PAGE;
         $params = self::validate_parameters(self::count_competencies_in_template_parameters(),
                                             array(
                                                 'id' => $templateid,

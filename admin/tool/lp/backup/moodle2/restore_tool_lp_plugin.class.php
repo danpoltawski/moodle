@@ -65,8 +65,6 @@ class restore_tool_lp_plugin extends restore_tool_plugin {
      * @param  array $data The data.
      */
     public function process_course_competency($data) {
-        global $DB;
-
         $data = (object) $data;
 
         // Mapping the competency by ID numbers.
@@ -103,8 +101,6 @@ class restore_tool_lp_plugin extends restore_tool_plugin {
      * @param  array $data The data.
      */
     public function process_course_module_competency($data) {
-        global $DB;
-
         $data = (object) $data;
 
         // Mapping the competency by ID numbers.

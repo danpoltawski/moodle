@@ -59,7 +59,7 @@ class page_helper {
      *               - Return URL (course competencies page)
      */
     public static function setup_for_course(moodle_url $url, $course, $subtitle = '') {
-        global $PAGE, $SITE;
+        global $PAGE;
 
         $context = context_course::instance($course->id);
 

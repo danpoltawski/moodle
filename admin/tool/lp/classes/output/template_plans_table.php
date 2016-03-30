@@ -57,7 +57,6 @@ class template_plans_table extends table_sql {
      * @param \tool_lp\template $template The template.
      */
     public function __construct($uniqueid, \tool_lp\template $template) {
-        global $CFG;
         parent::__construct($uniqueid);
 
         // This object should not be used without the right permissions.

@@ -74,7 +74,7 @@ class user_competency_course_navigation implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG, $DB, $SESSION, $PAGE;
+        global $CFG, $DB, $PAGE;
 
         $context = context_course::instance($this->courseid);
 
