@@ -126,7 +126,7 @@ class course_module_competency extends persistent {
                 $strname = 'complete';
                 break;
             default:
-                throw new \moodle_exception('errorcompetencyrule', 'tool_lp', '', $rule);
+                throw new \moodle_exception('errorcompetencyrule', 'tool_lp', '', $ruleoutcome);
                 break;
         }
 
