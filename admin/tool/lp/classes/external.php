@@ -1566,7 +1566,7 @@ class external extends external_api {
         $result = array();
 
         foreach ($apiresult as $cmrecord) {
-            $one = new stdClass();
+            $one = new \stdClass();
             $exporter = new competency_exporter($cmrecord['competency']);
             $one->competency = $exporter->export($output);
             $exporter = new course_module_competency_exporter($cmrecord['coursemodulecompetency']);
