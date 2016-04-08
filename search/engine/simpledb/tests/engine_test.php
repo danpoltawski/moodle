@@ -89,6 +89,14 @@ class search_simpledb_engine_testcase extends advanced_testcase {
 
         $this->search->index();
 
+        // Check that docid - id is respected.
+        $rolecaps = $DB->get_records('role_capabilities', array('capability' => 'moodle/course:renameroles'));
+        $rolecap = reset($rolecaps);
+        $rolecap->timemodified = time();
+        $DB->update_record('role_capabilities', $rolecap);
+
+        $this->search->index();
+
         $querydata = new stdClass();
         $querydata->q = 'message';
         $results = $this->search->search($querydata);
@@ -112,12 +120,12 @@ class search_simpledb_engine_testcase extends advanced_testcase {
 
         // Timestart.
         $querydata->timestart = $beforeadding;
-        $this->assertCount(1, $this->search->search($querydata));
+        $this->assertCount(2, $this->search->search($querydata));
 
         // Timeend.
         unset($querydata->timestart);
         $querydata->timeend = $beforeadding;
-        $this->assertCount(2, $this->search->search($querydata));
+        $this->assertCount(1, $this->search->search($querydata));
 
         // Title.
         unset($querydata->timeend);

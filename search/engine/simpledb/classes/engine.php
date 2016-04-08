@@ -192,10 +192,10 @@ class engine extends \core_search\engine {
         $doc->docid = $doc->id;
         unset($doc->id);
 
-        $record = $DB->get_field('search_simpledb_index', 'id', array('docid' => $doc->docid));
+        $id = $DB->get_field('search_simpledb_index', 'id', array('docid' => $doc->docid));
         try {
-            if ($record) {
-                $doc->id = $record->id;
+            if ($id) {
+                $doc->id = $id;
                 $DB->update_record('search_simpledb_index', $doc);
             } else {
                 $DB->insert_record('search_simpledb_index', $doc);
