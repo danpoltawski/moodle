@@ -122,12 +122,11 @@ class engine extends \core_search\engine {
         // And finally the main query after applying all AND filters.
         switch ($DB->get_dbfamily()) {
             case 'postgres':
-                //TODO: The hardcoding to 'english' is intentional to match our index.
                 $ands[] = "(" .
-                    "to_tsvector('english', title) @@ plainto_tsquery(?) OR ".
-                    "to_tsvector('english', content) @@ plainto_tsquery(?) OR ".
-                    "to_tsvector('english', description1) @@ plainto_tsquery(?) OR ".
-                    "to_tsvector('english', description2) @@ plainto_tsquery(?)".
+                    "to_tsvector('simple', title) @@ plainto_tsquery(?) OR ".
+                    "to_tsvector('simple', content) @@ plainto_tsquery(?) OR ".
+                    "to_tsvector('simple', description1) @@ plainto_tsquery(?) OR ".
+                    "to_tsvector('simple', description2) @@ plainto_tsquery(?)".
                     ")";
                 $params[] = $data->q;
                 $params[] = $data->q;

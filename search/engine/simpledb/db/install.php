@@ -30,11 +30,10 @@ function xmldb_search_simpledb_install() {
     switch ($DB->get_dbfamily()) {
         case 'postgres':
             // TODO: There are a few other ways of doing this which avoid the need for individual indicies..
-            // TODO: the to_tsvector is required to be hardcoded to 'english' for the index purposes.. not sure if we cna do anything with this.
-            $DB->execute("CREATE INDEX psql_search_title ON {search_simpledb_index} USING gin(to_tsvector('english', title))");
-            $DB->execute("CREATE INDEX psql_search_content ON {search_simpledb_index} USING gin(to_tsvector('english', content))");
-            $DB->execute("CREATE INDEX psql_search_description1 ON {search_simpledb_index} USING gin(to_tsvector('english', description1))");
-            $DB->execute("CREATE INDEX psql_search_description2 ON {search_simpledb_index} USING gin(to_tsvector('english', description2))");
+            $DB->execute("CREATE INDEX psql_search_title ON {search_simpledb_index} USING gin(to_tsvector('simple', title))");
+            $DB->execute("CREATE INDEX psql_search_content ON {search_simpledb_index} USING gin(to_tsvector('simple', content))");
+            $DB->execute("CREATE INDEX psql_search_description1 ON {search_simpledb_index} USING gin(to_tsvector('simple', description1))");
+            $DB->execute("CREATE INDEX psql_search_description2 ON {search_simpledb_index} USING gin(to_tsvector('simple', description2))");
             break;
         case 'mysql':
             $DB->execute("CREATE FULLTEXT INDEX mysql_custom_search_index
