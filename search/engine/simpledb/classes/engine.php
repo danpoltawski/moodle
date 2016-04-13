@@ -222,7 +222,7 @@ class engine extends \core_search\engine {
             }
 
         } catch (\dml_exception $ex) {
-            debugging('dml error while trying to insert document with id ' . $doc->docid . ': ' . $e->getMessage(),
+            debugging('dml error while trying to insert document with id ' . $doc->docid . ': ' . $ex->getMessage(),
                 DEBUG_DEVELOPER);
         }
 
