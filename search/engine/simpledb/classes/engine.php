@@ -221,7 +221,7 @@ class engine extends \core_search\engine {
                 $DB->insert_record('search_simpledb_index', $doc);
             }
 
-        } catch (dml_exception $ex) {
+        } catch (\dml_exception $ex) {
             debugging('dml error while trying to insert document with id ' . $doc->docid . ': ' . $e->getMessage(),
                 DEBUG_DEVELOPER);
         }
