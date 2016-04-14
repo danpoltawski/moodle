@@ -36,8 +36,14 @@ function xmldb_search_simpledb_install() {
             $DB->execute("CREATE INDEX psql_search_description2 ON {search_simpledb_index} USING gin(to_tsvector('simple', description2))");
             break;
         case 'mysql':
-            $DB->execute("CREATE FULLTEXT INDEX mysql_custom_search_index
+            $DB->execute("CREATE FULLTEXT INDEX mysql_search_index
                           ON {search_simpledb_index} (title, content, description1, description2)");
+            break;
+        case 'mssql':
+            //TODO: workout if fulltext search is installed... select SERVERPROPERTY('IsFullTextInstalled')
+            $DB->execute("CREATE FULLTEXT CATALOG {search_simpledb_catalog}");
+            $DB->execute("CREATE FULLTEXT INDEX ON {search_simpledb_index} (title, content, description1, description2)
+                          KEY INDEX {searsimpinde_id_pk} ON {search_simpledb_catalog}");
             break;
     }
 }

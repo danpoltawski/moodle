@@ -137,6 +137,10 @@ class engine extends \core_search\engine {
                 $ands[] = "MATCH (title, content, description1, description2) AGAINST (?)";
                 $params[] = $data->q;
                 break;
+            case 'mssql':
+                $ands[] = "CONTAINS ((title, content, description1, description2), ?)";
+                $params[] = $data->q;
+                break;
             default:
                 $ands[] = '(' .
                     $DB->sql_like('title', '?', false, false) . ' OR ' .
