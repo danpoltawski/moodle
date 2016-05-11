@@ -77,6 +77,12 @@ module.exports = function(grunt) {
             options: { quiet: !grunt.option('eslint-warnings') },
             // Check AMD files with standard config
             amd: { src: amdSrc },
+            // Some rules disabled for YUI config, because we don't do rollup magic, so its able to be accurate
+            // about undefined items.
+            yui: {
+               src: ['**/yui/src/**/*.js'],
+               options: {globals: ['Y', 'YUI'], rules: {'no-undef': 'off', 'no-unused-vars': 'off', 'no-empty': 'off'} }
+            }
         },
         uglify: {
             amd: {
@@ -252,8 +258,9 @@ module.exports = function(grunt) {
 
     // Register JS tasks.
     grunt.registerTask('shifter', 'Run Shifter against the current directory', tasks.shifter);
+    grunt.registerTask('yui', ['eslint:yui', 'shifter']);
     grunt.registerTask('amd', ['eslint:amd', 'jshint', 'uglify']);
-    grunt.registerTask('js', ['amd', 'shifter']);
+    grunt.registerTask('js', ['amd', 'yui']);
 
     // Register CSS taks.
     grunt.registerTask('css', ['less:bootstrapbase']);
