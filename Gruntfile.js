@@ -118,7 +118,7 @@ module.exports = function(grunt) {
             },
             yui: {
                 files: ['**/yui/src/**/*.js'],
-                tasks: ['shifter']
+                tasks: ['yui']
             },
         },
         shifter: {
