@@ -27,7 +27,10 @@
 module.exports = function(grunt) {
     var path = require('path'),
         tasks = {},
-        cwd = process.env.PWD || process.cwd();
+        cwd = process.env.PWD || process.cwd(),
+        async = require('async'),
+        dom = require('xmldom').DOMParser,
+        xpath = require('xpath');
 
     // Windows users can't run grunt in a subdirectory, so allow them to set
     // the root by passing --root=path/to/dir.
@@ -137,8 +140,7 @@ module.exports = function(grunt) {
      * so be careful to to call done().
      */
     tasks.shifter = function() {
-        var async = require('async'),
-            done = this.async(),
+        var done = this.async(),
             options = grunt.config('shifter.options');
 
         // Run the shifter processes one at a time to avoid confusing output.
@@ -227,6 +229,7 @@ module.exports = function(grunt) {
             grunt.task.run('amd');
         } else {
             // Run them all!.
+            grunt.task.run('ignorefiles');
             grunt.task.run('css');
             grunt.task.run('js');
         }
@@ -249,6 +252,47 @@ module.exports = function(grunt) {
           onChange();
     });
 
+    /**
+     * Find thirdpartylibs.xml and generate an array of paths contained within
+     * them (used to generate ignore files and so on).
+
+     * @return {array} The list of thirdparty paths.
+     */
+    var getThirdPartyPathsFromXML = function() {
+        var thirdpartyfiles = grunt.file.expand('*/**/thirdpartylibs.xml');
+        var libs = ['node_modules/', 'vendor/'];
+
+        thirdpartyfiles.forEach( function(file) {
+          var dirname = path.dirname(file);
+
+          var doc = new dom().parseFromString(grunt.file.read(file));
+          var nodes = xpath.select("/libraries/library/location/text()", doc);
+
+          nodes.forEach(function(node) {
+            var lib = path.join(dirname, node.toString());
+            if (grunt.file.isDir(lib)) {
+                // Ensure trailing slash on dirs.
+                lib = lib.replace(/\/?$/, '/');
+            }
+
+            // Look for duplicate paths before adding to array.
+            if (libs.indexOf(lib) === -1) {
+                libs.push(lib);
+            }
+          });
+        });
+        return libs;
+    };
+
+    /**
+     * Generate ignore files from thirdpartylibs.xml
+     */
+    tasks.ignorefiles = function() {
+      var libs = getThirdPartyPathsFromXML();
+      // ESLint.
+      grunt.file.write('.eslintignore', libs.join('\n'));
+    };
+
     // Register NPM tasks.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -258,6 +302,7 @@ module.exports = function(grunt) {
 
     // Register JS tasks.
     grunt.registerTask('shifter', 'Run Shifter against the current directory', tasks.shifter);
+    grunt.registerTask('ignorefiles', 'Generate ignore files from thirdpartylibs.xml', tasks.ignorefiles);
     grunt.registerTask('yui', ['eslint:yui', 'shifter']);
     grunt.registerTask('amd', ['eslint:amd', 'jshint', 'uglify']);
     grunt.registerTask('js', ['amd', 'yui']);
