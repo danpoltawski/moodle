@@ -35,7 +35,7 @@
     'no-unreachable': 'warn',
     'no-unsafe-finally': 'error',
     'use-isnan': 'error',
-    'valid-jsdoc': 'warn',
+    'valid-jsdoc': ['warn', { 'requireReturn': false }],
     'valid-typeof': 'error',
 
     // === Best Practices ===
