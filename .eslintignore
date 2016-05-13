@@ -52,3 +52,5 @@ repository/s3/S3.php
 theme/bootstrapbase/less/bootstrap/
 theme/bootstrapbase/javascript/html5shiv.js
 theme/bootstrapbase/amd/src/bootstrap.js
+*/**/yui/src/*/meta/
+*/**/build/

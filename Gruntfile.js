@@ -289,7 +289,9 @@ module.exports = function(grunt) {
      */
     tasks.ignorefiles = function() {
       var libs = getThirdPartyPathsFromXML();
-      // ESLint.
+      // Ignore YUI meta files with eslint.
+      libs.push('*/**/yui/src/*/meta/');
+      libs.push('*/**/build/');
       grunt.file.write('.eslintignore', libs.join('\n'));
     };
 
