@@ -27,7 +27,7 @@ M.mod_scormform.init = function(Y) {
     }
 
     // Hide the form and toc if it exists - we don't want to allow multiple submissions when a window is open.
-    var scormload = function () {
+    var scormload = function() {
         if (scormform) {
             scormform.hide();
         }
@@ -39,20 +39,20 @@ M.mod_scormform.init = function(Y) {
         // Hide the intro and display a message to the user if the window is closed.
         var scormintro = Y.one('#intro');
         scormintro.setHTML('<a href="' + course_url + '">' + M.util.get_string('popuplaunched', 'scorm') + '</a>');
-    }
+    };
 
     // When pop-up is closed return to course homepage.
-    var scormunload = function () {
+    var scormunload = function() {
         // Onunload is called multiple times in the SCORM window - we only want to handle when it is actually closed.
         setTimeout(function() {
             if (winobj.closed) {
                 // Redirect the parent window to the course homepage.
                 parent.window.location = course_url;
             }
-        }, 800)
-    }
+        }, 800);
+    };
 
-    var scormredirect = function (winobj) {
+    var scormredirect = function(winobj) {
         Y.on('load', scormload, winobj);
         Y.on('unload', scormunload, winobj);
         // Check to make sure pop-up has been launched - if not display a warning,
@@ -61,8 +61,8 @@ M.mod_scormform.init = function(Y) {
             if (!winobj) {
                 var scormintro = Y.one('#intro');
                 scormintro.setHTML(M.util.get_string('popupsblocked', 'scorm'));
-            }}, 800);
-    }
+            } }, 800);
+    };
 
     // Set mode and newattempt correctly.
     var setlaunchoptions = function() {
@@ -76,11 +76,11 @@ M.mod_scormform.init = function(Y) {
 
         var newattempt = Y.one('#scormviewform #a');
         launch_url += (newattempt && newattempt.get('checked') ? '&newattempt=on' : '');
-    }
+    };
 
     if (launch == true) {
         setlaunchoptions();
-        winobj = window.open(launch_url,'Popup', poptions);
+        winobj = window.open(launch_url, 'Popup', poptions);
         this.target = 'Popup';
         scormredirect(winobj);
         winobj.opener = null;
@@ -96,4 +96,4 @@ M.mod_scormform.init = function(Y) {
             e.preventDefault();
         }, scormform);
     }
-}
+};

@@ -168,7 +168,7 @@ Course.prototype = {
             node = this.get('node'),
             previous;
         if (outcome === false) {
-            previous = node.ancestor('ul').one('li[data-id='+args.previous+']');
+            previous = node.ancestor('ul').one('li[data-id=' + args.previous + ']');
             Y.log('AJAX failed to move this course after the requested course', 'warn', 'moodle-course-management');
             if (previous) {
                 // After the last previous.
@@ -179,7 +179,7 @@ Course.prototype = {
             }
             return false;
         }
-        Y.log('AJAX successfully moved course ('+this.getName()+')', 'info', 'moodle-course-management');
+        Y.log('AJAX successfully moved course (' + this.getName() + ')', 'info', 'moodle-course-management');
         this.highlight();
     }
 };

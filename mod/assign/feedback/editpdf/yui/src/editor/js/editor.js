@@ -455,7 +455,7 @@ EDITOR.prototype = {
                             }
 
                             // New ajax request delayed of a second.
-                            Y.later(1000, this, function () {
+                            Y.later(1000, this, function() {
                                 Y.io(AJAXBASEPROGRESS, checkconversionstatus);
                             });
                         }
@@ -465,7 +465,7 @@ EDITOR.prototype = {
                         // We only continue on error if the all pages were not generated,
                         // and if the ajax call did not produce 5 errors in the row.
                         if (this.pagecount === 0 && ajax_error_total < 5) {
-                            Y.later(1000, this, function () {
+                            Y.later(1000, this, function() {
                                 Y.io(AJAXBASEPROGRESS, checkconversionstatus);
                             });
                         }
@@ -475,7 +475,7 @@ EDITOR.prototype = {
             };
             // We start the AJAX "generated page total number" call a second later to give a chance to
             // the AJAX "combined pdf generation" call to clean the previous submission images.
-            Y.later(1000, this, function () {
+            Y.later(1000, this, function() {
                 ajax_error_total = 0;
                 Y.io(AJAXBASEPROGRESS, checkconversionstatus);
             });
@@ -598,7 +598,7 @@ EDITOR.prototype = {
             buttonNode: commentcolourbutton,
             colours: COMMENTCOLOUR,
             iconprefix: 'background_colour_',
-            callback: function (e) {
+            callback: function(e) {
                 var colour = e.target.getAttribute('data-colour');
                 if (!colour) {
                     colour = e.target.ancestor().getAttribute('data-colour');
@@ -614,7 +614,7 @@ EDITOR.prototype = {
             buttonNode: annotationcolourbutton,
             iconprefix: 'colour_',
             colours: ANNOTATIONCOLOUR,
-            callback: function (e) {
+            callback: function(e) {
                 var colour = e.target.getAttribute('data-colour');
                 if (!colour) {
                     colour = e.target.ancestor().getAttribute('data-colour');
@@ -934,7 +934,7 @@ EDITOR.prototype = {
         }
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         if (this.dialogue) {
-            drawingregion.setStyle('maxHeight', drawregionheight +'px');
+            drawingregion.setStyle('maxHeight', drawregionheight + 'px');
         }
         this.redraw();
         return true;
@@ -1119,7 +1119,7 @@ EDITOR.prototype = {
             for (i = 0; i < this.pages.length; i++) {
                 option = Y.Node.create('<option/>');
                 option.setAttribute('value', i);
-                strinfo = {page: i+1, total: this.pages.length};
+                strinfo = {page: i + 1, total: this.pages.length};
                 option.setHTML(M.util.get_string('pagexofy', 'assignfeedback_editpdf', strinfo));
                 pageselect.append(option);
             }
@@ -1246,6 +1246,6 @@ M.assignfeedback_editpdf.editor = M.assignfeedback_editpdf.editor || {};
  * @param {Object} params
  */
 M.assignfeedback_editpdf.editor.init = M.assignfeedback_editpdf.editor.init || function(params) {
-    M.assignfeedback_editpdf.instance =  new EDITOR(params);
+    M.assignfeedback_editpdf.instance = new EDITOR(params);
     return M.assignfeedback_editpdf.instance;
 };

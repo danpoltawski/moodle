@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-function scorm_openpopup(url,name,options,width,height) {
+function scorm_openpopup(url, name, options, width, height) {
     if (width <= 100) {
         width = Math.round(screen.availWidth * width / 100);
     }
@@ -22,14 +22,14 @@ function scorm_openpopup(url,name,options,width,height) {
     }
     options += ",width=" + width + ",height=" + height;
 
-    windowobj = window.open(url,name,options);
+    windowobj = window.open(url, name, options);
     windowobj.opener = null;
     if (!windowobj) {
         return;
     }
     if ((width == 100) && (height == 100)) {
         // Fullscreen
-        windowobj.moveTo(0,0);
+        windowobj.moveTo(0, 0);
     }
     windowobj.focus();
     return windowobj;

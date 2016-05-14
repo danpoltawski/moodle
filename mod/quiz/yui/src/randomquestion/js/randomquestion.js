@@ -63,7 +63,7 @@ Y.extend(POPUP, Y.Base, {
         Y.one('body').delegate('click', this.display_dialogue, CSS.RANDOMQUESTIONLINKS, this);
     },
 
-    display_dialogue : function (e) {
+    display_dialogue : function(e) {
         e.preventDefault();
 
         Y.one(CSS.RANDOMQUESTIONFORM + ' ' + CSS.PAGEHIDDENINPUT).set('value',

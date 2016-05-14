@@ -1,7 +1,7 @@
 M.mod_assign = {};
 
 M.mod_assign.init_tree = function(Y, expand_all, htmlid) {
-    var treeElement = Y.one('#'+htmlid);
+    var treeElement = Y.one('#' + htmlid);
     if (treeElement) {
         Y.use('yui2-treeview', function(Y) {
             var tree = new Y.YUI2.widget.TreeView(htmlid);
@@ -218,4 +218,4 @@ M.mod_assign.init_plugin_summary = function(Y, subtype, type, submissionid) {
             }
         });
     }
-}
+};

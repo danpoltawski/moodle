@@ -116,7 +116,7 @@ Y.extend(EventFilter, Y.Base, {
                      * @return {number} order for which the column should be sorted.
                      * @method sortFn
                      */
-                    sortFn: function (eventDataListA, eventDataListB, desc) {
+                    sortFn: function(eventDataListA, eventDataListB, desc) {
                         var rawEventDataA = eventDataListA.getAttrs().raweventname,
                             rawEventDataB = eventDataListB.getAttrs().raweventname,
                             order = (rawEventDataA > rawEventDataB ? 1 : -1);

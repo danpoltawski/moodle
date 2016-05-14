@@ -28,7 +28,7 @@ Console.ATTRS = {
     element : {
         setter : function(node) {
             if (typeof node === 'string') {
-                node = Y.one('#'+node);
+                node = Y.one('#' + node);
             }
             return node;
         }
@@ -265,7 +265,7 @@ Console.prototype = {
             menuresortcoursesby.setAttribute('disabled', true);
         }
 
-        listing.all('.listitem[data-id]').each(function(node){
+        listing.all('.listitem[data-id]').each(function(node) {
             this.set('categories', new Category({
                 node : node,
                 console : this
@@ -277,9 +277,9 @@ Console.prototype = {
             this.get('categorylisting').delegate('click', this.handleCategoryDelegation, 'input[name="bcat[]"]', this);
             this.get('categorylisting').delegate('click', this.handleBulkSortByaction, '#menuselectsortby', this);
             this.categoriesinit = true;
-            Y.log(count+' categories being managed', 'info', 'moodle-course-management');
+            Y.log(count + ' categories being managed', 'info', 'moodle-course-management');
         } else {
-            Y.log(count+' new categories being managed', 'info', 'moodle-course-management');
+            Y.log(count + ' new categories being managed', 'info', 'moodle-course-management');
         }
     },
 
@@ -303,7 +303,7 @@ Console.prototype = {
             menumovecoursesto.setAttribute('disabled', true);
         }
 
-        listing.all('.listitem[data-id]').each(function(node){
+        listing.all('.listitem[data-id]').each(function(node) {
             this.registerCourse(new Course({
                 node : node,
                 console : this,
@@ -313,7 +313,7 @@ Console.prototype = {
         }, this);
         listing.delegate('click', this.handleCourseDelegation, 'a[data-action]', this);
         listing.delegate('click', this.handleCourseDelegation, 'input[name="bc[]"]', this);
-        Y.log(count+' courses being managed', 'info', 'moodle-course-management');
+        Y.log(count + ' courses being managed', 'info', 'moodle-course-management');
     },
 
     /**
@@ -342,7 +342,7 @@ Console.prototype = {
         if (course) {
             course.handle(action, e);
         } else {
-            Y.log('Course with ID '+courseid+' could not be found for delegation', 'error', 'moodle-course-management');
+            Y.log('Course with ID ' + courseid + ' could not be found for delegation', 'error', 'moodle-course-management');
         }
     },
 
@@ -556,7 +556,7 @@ Console.prototype = {
         args.sesskey = M.cfg.sesskey;
         if (callback === null) {
             callback = function() {
-                Y.log("'Action '"+action+"' completed", 'debug', 'moodle-course-management');
+                Y.log("'Action '" + action + "' completed", 'debug', 'moodle-course-management');
             };
         }
         io.send(this.get('ajaxurl'), {

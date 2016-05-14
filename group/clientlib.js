@@ -42,10 +42,10 @@ function UpdatableGroupsCombo(wwwRoot, courseId) {
                 }
 
                 if (groupsComboEl && o.responseText) {
-                    var groups = eval("("+o.responseText+")");
+                    var groups = eval("(" + o.responseText + ")");
 
                     // Populate the groups list box.
-                    for (var i=0; i<groups.length; i++) {
+                    for (var i = 0; i < groups.length; i++) {
                         var optionEl = document.createElement("option");
                         optionEl.setAttribute("value", groups[i].id);
                         optionEl.title = groups[i].name;
@@ -80,7 +80,7 @@ function UpdatableMembersCombo(wwwRoot, courseId) {
             if (o.responseText !== undefined) {
                 var selectEl = document.getElementById("members");
                 if (selectEl && o.responseText) {
-                    var roles = eval("("+o.responseText+")");
+                    var roles = eval("(" + o.responseText + ")");
 
                     // Clear the members list box.
                     if (selectEl) {
@@ -89,11 +89,11 @@ function UpdatableMembersCombo(wwwRoot, courseId) {
                         }
                     }
                     // Populate the members list box.
-                    for (var i=0; i<roles.length; i++) {
+                    for (var i = 0; i < roles.length; i++) {
                         var optgroupEl = document.createElement("optgroup");
-                        optgroupEl.setAttribute("label",roles[i].name);
+                        optgroupEl.setAttribute("label", roles[i].name);
 
-                        for(var j=0; j<roles[i].users.length; j++) {
+                        for (var j = 0; j < roles[i].users.length; j++) {
                             var optionEl = document.createElement("option");
                             optionEl.setAttribute("value", roles[i].users[j].id);
                             optionEl.title = roles[i].users[j].name;
@@ -126,25 +126,25 @@ function UpdatableMembersCombo(wwwRoot, courseId) {
  * The Add/Remove Users button also needs to be disabled/enabled
  * depending on whether or not a group is selected
  */
-UpdatableMembersCombo.prototype.refreshMembers = function () {
+UpdatableMembersCombo.prototype.refreshMembers = function() {
 
     // Get group selector and check selection type
     var selectEl = document.getElementById("groups");
-    var selectionCount=0,groupId=0;
-    if( selectEl ) {
+    var selectionCount = 0, groupId = 0;
+    if ( selectEl ) {
         for (var i = 0; i < selectEl.options.length; i++) {
-            if(selectEl.options[i].selected) {
+            if (selectEl.options[i].selected) {
                 selectionCount++;
-                if(!groupId) {
-                    groupId=selectEl.options[i].value;
+                if (!groupId) {
+                    groupId = selectEl.options[i].value;
                 }
             }
         }
     }
-    var singleSelection=selectionCount == 1;
+    var singleSelection = selectionCount == 1;
 
     // Add the loader gif image (we only load for single selections)
-    if(singleSelection) {
+    if (singleSelection) {
         createLoaderImg("membersloader", "memberslabel", this.wwwRoot);
     }
 
@@ -168,10 +168,10 @@ UpdatableMembersCombo.prototype.refreshMembers = function () {
     document.getElementById("showeditgroupsettingsform").disabled = !singleSelection;
     document.getElementById("deletegroup").disabled = selectionCount == 0;
 
-    if(singleSelection) {
-        var sUrl = this.wwwRoot+"/group/index.php?id="+this.courseId+"&group="+groupId+"&act_ajax_getmembersingroup";
+    if (singleSelection) {
+        var sUrl = this.wwwRoot + "/group/index.php?id=" + this.courseId + "&group=" + groupId + "&act_ajax_getmembersingroup";
         var self = this;
-        YUI().use('io', function (Y) {
+        YUI().use('io', function(Y) {
             Y.io(sUrl, {
                 method: 'GET',
                 context: this,
@@ -183,7 +183,7 @@ UpdatableMembersCombo.prototype.refreshMembers = function () {
 
 
 
-var createLoaderImg = function (elClass, parentId, wwwRoot) {
+var createLoaderImg = function(elClass, parentId, wwwRoot) {
     var parentEl = document.getElementById(parentId);
     if (!parentEl) {
         return false;
@@ -204,7 +204,7 @@ var createLoaderImg = function (elClass, parentId, wwwRoot) {
 };
 
 
-var removeLoaderImgs = function (elClass, parentId) {
+var removeLoaderImgs = function(elClass, parentId) {
     var parentEl = document.getElementById(parentId);
     if (parentEl) {
         var loader = document.getElementById("loaderImg");

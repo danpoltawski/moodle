@@ -35,11 +35,11 @@ function NewHttpReq() {
     return httpReq;
 }
 
-function DoRequest(httpReq,url,param) {
+function DoRequest(httpReq, url, param) {
 
     // httpReq.open (Method("get","post"), URL(string), Asyncronous(true,false))
-    //popupwin(url+"\n"+param);
-    httpReq.open("POST", url,false);
+    // popupwin(url+"\n"+param);
+    httpReq.open("POST", url, false);
     httpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     try {
         httpReq.send(param);
@@ -47,7 +47,7 @@ function DoRequest(httpReq,url,param) {
         return false;
     }
     if (httpReq.status == 200) {
-        //popupwin(url+"\n"+param+"\n"+httpReq.responseText);
+        // popupwin(url+"\n"+param+"\n"+httpReq.responseText);
         return httpReq.responseText;
     } else {
         return httpReq.status;

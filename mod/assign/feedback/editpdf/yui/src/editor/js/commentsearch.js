@@ -80,7 +80,7 @@ Y.extend(COMMENTSEARCH, M.core.dialogue, {
 
         filtertext = filternode.get('value');
 
-        commentslist.all('li').each(function (node) {
+        commentslist.all('li').each(function(node) {
             if (node.get('text').indexOf(filtertext) !== -1) {
                 node.show();
             } else {

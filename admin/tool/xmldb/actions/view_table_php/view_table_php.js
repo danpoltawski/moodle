@@ -20,10 +20,10 @@
  */
 
 // Register the needed events
-onload=function() {
+onload = function() {
     // Adjust the form on load
     disablePopupHeads();
-}
+};
 
 /**
  * This function disables some elements from the command and from the fields/keys/indexes drop downs

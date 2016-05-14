@@ -75,7 +75,7 @@ SEARCH.prototype = {
         this.lastsearch = this.form.one('input[name=search]');
 
         var div = Y.Node.create('<div id="capabilitysearchui"></div>'),
-            label = Y.Node.create('<label for="capabilitysearch">'+this.get('strsearch')+'</label>');
+            label = Y.Node.create('<label for="capabilitysearch">' + this.get('strsearch') + '</label>');
         this.input = Y.Node.create('<input type="text" id="capabilitysearch" />');
 
         div.append(label).append(this.input);

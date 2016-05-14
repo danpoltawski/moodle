@@ -133,7 +133,7 @@ M.mod_chat_header.init_users = function(Y, users) {
          */
         update : function() {
             for (var i in this.users) {
-                var el  = Y.one('#uidle' + this.users[i]);
+                var el = Y.one('#uidle' + this.users[i]);
                 if (el) {
                     var parts = el.get('innerHTML').split(':');
                     var time = this.timeout + (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);

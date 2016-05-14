@@ -80,7 +80,7 @@ M.core_availability.form = {
      */
     init : function(pluginParams) {
         // Init all plugins.
-        for(var plugin in pluginParams) {
+        for (var plugin in pluginParams) {
             var params = pluginParams[plugin];
             var pluginClass = M[params[0]].form;
             pluginClass.init.apply(pluginClass, params);
@@ -106,7 +106,7 @@ M.core_availability.form = {
         if (value !== '') {
             try {
                 data = Y.JSON.parse(value);
-            } catch(x) {
+            } catch (x) {
                 // If the JSON data is not valid, treat it as empty.
                 this.field.set('value', '');
             }
@@ -897,7 +897,7 @@ M.core_availability.Item = function(json, root) {
     // hidden depending on the selected list operator.
     if (root) {
         var shown = true;
-        if(json.showc !== undefined) {
+        if (json.showc !== undefined) {
             shown = json.showc;
         }
         this.eyeIcon = new M.core_availability.EyeIcon(true, shown);
@@ -1062,7 +1062,7 @@ M.core_availability.EyeIcon = function(individual, shown) {
             this.span.set('title', shownStr + ' \u2022 ' +
                     M.util.get_string('hide_verb', 'availability'));
         };
-    if(shown) {
+    if (shown) {
         setShown.call(this);
     } else {
         setHidden.call(this);

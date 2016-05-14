@@ -174,7 +174,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
     },
 
     global_drop_over: function(e) {
-        //Overriding parent method so we can stop the slots being dragged before the first page node.
+        // Overriding parent method so we can stop the slots being dragged before the first page node.
 
         // Check that drop object belong to correct group.
         if (!e.drop || !e.drop.inGroup(this.groups)) {

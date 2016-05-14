@@ -50,7 +50,7 @@ Y.extend(POPUP, Y.Base, {
         Y.one(CSS.REPAGINATECOMMAND).on('click', this.display_dialog, this);
     },
 
-    display_dialog : function (e) {
+    display_dialog : function(e) {
         e.preventDefault();
 
         // Configure the popup.

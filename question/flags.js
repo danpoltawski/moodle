@@ -68,7 +68,7 @@ M.core_question_flags = {
                     input.get('value');
 
             e.halt();
-            Y.io(M.core_question_flags.actionurl , {method: 'POST', 'data': postdata});
+            Y.io(M.core_question_flags.actionurl, {method: 'POST', 'data': postdata});
             M.core_question_flags.fire_listeners(postdata);
         }, document.body, 'div.questionflag');
     },

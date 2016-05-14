@@ -75,7 +75,7 @@ M.mod_imscp.init = function(Y) {
                     var a = document.createElement('a');
                     a.appendChild(document.createTextNode(childnode.label));
                     a.setAttribute('id', 'ref_' + childnode.index);
-                    Y.YUI2.util.Event.addListener(a, "click", function () {
+                    Y.YUI2.util.Event.addListener(a, "click", function() {
                         imscp_activate_item_by_index(this.id.substr(4));
                     });
                     ul.appendChild(li);
@@ -159,7 +159,7 @@ M.mod_imscp.init = function(Y) {
                 var content = imscp_layout_widget.getUnitByPosition('center').get('wrap');
                 // Basically trap IE6 and 7.
                 if (Y.YUI2.env.ua.ie > 5 && Y.YUI2.env.ua.ie < 8) {
-                    if( obj.style.setAttribute ) {
+                    if ( obj.style.setAttribute ) {
                         obj.style.setAttribute("cssText", 'width: ' + (content.offsetWidth - 6) + 'px; height: ' + (content.offsetHeight - 10) + 'px;');
                     }
                     else {

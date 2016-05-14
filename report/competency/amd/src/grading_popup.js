@@ -59,7 +59,7 @@ define(['jquery', 'core/notification', 'core/str', 'core/ajax', 'core/log', 'cor
         }]);
 
         // Log the user competency viewed in course event.
-        requests[0].then(function(){
+        requests[0].then(function() {
             ajax.call([{
                 methodname : 'core_competency_user_competency_viewed_in_course',
                 args: { userid: userId, competencyid: competencyId, courseid: courseId },

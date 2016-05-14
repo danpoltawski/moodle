@@ -282,7 +282,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             var id = getToolProxyId();
             toolProxy.delete(id).done(function() {
                 promise.resolve();
-            }).fail(function (failure) {
+            }).fail(function(failure) {
                 promise.reject(failure);
             });
         } else {
@@ -293,12 +293,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             // Return to the original page.
             finishExternalRegistration();
             stopLoadingCancel();
-        }).fail(function (failure) {
+        }).fail(function(failure) {
             notification.exception(failure);
             finishExternalRegistration();
             stopLoadingCancel();
             str.get_strings([{key: 'error', component: 'moodle'},
-                             {key: 'failedtodeletetoolproxy', component: 'mod_lti'}]).done(function (s) {
+                             {key: 'failedtodeletetoolproxy', component: 'mod_lti'}]).done(function(s) {
                 var feedback = {
                     status: s[0],
                     message: s[1],
@@ -522,7 +522,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
 
             if (data.status == "success") {
                 str.get_strings([{key: 'success', component: 'moodle'},
-                                 {key: 'successfullycreatedtooltype', component: 'mod_lti'}]).done(function (s) {
+                                 {key: 'successfullycreatedtooltype', component: 'mod_lti'}]).done(function(s) {
                     feedback.status = s[0];
                     feedback.message = s[1];
                 }).fail(notification.exception);

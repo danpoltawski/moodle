@@ -42,7 +42,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
             var filtervalue = this.getFilterCookieValue();
 
             // Find the form controls.
-            this.table = Y.one('#'+this.tableid);
+            this.table = Y.one('#' + this.tableid);
 
             // Create a div to hold the search UI.
             this.div = Y.Node.create('<div class="capabilitysearchui"></div>').setStyles({
@@ -51,11 +51,11 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
                 marginRight : 'auto'
             });
             // Create the capability search input.
-            this.input = Y.Node.create('<input type="text" id="'+this.table.get('id')+'capabilitysearch" value="'+Y.Escape.html(filtervalue)+'" />');
+            this.input = Y.Node.create('<input type="text" id="' + this.table.get('id') + 'capabilitysearch" value="' + Y.Escape.html(filtervalue) + '" />');
             // Create a label for the search input.
-            this.label = Y.Node.create('<label for="'+this.input.get('id')+'">'+M.util.get_string('filter', 'moodle')+' </label>');
+            this.label = Y.Node.create('<label for="' + this.input.get('id') + '">' + M.util.get_string('filter', 'moodle') + ' </label>');
             // Create a clear button to clear the input.
-            this.button = Y.Node.create('<input type="button" value="'+M.util.get_string('clear', 'moodle')+'" />').set('disabled', filtervalue=='');
+            this.button = Y.Node.create('<input type="button" value="' + M.util.get_string('clear', 'moodle') + '" />').set('disabled', filtervalue == '');
 
             // Tie it all together
             this.div.append(this.label).append(this.input).append(this.button);
@@ -82,7 +82,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
                 fltcontext : this.context,
                 flttime : new Date().getTime(),
                 fltvalue : value
-            }
+            };
             Y.Cookie.setSubs("captblflt", cookie);
         },
         /**
@@ -93,7 +93,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
          */
         getFilterCookieValue : function() {
             var cookie = Y.Cookie.getSubs('captblflt');
-            if (cookie!=null && cookie.fltcontext && cookie.fltcontext == this.context && parseInt(cookie.flttime) > new Date().getTime()-(60*60*1000)) {
+            if (cookie != null && cookie.fltcontext && cookie.fltcontext == this.context && parseInt(cookie.flttime) > new Date().getTime() - (60 * 60 * 1000)) {
                 return cookie.fltvalue;
             }
             return '';
@@ -114,7 +114,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
          */
         change : function() {
             var self = this;
-            var handle = setTimeout(function(){self.filter();}, this.searchdelay);
+            var handle = setTimeout(function() { self.filter(); }, this.searchdelay);
             if (this.delayhandle != -1) {
                 clearTimeout(this.delayhandle);
             }
@@ -141,7 +141,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
 
             this.button.set('disabled', (filtertext == ''));
 
-            this.table.all('tr').each(function(row){
+            this.table.all('tr').each(function(row) {
                 if (row.hasClass('rolecapheading')) {
                     this.setVisible(row, false);
                     lastheading = row;
@@ -160,7 +160,7 @@ M.core_role.init_cap_table_filter = function(Y, tableid, contextid) {
                 }
             }, this);
         }
-    }
+    };
 
     new CapTableFilter(tableid);
 };

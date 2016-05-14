@@ -67,7 +67,7 @@ DragDrop.prototype = {
             return false;
         }
 
-        courseul.all('> li').each(function(li){
+        courseul.all('> li').each(function(li) {
             this.initCourseListing(li, contstraint);
         }, this);
         courseul.setData('dd', new Y.DD.Drop({
@@ -75,7 +75,7 @@ DragDrop.prototype = {
         }));
         if (canmoveoutof && categoryul) {
             // Category UL may not be there if viewmode is just courses.
-            categoryul.all('li > div').each(function(div){
+            categoryul.all('li > div').each(function(div) {
                 this.initCategoryListitem(div);
             }, this);
         }
@@ -172,7 +172,7 @@ DragDrop.prototype = {
      * @param {EventFacade} e
      */
     dropOver : function(e) {
-        //Get a reference to our drag and drop nodes
+        // Get a reference to our drag and drop nodes
         var drag = e.drag.get('node'),
             drop = e.drop.get('node'),
             tag = drop.get('tagName').toLowerCase();
@@ -257,7 +257,7 @@ DragDrop.prototype = {
             course = managementconsole.getCourseById(courseid);
             previoussibling = drag.get('previousSibling');
             aftercourseid = (previoussibling) ? previoussibling.getData('id') || 0 : 0;
-            previousid = (this.previoussibling) ?  this.previoussibling.getData('id') : 0;
+            previousid = (this.previoussibling) ? this.previoussibling.getData('id') : 0;
             if (aftercourseid !== previousid) {
                 course.moveAfter(aftercourseid, previousid);
             }

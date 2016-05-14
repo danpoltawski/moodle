@@ -167,7 +167,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
         // Prevent the default button action
         ev.preventDefault();
 
-        var direction = (action === 'moveleft') ? -1: 1;
+        var direction = (action === 'moveleft') ? -1 : 1;
 
         // And we need to determine the current and new indent level
         var indentdiv = activity.one(SELECTOR.MODINDENTDIV),
@@ -244,7 +244,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
         ev.preventDefault();
 
         // Get the element we're working on
-        var element   = activity,
+        var element = activity,
             // Create confirm string (different if element has or does not have name)
             confirmstring = '',
             plugindata = {
@@ -377,7 +377,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
                     SELECTOR.CONTENTWITHOUTLINK
                 ].join(', ')),
             availabilityinfo = activity.one(CSS.AVAILABILITYINFODIV),
-            nextaction = (action === 'hide') ? 'show': 'hide',
+            nextaction = (action === 'hide') ? 'show' : 'hide',
             buttontext = button.one('span'),
             newstring = M.util.get_string(nextaction, 'moodle'),
             buttonimg = button.one('img');
@@ -395,7 +395,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
             buttonimg.setAttribute('alt', newstring);
         }
 
-        button.replaceClass('editing_'+action, 'editing_'+nextaction);
+        button.replaceClass('editing_' + action, 'editing_' + nextaction);
         button.setData('action', nextaction);
         if (buttontext) {
             buttontext.set('text', newstring);
@@ -426,7 +426,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
         if (availabilityinfo) {
             availabilityinfo.toggleClass(CSS.HIDE);
         }
-        return (action === 'hide') ? 0: 1;
+        return (action === 'hide') ? 0 : 1;
     },
 
     /**

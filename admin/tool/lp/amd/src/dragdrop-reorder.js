@@ -64,8 +64,8 @@ define(['core/str', 'core/yui'], function(str, Y) {
                 { key: 'emptydragdropregion', component: 'moodle' },
                 { key: 'movecontent', component: 'moodle' },
                 { key: 'tocontent', component: 'moodle' },
-            ]).done( function () {
-                Y.use('moodle-tool_lp-dragdrop-reorder', function () {
+            ]).done( function() {
+                Y.use('moodle-tool_lp-dragdrop-reorder', function() {
 
                     var context = {
                         callback: callback

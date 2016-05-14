@@ -50,7 +50,7 @@ M.core_scroll_manager = M.core_scroll_manager || {};
  *      passed to Y.one.
  */
 M.core_scroll_manager.save_scroll_pos = function(Y, element) {
-    if (typeof(element) == 'string') {
+    if (typeof (element) == 'string') {
         // Have to use getElementById here because element id can contain :.
         element = Y.one(document.getElementById(element));
     }
@@ -63,7 +63,7 @@ M.core_scroll_manager.save_scroll_pos = function(Y, element) {
         scrollpos = form.appendChild(form.create('<input type="hidden" name="scrollpos" />'));
     }
     scrollpos.set('value', form.get('docScrollY'));
-}
+};
 
 /**
  * Event handler that can be used on a link. Assumes that the link already
@@ -76,7 +76,7 @@ M.core_scroll_manager.save_scroll_action = function(e) {
         return;
     }
     link.set('href', link.get('href') + '&scrollpos=' + link.get('docScrollY'));
-}
+};
 
 /**
  * If there is a parameter like scrollpos=123 in the URL, scroll to that saved position.
@@ -92,10 +92,10 @@ M.core_scroll_manager.scroll_to_saved_pos = function(Y) {
         // And the following horror is necessary to make it work in IE 8.
         // Note that the class ie8 on body is only there in Moodle 2.0 and OU Moodle.
         if (Y.one('body').hasClass('ie')) {
-            M.core_scroll_manager.force_ie_to_scroll(Y, matches[1])
+            M.core_scroll_manager.force_ie_to_scroll(Y, matches[1]);
         }
     }
-}
+};
 
 /**
  * Beat IE into submission.
@@ -111,7 +111,7 @@ M.core_scroll_manager.force_ie_to_scroll = function(Y, targetpos) {
         }
     }
     Y.on('load', do_scroll, window);
-}
+};
 
 M.core_question_engine = M.core_question_engine || {};
 
@@ -132,7 +132,7 @@ M.core_question_engine.init_submit_button = function(Y, button, slot) {
         M.core_scroll_manager.save_scroll_pos(Y, button);
         buttonel.form.action = buttonel.form.action + '#q' + slot;
     }, buttonel);
-}
+};
 
 /**
  * Initialise a form that contains questions printed using print_question.
@@ -152,7 +152,7 @@ M.core_question_engine.init_form = function(Y, form) {
 
     Y.on('submit', M.core_question_engine.prevent_repeat_submission, form, form, Y);
 
-    Y.on('key', function (e) {
+    Y.on('key', function(e) {
         if (!e.target.test('a') && !e.target.test('input[type=submit]') &&
                 !e.target.test('input[type=img]') && !e.target.test('textarea') && !e.target.test('[contenteditable=true]')) {
             e.preventDefault();
@@ -162,7 +162,7 @@ M.core_question_engine.init_form = function(Y, form) {
     Y.one(form).all('.questionflagsavebutton').remove();
 
     M.core_scroll_manager.scroll_to_saved_pos(Y);
-}
+};
 
 /**
  * Event handler to stop a question form being submitted more than once.
@@ -179,4 +179,4 @@ M.core_question_engine.prevent_repeat_submission = function(e, Y) {
         Y.all('input[type=submit]').set('disabled', true);
     }, 0);
     M.core_question_engine.questionformalreadysubmitted = true;
-}
+};

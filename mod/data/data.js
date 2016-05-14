@@ -19,9 +19,9 @@ function insert_field_tags(selectlist) {
  */
 function showHideAdvSearch(checked) {
     var divs = document.getElementsByTagName('div');
-    for(i=0;i<divs.length;i++) {
-        if(divs[i].id.match('data_adv_form')) {
-            if(checked) {
+    for (i = 0; i < divs.length; i++) {
+        if (divs[i].id.match('data_adv_form')) {
+            if (checked) {
                 divs[i].style.display = 'inline';
             }
             else {
@@ -49,10 +49,10 @@ M.data_urlpicker.init = function(Y, options) {
     Y.on('click', function(e, client_id) {
         e.preventDefault();
         M.core_filepicker.instances[client_id].show();
-    }, '#filepicker-button-'+options.client_id, null, options.client_id);
+    }, '#filepicker-button-' + options.client_id, null, options.client_id);
 
 };
 
-M.data_urlpicker.callback = function (params) {
-    document.getElementById('field_url_'+params.client_id).value = params.url;
+M.data_urlpicker.callback = function(params) {
+    document.getElementById('field_url_' + params.client_id).value = params.url;
 };

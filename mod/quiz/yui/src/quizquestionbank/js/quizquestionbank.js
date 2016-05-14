@@ -65,7 +65,7 @@ Y.extend(POPUP, Y.Base, {
 
         this.loadingDiv = this.dialogue.bodyNode.getHTML();
 
-        Y.later(100, this, function() {this.load_content(window.location.search);});
+        Y.later(100, this, function() { this.load_content(window.location.search); });
     },
 
     initializer : function() {
@@ -76,7 +76,7 @@ Y.extend(POPUP, Y.Base, {
         Y.one('body').delegate('click', this.display_dialogue, CSS.ADDQUESTIONLINKS, this);
     },
 
-    display_dialogue : function (e) {
+    display_dialogue : function(e) {
         e.preventDefault();
         this.dialogue.set('headerContent', e.currentTarget.getData(PARAMS.HEADER));
 
@@ -127,7 +127,7 @@ Y.extend(POPUP, Y.Base, {
         Y.log('Load completed.', 'debug', 'moodle-mod_quiz-quizquestionbank');
 
         this.dialogue.bodyNode.setHTML(result.contents);
-        Y.use('moodle-question-chooser', function() {M.question.init_chooser({});});
+        Y.use('moodle-question-chooser', function() { M.question.init_chooser({}); });
         this.dialogue.bodyNode.one('form').delegate('change', this.options_changed, '.searchoptions', this);
 
         if (this.dialogue.visible) {

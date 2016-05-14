@@ -379,7 +379,7 @@ Y.Moodle.mod_quiz.util.slot = {
             slotnumber = 0,
             previousslot = null;
         // Loop through slots incrementing the number each time.
-        slots.each (function(slot) {
+        slots.each(function(slot) {
             slotnumber++;
 
             if (slotnumber == 1 || previousslot.getData('canfinish') === '0') {

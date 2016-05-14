@@ -90,7 +90,7 @@ define(['jquery'], function($) {
 
                 if (icon) {
                     link.append(icon);
-                    link.append('<span class="item-content-wrap">'+node.name+'</span>');
+                    link.append('<span class="item-content-wrap">' + node.name + '</span>');
                 } else {
                     link.text(node.name);
                 }
@@ -105,7 +105,7 @@ define(['jquery'], function($) {
 
                 if (icon) {
                     span.append(icon);
-                    span.append('<span class="item-content-wrap">'+node.name+'</span>');
+                    span.append('<span class="item-content-wrap">' + node.name + '</span>');
                 } else {
                     span.text(node.name);
                 }

@@ -86,7 +86,7 @@ define(['jquery',
                 { key: 'addingcompetencywillresetparentrule', component: 'tool_lp', param: parent.shortname },
                 { key: 'yes', component: 'core' },
                 { key: 'no', component: 'core' }
-            ]).done(function (strings) {
+            ]).done(function(strings) {
                 notification.confirm(
                     strings[0],
                     strings[1],
@@ -157,7 +157,7 @@ define(['jquery',
                 { key: confirmMessage, component: 'tool_lp' },
                 { key: 'yes', component: 'moodle' },
                 { key: 'no', component: 'moodle' }
-            ]).done(function (strings) {
+            ]).done(function(strings) {
                 notification.confirm(
                     strings[0], // Confirm.
                     strings[1], // Delete competency X?
@@ -230,7 +230,7 @@ define(['jquery',
                     competencyframeworkid: competency.competencyframeworkid,
                     searchtext: ''
                 }
-            },{
+            }, {
                 methodname: 'core_competency_read_competency_framework',
                 args: {
                     id: competency.competencyframeworkid
@@ -257,7 +257,7 @@ define(['jquery',
                 { key: 'movecompetency', component: 'tool_lp', param: competency.shortname },
                 { key: 'move', component: 'tool_lp' },
                 { key: 'cancel', component: 'moodle' }
-            ]).done(function (strings) {
+            ]).done(function(strings) {
 
                 var context = {
                     framework: framework,
@@ -381,7 +381,7 @@ define(['jquery',
                 courses: courses
             };
             templates.render('tool_lp/linked_courses_summary', context).done(function(html) {
-                str.get_string('linkedcourses', 'tool_lp').done(function (linkedcourses) {
+                str.get_string('linkedcourses', 'tool_lp').done(function(linkedcourses) {
                     new Dialogue(
                         linkedcourses, // Title.
                         html, // The linked courses.
@@ -486,7 +486,7 @@ define(['jquery',
                 str.get_strings([
                 { key: 'competencycannotbedeleted', component: 'tool_lp', param: competency.shortname },
                 { key: 'cancel', component: 'moodle' }
-                ]).done(function (strings) {
+                ]).done(function(strings) {
                     notification.alert(
                         null,
                         strings[0]
@@ -514,7 +514,7 @@ define(['jquery',
             { key: confirmMessage, component: 'tool_lp', param: competency.shortname },
             { key: 'delete', component: 'moodle' },
             { key: 'cancel', component: 'moodle' }
-        ]).done(function (strings) {
+        ]).done(function(strings) {
             notification.confirm(
                 strings[0], // Confirm.
                 strings[1], // Delete competency X?

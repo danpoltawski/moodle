@@ -32,7 +32,7 @@ var CSS = {
         ACTIVITYACTION : 'a.cm-edit-action[data-action]',
         ACTIVITYICON : 'img.activityicon',
         ACTIVITYINSTANCE : '.' + CSS.ACTIVITYINSTANCE,
-        ACTIVITYLINK: '.' + CSS.ACTIVITYINSTANCE + ' > a, .'+ CSS.ACTIVITYINSTANCE +
+        ACTIVITYLINK: '.' + CSS.ACTIVITYINSTANCE + ' > a, .' + CSS.ACTIVITYINSTANCE +
             ' > span[data-inplaceeditable] > a:not([data-inplaceeditablelink])',
         ACTIVITYLI : 'li.activity',
         COMMANDSPAN : '.commands',
@@ -46,7 +46,7 @@ var CSS = {
         MODINDENTOUTER : '.mod-indent-outer',
         PAGECONTENT : 'body',
         SECTIONLI : 'li.section',
-        SHOW : 'a.'+CSS.SHOW,
+        SHOW : 'a.' + CSS.SHOW,
         SHOWHIDE : 'a.editing_showhide'
     },
     INDENTLIMITS = {

@@ -1,4 +1,4 @@
-/*/////////////////////////////////////////////////////////
+/* /////////////////////////////////////////////////////////
 // This code is based off of
 // "Live Clock Lite" script - Version 1.0
 // By Mark Plachetta (astroboy@zip.com.au)
@@ -25,7 +25,7 @@
     var javatime = javatimeDate.getTime();
     javatime = Math.floor(javatime / 1000);
 
-    if (typeof(clocksettings) != 'undefined') {
+    if (typeof (clocksettings) != 'undefined') {
         if (clocksettings.starttime) {
             starttime = parseInt(clocksettings.starttime);
         }
@@ -40,7 +40,7 @@
     difference = javatime - servertime;
     starttime = starttime + difference;
 
-    /*function leave() {  // feable attempt to run a script when someone leaves a timed test early, failed so far
+    /* function leave() {  // feable attempt to run a script when someone leaves a timed test early, failed so far
         window.onunload = window.open('http://www.google.com','','toolbar=no,menubar=no,location=no,height=500,width=500');
     }
     leave();*/

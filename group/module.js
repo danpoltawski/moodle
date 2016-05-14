@@ -8,7 +8,7 @@ M.core_group = {
 
 M.core_group.init_hover_events = function(Y, events) {
     // Prepare the overlay if it hasn't already been created
-    this.hoveroverlay = this.hoveroverlay || (function(){
+    this.hoveroverlay = this.hoveroverlay || (function() {
         // New Y.Overlay
         var overlay = new Y.Overlay({
             bodyContent : 'Loading',
@@ -24,13 +24,13 @@ M.core_group.init_hover_events = function(Y, events) {
         var node = this.ancestor();
         var id = this.getAttribute('data-groupid');
 
-        node.on('mouseenter', function(){
-            M.core_group.hoveroverlay.set('xy', [this.getX()+(this.get('offsetWidth')/2),this.getY()+this.get('offsetHeight')-5]);
+        node.on('mouseenter', function() {
+            M.core_group.hoveroverlay.set('xy', [this.getX() + (this.get('offsetWidth') / 2), this.getY() + this.get('offsetHeight') - 5]);
             M.core_group.hoveroverlay.set("bodyContent", events[id]);
             M.core_group.hoveroverlay.show();
             M.core_group.hoveroverlay.get('boundingBox').setStyle('visibility', 'visible');
         });
-        node.on('mouseleave', function(){
+        node.on('mouseleave', function() {
             M.core_group.hoveroverlay.hide();
             M.core_group.hoveroverlay.get('boundingBox').setStyle('visibility', 'hidden');
         });
@@ -68,6 +68,6 @@ M.core_group.groupslist = function(Y, preventgroupremoval) {
                 deletebutton.setAttribute('disabled', 'disabled');
             }
         }
-    }
+    };
     actions.init();
 };

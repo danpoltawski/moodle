@@ -20,7 +20,7 @@ Category.ATTRS = {
      * @default null
      */
     categoryid : {
-        getter : function (value, name) {
+        getter : function(value, name) {
             if (value === null) {
                 value = this.get('node').getData('id');
                 this.set(name, value);
@@ -215,10 +215,10 @@ Category.prototype = {
             ul,
             actionnode;
         if (outcome === false) {
-            Y.log('AJAX failed to load sub categories for '+this.get('itemname'), 'warn', 'moodle-course-management');
+            Y.log('AJAX failed to load sub categories for ' + this.get('itemname'), 'warn', 'moodle-course-management');
             return false;
         }
-        Y.log('AJAX loaded subcategories for '+this.get('itemname'), 'info', 'moodle-course-management');
+        Y.log('AJAX loaded subcategories for ' + this.get('itemname'), 'info', 'moodle-course-management');
         node.append(outcome.html);
         managementconsole.initialiseCategories(node);
         if (M.core && M.core.actionmenu && M.core.actionmenu.newDOMNode) {
@@ -278,7 +278,7 @@ Category.prototype = {
             course,
             totals;
         if (outcome === false) {
-            Y.log('AJAX failed to move courses into this category: '+this.get('itemname'), 'warn', 'moodle-course-management');
+            Y.log('AJAX failed to move courses into this category: ' + this.get('itemname'), 'warn', 'moodle-course-management');
             return false;
         }
         course = managementconsole.getCourseById(args.courseid);
@@ -330,7 +330,7 @@ Category.prototype = {
         var outcome = this.checkAjaxResponse(transactionid, response, args),
             hidebtn;
         if (outcome === false) {
-            Y.log('AJAX request to show '+this.get('itemname')+' by outcome.', 'warn', 'moodle-course-management');
+            Y.log('AJAX request to show ' + this.get('itemname') + ' by outcome.', 'warn', 'moodle-course-management');
             return false;
         }
 
@@ -362,7 +362,7 @@ Category.prototype = {
         var outcome = this.checkAjaxResponse(transactionid, response, args),
             showbtn;
         if (outcome === false) {
-            Y.log('AJAX request to hide '+this.get('itemname')+' by outcome.', 'warn', 'moodle-course-management');
+            Y.log('AJAX request to hide ' + this.get('itemname') + ' by outcome.', 'warn', 'moodle-course-management');
             return false;
         }
         this.markHidden();
@@ -377,7 +377,7 @@ Category.prototype = {
             this.updateCourseVisiblity(outcome.coursevisibility);
         }
         this.updated();
-        Y.log('Success: '+this.get('itemname')+' made hidden by AJAX.', 'info', 'moodle-course-management');
+        Y.log('Success: ' + this.get('itemname') + ' made hidden by AJAX.', 'info', 'moodle-course-management');
     },
 
     /**

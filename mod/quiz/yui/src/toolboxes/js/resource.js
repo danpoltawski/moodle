@@ -149,7 +149,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
         ev.preventDefault();
 
         // Get the element we're working on.
-        var element   = activity,
+        var element = activity,
             // Create confirm string (different if element has or does not have name)
             confirmstring = '',
             qtypename = M.util.get_string('pluginname',
@@ -201,13 +201,13 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
      */
     edit_maxmark : function(ev, button, activity) {
         // Get the element we're working on
-        var instancemaxmark  = activity.one(SELECTOR.INSTANCEMAXMARK),
+        var instancemaxmark = activity.one(SELECTOR.INSTANCEMAXMARK),
             instance = activity.one(SELECTOR.ACTIVITYINSTANCE),
             currentmaxmark = instancemaxmark.get('firstChild'),
             oldmaxmark = currentmaxmark.get('data'),
             maxmarktext = oldmaxmark,
             thisevent,
-            anchor = instancemaxmark,// Grab the anchor so that we can swap it with the edit form.
+            anchor = instancemaxmark, // Grab the anchor so that we can swap it with the edit form.
             data = {
                 'class'   : 'resource',
                 'field'   : 'getmaxmark',

@@ -20,12 +20,12 @@
  */
 
 // Register the needed events
-onload=function() {
+onload = function() {
     // Adjust the form on load
     transformForm();
 
     // Get the required fields
-    var typeField         = document.getElementById('menutype');
+    var typeField = document.getElementById('menutype');
 
     // Register the rest of events
     if (typeField.addEventListener) {
@@ -35,7 +35,7 @@ onload=function() {
         // IE 5.5
         typeField.attachEvent('onchange', transformForm);
     }
-}
+};
 
 /**
  * This function controls all modifications to perform when any field changes
@@ -43,10 +43,10 @@ onload=function() {
 function transformForm(event) {
 
     // Initialize all the needed variables
-    var typeField         = document.getElementById('menutype');
-    var fieldsField       = document.getElementById('fields');
-    var reftableField     = document.getElementById('reftable');
-    var reffieldsField    = document.getElementById('reffields');
+    var typeField = document.getElementById('menutype');
+    var fieldsField = document.getElementById('fields');
+    var reftableField = document.getElementById('reftable');
+    var reffieldsField = document.getElementById('reffields');
 
     // Initially, enable everything
     typeField.disabled = false;

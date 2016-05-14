@@ -53,11 +53,11 @@ function badges_set_connection_progress(status) {
     case 'connecting':
         var connecting = M.util.get_string('connecting', 'badges');
         var imageurl = M.util.image_url('i/loading_small', 'moodle');
-        var loading = Y.Node.create(connecting + '&nbsp;<img src="'+imageurl+'" width="16" height="16" alt="'+connecting+'"/>');
+        var loading = Y.Node.create(connecting + '&nbsp;<img src="' + imageurl + '" width="16" height="16" alt="' + connecting + '"/>');
         Y.one('#connection-status').removeClass('notconnected').addClass('connecting').setHTML(loading);
         break;
     case 'notconnected':
-        var notconnected = M.util.get_string('notconnected', 'badges');;
+        var notconnected = M.util.get_string('notconnected', 'badges');
         Y.one('#connection-status').removeClass('connecting').addClass('notconnected').setHTML(notconnected);
         break;
     default:
@@ -88,13 +88,13 @@ function badges_handle_assertion(assertion) {
 
     Y.io("backpackconnect.php", {
         method: "POST",
-        data: "assertion="+assertion+"&sesskey="+M.cfg.sesskey,
+        data: "assertion=" + assertion + "&sesskey=" + M.cfg.sesskey,
         on: {
-            success: function (id, result) {
+            success: function(id, result) {
                 // Reload page to display connected email address.
                 window.location.href = "mybackpack.php";
             },
-            failure: function (id, result) {
+            failure: function(id, result) {
                 try {
                     var parsedResponse = Y.JSON.parse(result.response);
                 } catch (e) {
@@ -118,7 +118,7 @@ function badges_init_persona_login_button() {
     // Create the login button and add to the page via Javascript.
     var imageurl = M.util.image_url('i/persona_sign_in_black', 'moodle');
     var imagealt = M.util.get_string('signinwithyouremail', 'badges');
-    var button = Y.Node.create('<img id="persona_signin" src="'+imageurl+'" width="202" height="25" alt="'+imagealt+'"/>');
+    var button = Y.Node.create('<img id="persona_signin" src="' + imageurl + '" width="202" height="25" alt="' + imagealt + '"/>');
     Y.one('#persona-container').append(button);
 
     // Bind a click event to trigger login when clicked.

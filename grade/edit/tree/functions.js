@@ -2,7 +2,7 @@
  * Toggles the selection checkboxes of all grade items children of the given eid (a category id)
  */
 function togglecheckboxes(event, args) {
-YUI().use('yui2-dom', 'yui2-element', function (Y) {
+YUI().use('yui2-dom', 'yui2-element', function(Y) {
 
     var rows = Y.YUI2.util.Dom.getElementsByClassName(args.eid);
 
@@ -10,7 +10,7 @@ YUI().use('yui2-dom', 'yui2-element', function (Y) {
         var element = new Y.YUI2.util.Element(rows[i]);
         var checkboxes = element.getElementsByClassName('itemselect');
         if (checkboxes[0]) {
-            checkboxes[0].checked=args.check;
+            checkboxes[0].checked = args.check;
         }
     }
 
@@ -20,7 +20,7 @@ YUI().use('yui2-dom', 'yui2-element', function (Y) {
 }
 
 function toggle_advanced_columns() {
-YUI().use('yui2-dom', function (Y) {
+YUI().use('yui2-dom', function(Y) {
 
     var advEls = Y.YUI2.util.Dom.getElementsByClassName("advanced");
     var shownAdvEls = Y.YUI2.util.Dom.getElementsByClassName("advancedshown");
@@ -40,7 +40,7 @@ YUI().use('yui2-dom', function (Y) {
  * Check if any of the grade item checkboxes is ticked. If yes, enable the dropdown. Otherwise, disable it
  */
 function toggleCategorySelector() {
-YUI().use('yui2-dom', function (Y) {
+YUI().use('yui2-dom', function(Y) {
 
     var menumoveafter = document.getElementById('menumoveafter');
     if (!menumoveafter) {
@@ -66,7 +66,7 @@ function submit_bulk_move(e, args) {
 
 function update_category_aggregation(e, args) {
     var selectmenu = e.target;
-    window.location = 'index.php?id='+args.courseid+'&category='+args.category+'&aggregationtype='+selectmenu.get('value')+'&sesskey='+args.sesskey;
+    window.location = 'index.php?id=' + args.courseid + '&category=' + args.category + '&aggregationtype=' + selectmenu.get('value') + '&sesskey=' + args.sesskey;
 }
 
 /**

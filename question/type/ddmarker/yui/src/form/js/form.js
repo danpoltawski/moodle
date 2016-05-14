@@ -63,7 +63,7 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
         }
     },
 
-    constrain_image_size : function (e) {
+    constrain_image_size : function(e) {
         var maxsize = this.get('maxsizes').bgimage;
         var reduceby = Math.max(e.target.get('width') / maxsize.width,
                                 e.target.get('height') / maxsize.height);
@@ -74,7 +74,7 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
         e.target.detach('load', this.constrain_image_size);
     },
 
-    update_drop_zones : function (pendingid) {
+    update_drop_zones : function(pendingid) {
 
         // Set up drop zones.
         if (this.graphics !== null) {
@@ -103,11 +103,11 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
         M.util.js_complete(pendingid);
     },
 
-    get_coords : function (dropzoneno) {
+    get_coords : function(dropzoneno) {
         var coords = this.form.get_form_value('drops', [dropzoneno, 'coords']);
         return coords.replace(new RegExp("\\s*", 'g'), '');
     },
-    get_marker_text : function (markerno) {
+    get_marker_text : function(markerno) {
         if (Number(markerno) !== 0) {
             var label = this.form.get_form_value('drags', [markerno - 1, 'label']);
             return label.replace(new RegExp("^\\s*(.*)\\s*$"), "$1");
@@ -115,7 +115,7 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
             return '';
         }
     },
-    set_options_for_drag_item_selectors : function () {
+    set_options_for_drag_item_selectors : function() {
         var dragitemsoptions = {0: ''};
         for (var i = 1; i <= this.form.get_form_value('noitems', []); i++) {
             var label = this.get_marker_text(i);
@@ -168,25 +168,25 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
         }
     },
 
-    stop_selector_events : function () {
+    stop_selector_events : function() {
         Y.all('fieldset#id_dropzoneheader select').detachAll();
     },
 
-    setup_form_events : function () {
-        //events triggered by changes to form data
+    setup_form_events : function() {
+        // events triggered by changes to form data
 
         // Changes to labels.
-        Y.all('fieldset#id_draggableitemheader input').on('change', function () {
+        Y.all('fieldset#id_draggableitemheader input').on('change', function() {
             this.set_options_for_drag_item_selectors();
         }, this);
 
         // Changes to selected drag item.
-        Y.all('fieldset#id_draggableitemheader select').on('change', function () {
+        Y.all('fieldset#id_draggableitemheader select').on('change', function() {
             this.set_options_for_drag_item_selectors();
         }, this);
 
         // Change in selected item.
-        Y.all('fieldset#id_dropzoneheader select').on('change', function () {
+        Y.all('fieldset#id_dropzoneheader select').on('change', function() {
             this.set_options_for_drag_item_selectors();
         }, this);
     },
@@ -202,7 +202,7 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
             }
             return indexstring;
         },
-        get_el : function (name, indexes) {
+        get_el : function(name, indexes) {
             var form = document.getElementById('mform1');
             return form.elements[this.to_name_with_index(name, indexes)];
         },
@@ -236,7 +236,7 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
         }
     },
 
-    file_pickers : function () {
+    file_pickers : function() {
         var draftitemidstoname;
         var nametoparentnode;
         if (draftitemidstoname === undefined) {
@@ -249,7 +249,7 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
             }, this);
         }
         var toreturn = {
-            file : function (name) {
+            file : function(name) {
                 var parentnode = nametoparentnode[name];
                 var fileanchor = parentnode.one('div.filepicker-filelist a');
                 if (fileanchor) {
@@ -258,13 +258,13 @@ Y.extend(DDMARKER_FORM, M.qtype_ddmarker.dd_base_class, {
                     return {href : null, name : null};
                 }
             },
-            name : function (draftitemid) {
+            name : function(draftitemid) {
                 return draftitemidstoname[draftitemid];
             }
         };
         return toreturn;
     }
-},{NAME : DDMARKERFORMNAME, ATTRS : {maxsizes:{value:null}}});
+}, {NAME : DDMARKERFORMNAME, ATTRS : {maxsizes:{value:null}}});
 
 M.qtype_ddmarker = M.qtype_ddmarker || {};
 M.qtype_ddmarker.init_form = function(config) {

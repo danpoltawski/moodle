@@ -30,8 +30,8 @@ scorm_layout_widget = null;
 window.scorm_current_node = null;
 
 function underscore(str) {
-    str = String(str).replace(/.N/g,".");
-    return str.replace(/\./g,"__");
+    str = String(str).replace(/.N/g, ".");
+    return str.replace(/\./g, "__");
 }
 
 M.mod_scorm = {};
@@ -65,17 +65,17 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             return node;
         };
 
-        Y.TreeView.prototype.openAll = function () {
+        Y.TreeView.prototype.openAll = function() {
             this.get('container').all('.yui3-treeview-can-have-children').each(function(target) {
                 this.getNodeById(target.get('id')).open();
             }, this);
         };
 
-        Y.TreeView.prototype.closeAll = function () {
+        Y.TreeView.prototype.closeAll = function() {
             this.get('container').all('.yui3-treeview-can-have-children').each(function(target) {
                 this.getNodeById(target.get('id')).close();
             }, this);
-        }
+        };
 
         var scorm_parse_toc_tree = function(srcNode) {
             var SELECTORS = {
@@ -134,7 +134,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                     return;
                 }
                 // Start to unload iframe here
-                if(!window_name){
+                if (!window_name) {
                     content.removeChild(old);
                     old = null;
                 }
@@ -163,15 +163,15 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 obj.setAttribute('src', url_prefix + node.title);
             }
             if (window_name) {
-                var mine = window.open('','','width=1,height=1,left=0,top=0,scrollbars=no');
-                if(! mine) {
+                var mine = window.open('', '', 'width=1,height=1,left=0,top=0,scrollbars=no');
+                if (!mine) {
                     alert(M.util.get_string('popupsblocked', 'scorm'));
                 }
                 mine.close();
             }
 
             if (old) {
-                if(window_name) {
+                if (window_name) {
                     var cwidth = scormplayerdata.cwidth;
                     var cheight = scormplayerdata.cheight;
                     var poptions = scormplayerdata.popupoptions;
@@ -205,31 +205,31 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             var upnode = scorm_up(scorm_current_node);
 
             scorm_buttons[0].set('disabled', ((skipprevnode === null) ||
-                        (typeof(skipprevnode.scoid) === 'undefined') ||
+                        (typeof (skipprevnode.scoid) === 'undefined') ||
                         (scoes_nav[skipprevnode.scoid].isvisible === "false") ||
                         (skipprevnode.title === null) ||
                         (scoes_nav[launch_sco].hideprevious === 1)));
 
             scorm_buttons[1].set('disabled', ((prevnode === null) ||
-                        (typeof(prevnode.scoid) === 'undefined') ||
+                        (typeof (prevnode.scoid) === 'undefined') ||
                         (scoes_nav[prevnode.scoid].isvisible === "false") ||
                         (prevnode.title === null) ||
                         (scoes_nav[launch_sco].hideprevious === 1)));
 
             scorm_buttons[2].set('disabled', (upnode === null) ||
-                        (typeof(upnode.scoid) === 'undefined') ||
+                        (typeof (upnode.scoid) === 'undefined') ||
                         (scoes_nav[upnode.scoid].isvisible === "false") ||
                         (upnode.title === null));
 
             scorm_buttons[3].set('disabled', ((nextnode === null) ||
                         ((nextnode.title === null) && (scoes_nav[launch_sco].flow !== 1)) ||
-                        (typeof(nextnode.scoid) === 'undefined') ||
+                        (typeof (nextnode.scoid) === 'undefined') ||
                         (scoes_nav[nextnode.scoid].isvisible === "false") ||
                         (scoes_nav[launch_sco].hidecontinue === 1)));
 
             scorm_buttons[4].set('disabled', ((skipnextnode === null) ||
                         (skipnextnode.title === null) ||
-                        (typeof(skipnextnode.scoid) === 'undefined') ||
+                        (typeof (skipnextnode.scoid) === 'undefined') ||
                         (scoes_nav[skipnextnode.scoid].isvisible === "false") ||
                         scoes_nav[launch_sco].hidecontinue === 1));
         };
@@ -459,7 +459,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 var datastring = scoes_nav[launch_sco].url + '&function=scorm_seq_flow&request=backward';
                 result = scorm_ajax_request(M.cfg.wwwroot + '/mod/scorm/datamodels/sequencinghandler.php?', datastring);
                 mod_scorm_seq = encodeURIComponent(result);
-                result = Y.JSON.parse (result);
+                result = Y.JSON.parse(result);
                 if (typeof result.nextactivity.id != undefined) {
                         var node = scorm_prev(scorm_tree_node.getSelectedNodes()[0]);
                         if (node == null) {
@@ -485,13 +485,13 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         };
 
         // Launch next sco
-        var scorm_launch_next_sco = function () {
+        var scorm_launch_next_sco = function() {
             var result = null;
             if (scoes_nav[launch_sco].flow === 1) {
                 var datastring = scoes_nav[launch_sco].url + '&function=scorm_seq_flow&request=forward';
                 result = scorm_ajax_request(M.cfg.wwwroot + '/mod/scorm/datamodels/sequencinghandler.php?', datastring);
                 mod_scorm_seq = encodeURIComponent(result);
-                result = Y.JSON.parse (result);
+                result = Y.JSON.parse(result);
                 if (typeof result.nextactivity !== 'undefined' && typeof result.nextactivity.id !== 'undefined') {
                     var node = scorm_next(scorm_tree_node.getSelectedNodes()[0]);
                     if (node === null) {
@@ -583,7 +583,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         tree.after('select', function(e) {
             var node = e.node;
             if (node.title == '' || node.title == null) {
-                return; //this item has no navigation
+                return; // this item has no navigation
             }
 
             // If item is already active, return; avoid recursive calls.
@@ -593,7 +593,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                 if (node_full_url === scorm_active_url) {
                     return;
                 }
-            } else if(scorm_current_node == node){
+            } else if (scorm_current_node == node) {
                 return;
             }
 
@@ -624,7 +624,7 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
         tree.openAll();
 
         // On getting the window, always set the focus on the current item
-        Y.one(Y.config.win).on('focus', function (e) {
+        Y.one(Y.config.win).on('focus', function(e) {
             var current = scorm_tree_node.getSelectedNodes()[0];
             var toc_disabled = Y.one('#scorm_toc').hasClass('disabled');
             if (current.id && !toc_disabled) {
@@ -808,7 +808,7 @@ M.mod_scorm.connectPrereqCallback = {
             if (!pagecontent) {
                 pagecontent = document.getElementById("content");
             }
-            el_new_tree.setAttribute('id','scormtree123');
+            el_new_tree.setAttribute('id', 'scormtree123');
             el_new_tree.innerHTML = o.responseText;
             // Make sure it does not show.
             el_new_tree.style.display = 'none';

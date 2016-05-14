@@ -115,7 +115,7 @@ Y.extend(MODCHOOSER, M.core.chooserdialogue, {
      * @method display_mod_chooser
      * @param {EventFacade} e Triggering Event
      */
-    display_mod_chooser : function (e) {
+    display_mod_chooser : function(e) {
         // Set the section for this version of the dialogue
         if (e.target.ancestor(CSS.SITETOPIC)) {
             // The site topic has a sectionid of 1

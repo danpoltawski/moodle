@@ -26,7 +26,7 @@
 M.qtype_multianswer = M.qtype_multianswer || {};
 
 
-M.qtype_multianswer.init = function (Y, questiondiv) {
+M.qtype_multianswer.init = function(Y, questiondiv) {
     Y.one(questiondiv).all('span.subquestion').each(function(subqspan) {
         var feedbackspan = subqspan.one('.feedbackspan');
         if (!feedbackspan) {

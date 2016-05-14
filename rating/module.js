@@ -3,11 +3,11 @@ M.core_rating = {
     Y : null,
     api: M.cfg.wwwroot + '/rating/rate_ajax.php',
 
-    init : function(Y){
+    init : function(Y) {
         this.Y = Y;
         Y.all('select.postratingmenu').each(this.attach_rating_events, this);
 
-        //hide the submit buttons
+        // hide the submit buttons
         this.Y.all('input.postratingmenusubmit').setStyle('display', 'none');
     },
 
@@ -15,13 +15,13 @@ M.core_rating = {
         selectnode.on('change', this.submit_rating, this, selectnode);
     },
 
-    submit_rating : function(e, selectnode){
+    submit_rating : function(e, selectnode) {
         var theinputs = selectnode.ancestor('form').all('.ratinginput');
         var thedata = [];
 
         var inputssize = theinputs.size();
         for (var i = 0; i < inputssize; i++) {
-            if(theinputs.item(i).get("name") != "returnurl") { // Dont include return url for ajax requests.
+            if (theinputs.item(i).get("name") != "returnurl") { // Dont include return url for ajax requests.
                 thedata[theinputs.item(i).get("name")] = theinputs.item(i).get("value");
             }
         }
@@ -38,13 +38,13 @@ M.core_rating = {
                         }
 
                         var data = scope.Y.JSON.parse(outcome.responseText);
-                        if (data.success){
-                            //if the user has access to the aggregate then update it
-                            if (data.itemid) { //do not test data.aggregate or data.count otherwise it doesn't refresh value=0 or no value
+                        if (data.success) {
+                            // if the user has access to the aggregate then update it
+                            if (data.itemid) { // do not test data.aggregate or data.count otherwise it doesn't refresh value=0 or no value
                                 var itemid = data.itemid;
 
                                 var node = scope.Y.one('#ratingaggregate' + itemid);
-                                node.set('innerHTML',data.aggregate);
+                                node.set('innerHTML', data.aggregate);
 
                                 // Empty the count value if no ratings.
                                 var node = scope.Y.one('#ratingcount' + itemid);
@@ -59,7 +59,7 @@ M.core_rating = {
                         else if (data.error) {
                             alert(data.error);
                         }
-                    } catch(e) {
+                    } catch (e) {
                         alert(e.message + " " + outcome.responseText);
                     }
                     return false;

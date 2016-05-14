@@ -13,7 +13,7 @@ M.core_user.user_selectors = [];
  * @param {string} name The name of the selector to retrieve
  * @return bool
  */
-M.core_user.get_user_selector = function (name) {
+M.core_user.get_user_selector = function(name) {
     return this.user_selectors[name] || null;
 };
 
@@ -26,7 +26,7 @@ M.core_user.get_user_selector = function (name) {
  * @param {array} extrafields extra fields we are displaying for each user in addition to fullname.
  * @param {string} lastsearch The last search that took place
  */
-M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearch) {
+M.core_user.init_user_selector = function(Y, name, hash, extrafields, lastsearch) {
     // Creates a new user_selector object
     var user_selector = {
         /** This id/name used for this control in the HTML. */
@@ -72,7 +72,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             Y.one('#userselector_searchanywhereid').on('click', this.handle_searchanywhere_change, this);
 
             // Define our custom event.
-            //this.createEvent('selectionchanged');
+            // this.createEvent('selectionchanged');
             this.selectionempty = this.is_selection_empty();
 
             // Replace the Clear submit button with a clone that is not a submit button.
@@ -92,7 +92,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
         handle_keyup : function(e) {
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj) { obj.send_query(false); }, this);
 
             // Enable or diable the clear button.
             this.clearbutton.set('disabled', (this.get_search_text() == ''));
@@ -126,7 +126,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
          */
         handle_clear : function() {
             this.searchfield.set('value', '');
-            this.clearbutton.set('disabled',true);
+            this.clearbutton.set('disabled', true);
             this.send_query(false);
         },
         /**
@@ -158,7 +158,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             this.iotransactions[iotrans.id] = iotrans;
 
             this.lastsearch = value;
-            this.listbox.setStyle('background','url(' + M.util.image_url('i/loading', 'moodle') + ') no-repeat center center');
+            this.listbox.setStyle('background', 'url(' + M.util.image_url('i/loading', 'moodle') + ') no-repeat center center');
         },
         /**
          * Handle what happens when we get some data back from the search.
@@ -172,7 +172,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
                     // More searches pending. Wait until they are all done.
                     return;
                 }
-                this.listbox.setStyle('background','');
+                this.listbox.setStyle('background', '');
                 var data = Y.JSON.parse(response.responseText);
                 if (data.error) {
                     this.searchfield.addClass('error');
@@ -180,7 +180,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
                 }
                 this.output_options(data);
             } catch (e) {
-                this.listbox.setStyle('background','');
+                this.listbox.setStyle('background', '');
                 this.searchfield.addClass('error');
                 return new M.core.exception(e);
             }
@@ -193,14 +193,14 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
         output_options : function(data) {
             // Clear out the existing options, keeping any ones that are already selected.
             var selectedusers = {};
-            this.listbox.all('optgroup').each(function(optgroup){
-                optgroup.all('option').each(function(option){
+            this.listbox.all('optgroup').each(function(optgroup) {
+                optgroup.all('option').each(function(option) {
                     if (option.get('selected')) {
                         selectedusers[option.get('value')] = {
                             id : option.get('value'),
                             name : option.get('innerText') || option.get('textContent'),
                             disabled: option.get('disabled')
-                        }
+                        };
                     }
                     option.remove();
                 }, this);
@@ -212,11 +212,11 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             for (var key in data.results) {
                 var groupdata = data.results[key];
                 this.output_group(groupdata.name, groupdata.users, selectedusers, true);
-                count ++;
+                count++;
             }
             if (!count) {
                 var searchstr = (this.lastsearch != '') ? this.insert_search_into_str(M.util.get_string('nomatchingusers', 'moodle'), this.lastsearch) : M.util.get_string('none', 'moodle');
-                this.output_group(searchstr, {}, selectedusers, true)
+                this.output_group(searchstr, {}, selectedusers, true);
             }
 
             // If there were previously selected users who do not match the search, show them too.
@@ -254,7 +254,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
                     extraoption.appendChild(document.createTextNode(user.infobelow));
                     optgroup.append(extraoption);
                 }
-                count ++;
+                count++;
             }
 
             if (count > 0) {
@@ -290,7 +290,7 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
          */
         is_selection_empty : function() {
             var selection = false;
-            this.listbox.all('option').each(function(){
+            this.listbox.all('option').each(function() {
                 if (this.get('selected')) {
                     selection = true;
                 }

@@ -21,10 +21,10 @@ Y.extend(AUTOLINKER, Y.Base, {
     initializer : function() {
         var self = this;
         require(['core/event'], function(event) {
-            Y.delegate('click', function(e){
+            Y.delegate('click', function(e) {
                 e.preventDefault();
 
-                //display a progress indicator
+                // display a progress indicator
                 var title = '',
                     content = Y.Node.create('<div id="glossaryfilteroverlayprogress">' +
                                             '<img src="' + M.cfg.loadingicon + '" class="spinner" />' +
@@ -38,8 +38,8 @@ Y.extend(AUTOLINKER, Y.Base, {
                 self.overlay = o;
                 o.render(Y.one(document.body));
 
-                //Switch over to the ajax url and fetch the glossary item
-                fullurl = this.getAttribute('href').replace('showentry.php','showentry_ajax.php');
+                // Switch over to the ajax url and fetch the glossary item
+                fullurl = this.getAttribute('href').replace('showentry.php', 'showentry_ajax.php');
                 cfg = {
                     method: 'get',
                     context : self,
@@ -75,8 +75,8 @@ Y.extend(AUTOLINKER, Y.Base, {
             position;
         try {
             data = Y.JSON.parse(content);
-            if (data.success){
-                this.overlay.hide(); //hide progress indicator
+            if (data.success) {
+                this.overlay.hide(); // hide progress indicator
 
                 for (key in data.entries) {
                     definition = data.entries[key].definition + data.entries[key].attachments;
@@ -91,7 +91,7 @@ Y.extend(AUTOLINKER, Y.Base, {
                     alertpanel.on('complete', this._deletealertpanel, this, alertpanelid);
 
                     // We already have some windows opened, so set the right position...
-                    if (!Y.Object.isEmpty(this.alertpanels)){
+                    if (!Y.Object.isEmpty(this.alertpanels)) {
                         position = this._getLatestWindowPosition();
                         Y.Node.one(alertpanelid).setXY([position[0] + 10, position[1] + 10]);
                     }
@@ -103,7 +103,7 @@ Y.extend(AUTOLINKER, Y.Base, {
             } else if (data.error) {
                 new M.core.ajaxException(data);
             }
-        } catch(e) {
+        } catch (e) {
             new M.core.exception(e);
         }
         return false;
@@ -111,7 +111,7 @@ Y.extend(AUTOLINKER, Y.Base, {
     _getLatestWindowPosition : function() {
         var lastPosition = [0, 0];
         Y.Object.each(this.alertpanels, function(position) {
-            if (position[0] > lastPosition[0]){
+            if (position[0] > lastPosition[0]) {
                 lastPosition = position;
             }
         });
@@ -125,7 +125,7 @@ Y.extend(AUTOLINKER, Y.Base, {
     ATTRS : {
         url : {
             validator : Y.Lang.isString,
-            value : M.cfg.wwwroot+'/mod/glossary/showentry.php'
+            value : M.cfg.wwwroot + '/mod/glossary/showentry.php'
         },
         name : {
             validator : Y.Lang.isString,

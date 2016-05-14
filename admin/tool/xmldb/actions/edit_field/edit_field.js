@@ -20,13 +20,13 @@
  */
 
 // Register the needed events
-onload=function() {
+onload = function() {
     // Adjust the form on load
     transformForm();
 
     // Get the required fields
-    var typeField         = document.getElementById('menutype');
-    var sequenceField     = document.getElementById('menusequence');
+    var typeField = document.getElementById('menutype');
+    var sequenceField = document.getElementById('menusequence');
 
     // Register the rest of events
     if (typeField.addEventListener) {
@@ -38,7 +38,7 @@ onload=function() {
         typeField.attachEvent('onchange', transformForm);
         sequenceField.attachEvent('onchange', transformForm);
     }
-}
+};
 
 /**
  * This function controls all modifications to perform when any field changes
@@ -46,15 +46,15 @@ onload=function() {
 function transformForm(event) {
 
     // Initialize all the needed variables
-    var typeField         = document.getElementById('menutype');
-    var lengthField       = document.getElementById('length');
-    var decimalsField     = document.getElementById('decimals');
-    var notnullField      = document.getElementById('menunotnull');
-    var sequenceField     = document.getElementById('menusequence');
-    var defaultField      = document.getElementById('default');
+    var typeField = document.getElementById('menutype');
+    var lengthField = document.getElementById('length');
+    var decimalsField = document.getElementById('decimals');
+    var notnullField = document.getElementById('menunotnull');
+    var sequenceField = document.getElementById('menusequence');
+    var defaultField = document.getElementById('default');
 
-    var lengthTip         = document.getElementById('lengthtip');
-    var decimalsTip       = document.getElementById('decimalstip');
+    var lengthTip = document.getElementById('lengthtip');
+    var decimalsTip = document.getElementById('decimalstip');
 
     // Initially, enable everything
     decimalsField.disabled = false;

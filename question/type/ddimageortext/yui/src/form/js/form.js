@@ -47,7 +47,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
             var drop = new Y.DD.Drop({
                 node: this.doc.bg_img()
             });
-            //Listen for a drop:hit on the background image
+            // Listen for a drop:hit on the background image
             drop.on('drop:hit', function(e) {
                 e.drag.get('node').setData('gooddrop', true);
             });
@@ -67,7 +67,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         this.update_visibility_of_file_pickers();
     },
 
-    after_all_images_loaded : function () {
+    after_all_images_loaded : function() {
         this.update_padding_sizes_all();
         this.update_drag_instances();
         this.reposition_drags_for_form();
@@ -76,7 +76,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         Y.later(500, this, this.reposition_drags_for_form, [], true);
     },
 
-    constrain_image_size : function (e, imagetype) {
+    constrain_image_size : function(e, imagetype) {
         var maxsize = this.get('maxsizes')[imagetype];
         var reduceby = Math.max(e.target.get('width') / maxsize.width,
                                 e.target.get('height') / maxsize.height);
@@ -87,14 +87,14 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         e.target.detach('load', this.constrain_image_size);
     },
 
-    load_drag_homes : function () {
+    load_drag_homes : function() {
         // Set up drag items homes.
         for (var i = 0; i < this.form.get_form_value('noitems', []); i++) {
             this.load_drag_home(i);
         }
     },
 
-    load_drag_home : function (dragitemno) {
+    load_drag_home : function(dragitemno) {
         var url = null;
         if ('image' === this.form.get_form_value('drags', [dragitemno, 'dragitemtype'])) {
             url = this.fp.file(this.form.to_name_with_index('dragitem', [dragitemno])).href;
@@ -104,7 +104,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
                 this.form.get_form_value('drags', [dragitemno, 'draggroup']));
     },
 
-    update_drag_instances : function () {
+    update_drag_instances : function() {
         // Set up drop zones.
         for (var i = 0; i < this.form.get_form_value('nodropzone', []); i++) {
             var dragitemno = this.form.get_form_value('drops', [i, 'choice']);
@@ -116,7 +116,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
             }
         }
     },
-    set_options_for_drag_item_selectors : function () {
+    set_options_for_drag_item_selectors : function() {
         var dragitemsoptions = {0: ''};
         for (var i = 0; i < this.form.get_form_value('noitems', []); i++) {
             var label = this.form.get_form_value('draglabel', [i]);
@@ -133,11 +133,11 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
             var selectedvalue = selector.get('value');
             selector.all('option').remove(true);
             for (var value in dragitemsoptions) {
-                value = + value;
+                value = +value;
                 var option = '<option value="' + value + '">' + dragitemsoptions[value] + '</option>';
                 selector.append(option);
                 var optionnode = selector.one('option[value="' + value + '"]');
-                if (value === + selectedvalue) {
+                if (value === +selectedvalue) {
                     optionnode.set('selected', true);
                 } else {
                     if (value !== 0) { // No item option is always selectable.
@@ -153,7 +153,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         }
     },
 
-    stop_selector_events : function () {
+    stop_selector_events : function() {
         Y.all('fieldset#id_dropzoneheader select').detachAll();
     },
 
@@ -170,11 +170,11 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         });
     },
 
-    setup_form_events : function () {
+    setup_form_events : function() {
         // Events triggered by changes to form data.
 
         // X and y coordinates.
-        Y.all('fieldset#id_dropzoneheader input').on('blur', function (e) {
+        Y.all('fieldset#id_dropzoneheader input').on('blur', function(e) {
             var name = e.target.getAttribute('name');
             var draginstanceno = this.form.from_name_with_index(name).indexes[0];
             var fromform = [this.form.get_form_value('drops', [draginstanceno, 'xleft']),
@@ -185,7 +185,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         }, this);
 
         // Change in selected item.
-        Y.all('fieldset#id_dropzoneheader select').on('change', function (e) {
+        Y.all('fieldset#id_dropzoneheader select').on('change', function(e) {
             var name = e.target.getAttribute('name');
             var draginstanceno = this.form.from_name_with_index(name).indexes[0];
             var old = this.doc.drag_item(draginstanceno);
@@ -206,7 +206,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
                                 .on('change', this.set_options_for_drag_item_selectors, this);
         }
         // Event on file picker new file selection.
-        Y.after(function (e) {
+        Y.after(function(e) {
             var name = this.fp.name(e.id);
             if (name !== 'bgimage') {
                 this.doc.drag_items().remove(true);
@@ -238,14 +238,14 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
     },
 
     reposition_drags_for_form : function() {
-        this.doc.drag_items().each(function (drag) {
+        this.doc.drag_items().each(function(drag) {
             var draginstanceno = drag.getData('draginstanceno');
             this.reposition_drag_for_form(draginstanceno);
         }, this);
         M.util.js_complete(this.pendingid);
     },
 
-    reposition_drag_for_form : function (draginstanceno) {
+    reposition_drag_for_form : function(draginstanceno) {
         var drag = this.doc.drag_item(draginstanceno);
         if (null !== drag && !drag.hasClass('yui3-dd-dragging')) {
             var fromform = [this.form.get_form_value('drops', [draginstanceno, 'xleft']),
@@ -258,18 +258,18 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
             }
         }
     },
-    set_drag_xy : function (draginstanceno, xy) {
+    set_drag_xy : function(draginstanceno, xy) {
         xy = this.constrain_xy(draginstanceno, this.convert_to_bg_img_xy(xy));
         this.form.set_form_value('drops', [draginstanceno, 'xleft'], Math.round(xy[0]));
         this.form.set_form_value('drops', [draginstanceno, 'ytop'], Math.round(xy[1]));
     },
-    reset_drag_xy : function (draginstanceno) {
+    reset_drag_xy : function(draginstanceno) {
         this.form.set_form_value('drops', [draginstanceno, 'xleft'], '');
         this.form.set_form_value('drops', [draginstanceno, 'ytop'], '');
     },
 
-    //make sure xy value is not out of bounds of bg image
-    constrain_xy : function (draginstanceno, bgimgxy) {
+    // make sure xy value is not out of bounds of bg image
+    constrain_xy : function(draginstanceno, bgimgxy) {
         var drag = this.doc.drag_item(draginstanceno);
         var xleftconstrained =
             Math.min(bgimgxy[0], this.doc.bg_img().get('width') - drag.get('offsetWidth'));
@@ -279,7 +279,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         ytopconstrained = Math.max(ytopconstrained, 0);
         return [xleftconstrained, ytopconstrained];
     },
-    convert_to_bg_img_xy : function (windowxy) {
+    convert_to_bg_img_xy : function(windowxy) {
         return [Number(windowxy[0]) - this.doc.bg_img().getX() - 1,
                 Number(windowxy[1]) - this.doc.bg_img().getY() - 1];
     },
@@ -295,7 +295,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
             }
             return indexstring;
         },
-        get_el : function (name, indexes) {
+        get_el : function(name, indexes) {
             var form = document.getElementById('mform1');
             return form.elements[this.to_name_with_index(name, indexes)];
         },
@@ -329,7 +329,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
         }
     },
 
-    file_pickers : function () {
+    file_pickers : function() {
         var draftitemidstoname;
         var nametoparentnode;
         if (draftitemidstoname === undefined) {
@@ -342,7 +342,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
             }, this);
         }
         var toreturn = {
-            file : function (name) {
+            file : function(name) {
                 var parentnode = nametoparentnode[name];
                 var fileanchor = parentnode.one('div.filepicker-filelist a');
                 if (fileanchor) {
@@ -351,7 +351,7 @@ Y.extend(DDIMAGEORTEXT_FORM, M.qtype_ddimageortext.dd_base_class, {
                     return {href : null, name : null};
                 }
             },
-            name : function (draftitemid) {
+            name : function(draftitemid) {
                 return draftitemidstoname[draftitemid];
             }
         };

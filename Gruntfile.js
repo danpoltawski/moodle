@@ -38,9 +38,9 @@ module.exports = function(grunt) {
         var root = grunt.option('root');
         if (grunt.file.exists(__dirname, root)) {
             cwd = path.join(__dirname, root);
-            grunt.log.ok('Setting root to '+cwd);
+            grunt.log.ok('Setting root to ' + cwd);
         } else {
-            grunt.fail.fatal('Setting root to '+root+' failed - path does not exist');
+            grunt.fail.fatal('Setting root to ' + root + ' failed - path does not exist');
         }
     }
 
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
      * @param {String} srcPath the  matched src path
      * @return {String} The rewritten destination path.
      */
-    var uglify_rename = function (destPath, srcPath) {
+    var uglify_rename = function(destPath, srcPath) {
         destPath = srcPath.replace('src', 'build');
         destPath = destPath.replace('.js', '.min.js');
         destPath = path.resolve(cwd, destPath);
@@ -146,7 +146,7 @@ module.exports = function(grunt) {
             options = grunt.config('shifter.options');
 
         // Run the shifter processes one at a time to avoid confusing output.
-        async.eachSeries(options.paths, function (src, filedone) {
+        async.eachSeries(options.paths, function(src, filedone) {
             var args = [];
             args.push( path.normalize(__dirname + '/node_modules/shifter/bin/shifter'));
 
@@ -196,7 +196,7 @@ module.exports = function(grunt) {
                     cmd: "node",
                     args: args,
                     opts: {cwd: src, stdio: 'inherit', env: process.env}
-                }, function (error, result, code) {
+                }, function(error, result, code) {
                     if (code) {
                         grunt.fail.fatal('Shifter failed with code: ' + code);
                     } else {

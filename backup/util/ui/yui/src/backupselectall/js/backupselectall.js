@@ -155,10 +155,10 @@ M.core_backup.backupselectall = function(modnames) {
     };
     Y.one('#backup-bytype').on('click', function() { toggletypes(); });
 
-    Y.one('#backup-all-included').on('click',  function(e) { helper(e, true,  '_included'); });
+    Y.one('#backup-all-included').on('click', function(e) { helper(e, true, '_included'); });
     Y.one('#backup-none-included').on('click', function(e) { helper(e, false, '_included'); });
     if (withuserdata) {
-        Y.one('#backup-all-userdata').on('click',  function(e) { helper(e, true,  withuserdata); });
+        Y.one('#backup-all-userdata').on('click', function(e) { helper(e, true, withuserdata); });
         Y.one('#backup-none-userdata').on('click', function(e) { helper(e, false, withuserdata); });
     }
 };

@@ -8,7 +8,7 @@ YUI.add('moodle-core_grading-manage', function(Y) {
 
     var MANAGE = function() {
         MANAGE.superclass.constructor.apply(this, arguments);
-    }
+    };
 
     Y.extend(MANAGE, Y.Base, {
 
@@ -43,6 +43,6 @@ YUI.add('moodle-core_grading-manage', function(Y) {
 
     M.core_grading.init_manage = function(config) {
         return new MANAGE(config);
-    }
+    };
 
 }, '@VERSION@', { requires:['base', 'anim'] });

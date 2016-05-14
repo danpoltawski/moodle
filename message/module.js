@@ -12,7 +12,7 @@ M.core_message.init_refresh_page = function(Y, delay, url) {
 };
 
 M.core_message.combinedsearchgotfocus = function(e) {
-    if (e.target.get('value')==this.defaultsearchterm) {
+    if (e.target.get('value') == this.defaultsearchterm) {
         e.target.select();
     }
 };
@@ -27,7 +27,7 @@ M.core_message.init_notification = function(Y, title, content, url) {
 
         if (Y.UA.ie > 0 && Y.UA.ie < 7) {
             // Adjust for IE 6 (can't handle fixed pos)
-            //align the bottom right corner of the overlay with the bottom right of the viewport
+            // align the bottom right corner of the overlay with the bottom right of the viewport
             o.set("align", {
                 points:[Y.WidgetPositionAlign.BR, Y.WidgetPositionAlign.BR]
             });
@@ -82,11 +82,11 @@ M.core_message.init_defaultoutputs = function(Y) {
             blocknode.all('input[type=checkbox]').each(function(node) {
                 node.removeAttribute('disabled');
                 if (disabled) {
-                    node.setAttribute('disabled', 1)
+                    node.setAttribute('disabled', 1);
                     node.removeAttribute('checked');
                 }
                 if (checked) {
-                    node.setAttribute('checked', 1)
+                    node.setAttribute('checked', 1);
                 }
             }, this);
         },
@@ -110,10 +110,10 @@ M.core_message.init_defaultoutputs = function(Y) {
                 parentnode.removeClass('dimmed_text');
             }
         }
-    }
+    };
 
     defaultoutputs.init();
-}
+};
 
 M.core_message.init_editsettings = function(Y) {
     var editsettings = {
@@ -130,11 +130,11 @@ M.core_message.init_editsettings = function(Y) {
 
                 node.removeAttribute('disabled');
                 if (disabled) {
-                    node.setAttribute('disabled', 1)
+                    node.setAttribute('disabled', 1);
                 }
             }, this);
         }
-    }
+    };
 
     editsettings.init();
-}
+};

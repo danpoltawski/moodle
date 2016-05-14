@@ -14,7 +14,7 @@ M.core_completion.init = function(Y) {
         Y.one('#completion_dynamic_change').set('value', 1);
 
         if (o.responseText != 'OK') {
-            alert('An error occurred when attempting to save your tick mark.\n\n('+o.responseText+'.)'); //TODO: localize
+            alert('An error occurred when attempting to save your tick mark.\n\n(' + o.responseText + '.)'); // TODO: localize
 
         } else {
             var current = args.state.get('value');
@@ -42,7 +42,7 @@ M.core_completion.init = function(Y) {
     };
 
     var handle_failure = function(id, o, args) {
-        alert('An error occurred when attempting to save your tick mark.\n\n('+o.responseText+'.)'); //TODO: localize
+        alert('An error occurred when attempting to save your tick mark.\n\n(' + o.responseText + '.)'); // TODO: localize
         args.ajax.remove();
     };
 
@@ -57,7 +57,7 @@ M.core_completion.init = function(Y) {
         var modulename = null;
 
         var inputs = Y.Node.getDOMNode(form).getElementsByTagName('input');
-        for (var i=0; i<inputs.length; i++) {
+        for (var i = 0; i < inputs.length; i++) {
             switch (inputs[i].name) {
                  case 'id':
                      cmid = inputs[i].value;
@@ -81,7 +81,7 @@ M.core_completion.init = function(Y) {
 
         var cfg = {
             method: "POST",
-            data: 'id='+cmid+'&completionstate='+completionstate+'&fromajax=1&sesskey='+M.cfg.sesskey,
+            data: 'id=' + cmid + '&completionstate=' + completionstate + '&fromajax=1&sesskey=' + M.cfg.sesskey,
             on: {
                 success: handle_success,
                 failure: handle_failure
@@ -90,7 +90,7 @@ M.core_completion.init = function(Y) {
         };
 
         Y.use('io-base', function(Y) {
-            Y.io(M.cfg.wwwroot+'/course/togglecompletion.php', cfg);
+            Y.io(M.cfg.wwwroot + '/course/togglecompletion.php', cfg);
         });
     };
 

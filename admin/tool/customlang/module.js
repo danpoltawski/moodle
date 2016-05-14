@@ -38,8 +38,8 @@ M.tool_customlang.Y = {};
 M.tool_customlang.init_editor = function(Y) {
     M.tool_customlang.Y = Y;
 
-    Y.all('#translator .local textarea').each(function (textarea) {
+    Y.all('#translator .local textarea').each(function(textarea) {
         var cell = textarea.get('parentNode');
         textarea.setStyle('height', cell.getComputedStyle('height'));
     });
-}
+};

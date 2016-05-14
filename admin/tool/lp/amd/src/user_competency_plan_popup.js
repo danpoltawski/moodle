@@ -60,7 +60,7 @@ define(['jquery', 'core/notification', 'core/str', 'core/ajax', 'core/templates'
         }]);
 
         // Log the user competency viewed in plan event.
-        requests[0].then(function (result) {
+        requests[0].then(function(result) {
             var eventMethodName = 'core_competency_user_competency_viewed_in_plan';
             // Trigger core_competency_user_competency_plan_viewed event instead if plan is already completed.
             if (result.plan.iscompleted) {

@@ -80,12 +80,12 @@ M.mod_chat_ajax.init = function(Y, cfg) {
             }, this);
 
             // Send the message when the enter key is pressed.
-            Y.on('key', this.send, this.messageinput,  'press:13', this);
+            Y.on('key', this.send, this.messageinput, 'press:13', this);
 
             document.title = this.cfg.chatroom_name;
 
             // Prepare and execute the first AJAX request of information.
-            Y.io(this.api,{
+            Y.io(this.api, {
                 method : 'POST',
                 data :  build_querystring({
                     action : 'init',
@@ -115,7 +115,7 @@ M.mod_chat_ajax.init = function(Y, cfg) {
             }, this.cfg.timer, this);
 
             // Create and initalise theme changing menu.
-            this.thememenu = new Y.YUI2.widget.Menu('basicmenu', {xy:[0,0]});
+            this.thememenu = new Y.YUI2.widget.Menu('basicmenu', {xy:[0, 0]});
             this.thememenu.addItems([
                 {text: M.util.get_string('bubble', 'mod_chat'), url: this.cfg.chaturl + '&theme=bubble'},
                 {text: M.util.get_string('compact', 'mod_chat'), url: this.cfg.chaturl + '&theme=compact'}
@@ -140,7 +140,7 @@ M.mod_chat_ajax.init = function(Y, cfg) {
         },
 
         send : function(e, beep) {
-            if((this.messageinput.get('value') != '') || (typeof beep != 'undefined')) {
+            if ((this.messageinput.get('value') != '') || (typeof beep != 'undefined')) {
                 this.sendbutton.set('value', M.util.get_string('sending', 'chat'));
                 var data = {
                     chat_message : (!beep) ? this.messageinput.get('value') : '',
@@ -148,7 +148,7 @@ M.mod_chat_ajax.init = function(Y, cfg) {
                     theme : this.cfg.theme
                 };
                 if (beep) {
-                    data.beep = beep
+                    data.beep = beep;
                 }
                 data.action = 'chat';
 
@@ -179,7 +179,7 @@ M.mod_chat_ajax.init = function(Y, cfg) {
             }, this.cfg.timer, this);
         },
 
-        talkto: function (e, name) {
+        talkto: function(e, name) {
             this.messageinput.set('value', "To " + name + ": ");
             this.messageinput.focus();
         },
@@ -214,9 +214,9 @@ M.mod_chat_ajax.init = function(Y, cfg) {
                 window.location = this.cfg.home;
             }
             this.cfg.chat_lasttime = data.lasttime;
-            this.cfg.chat_lastrow  = data.lastrow;
+            this.cfg.chat_lastrow = data.lastrow;
             // Update messages.
-            for (var key in data.msgs){
+            for (var key in data.msgs) {
                 if (!M.util.in_array(key, this.messages)) {
                     this.messages.push(key);
                     this.append_message(key, data.msgs[key], data.lastrow);

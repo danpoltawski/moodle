@@ -94,7 +94,7 @@ Item.prototype = {
             tmpnode,
             outcome = this.checkAjaxResponse(transactionid, response, args);
         if (outcome === false) {
-            Y.log('AJAX request to move '+this.get('itemname')+' up failed by outcome.', 'warn', 'moodle-course-management');
+            Y.log('AJAX request to move ' + this.get('itemname') + ' up failed by outcome.', 'warn', 'moodle-course-management');
             return false;
         }
         node = this.get('node');
@@ -134,7 +134,7 @@ Item.prototype = {
                 }
             }
             this.updated(true);
-            Y.log('Success: '+this.get('itemname')+' moved up by AJAX.', 'info', 'moodle-course-management');
+            Y.log('Success: ' + this.get('itemname') + ' moved up by AJAX.', 'info', 'moodle-course-management');
         } else {
             // Aha it succeeded but this is the top item in the list. Pagination is in play!
             // Refresh to update the state of things.
@@ -163,7 +163,7 @@ Item.prototype = {
             tmpnode,
             outcome = this.checkAjaxResponse(transactionid, response, args);
         if (outcome === false) {
-            Y.log('AJAX request to move '+this.get('itemname')+' down failed by outcome.', 'warn', 'moodle-course-management');
+            Y.log('AJAX request to move ' + this.get('itemname') + ' down failed by outcome.', 'warn', 'moodle-course-management');
             return false;
         }
         node = this.get('node');
@@ -203,7 +203,7 @@ Item.prototype = {
                 }
             }
             this.updated(true);
-            Y.log('Success: '+this.get('itemname')+' moved down by AJAX.', 'info', 'moodle-course-management');
+            Y.log('Success: ' + this.get('itemname') + ' moved down by AJAX.', 'info', 'moodle-course-management');
         } else {
             // Aha it succeeded but this is the bottom item in the list. Pagination is in play!
             // Refresh to update the state of things.
@@ -226,7 +226,7 @@ Item.prototype = {
         var outcome = this.checkAjaxResponse(transactionid, response, args),
             hidebtn;
         if (outcome === false) {
-            Y.log('AJAX request to show '+this.get('itemname')+' by outcome.', 'warn', 'moodle-course-management');
+            Y.log('AJAX request to show ' + this.get('itemname') + ' by outcome.', 'warn', 'moodle-course-management');
             return false;
         }
 
@@ -236,7 +236,7 @@ Item.prototype = {
             hidebtn.focus();
         }
         this.updated();
-        Y.log('Success: '+this.get('itemname')+' made visible by AJAX.', 'info', 'moodle-course-management');
+        Y.log('Success: ' + this.get('itemname') + ' made visible by AJAX.', 'info', 'moodle-course-management');
     },
 
     /**
@@ -245,7 +245,7 @@ Item.prototype = {
      */
     markVisible : function() {
         this.get('node').setAttribute('data-visible', '1');
-        Y.log('Marked '+this.get('itemname')+' as visible', 'info', 'moodle-course-management');
+        Y.log('Marked ' + this.get('itemname') + ' as visible', 'info', 'moodle-course-management');
         return true;
     },
 
@@ -262,7 +262,7 @@ Item.prototype = {
         var outcome = this.checkAjaxResponse(transactionid, response, args),
             showbtn;
         if (outcome === false) {
-            Y.log('AJAX request to hide '+this.get('itemname')+' by outcome.', 'warn', 'moodle-course-management');
+            Y.log('AJAX request to hide ' + this.get('itemname') + ' by outcome.', 'warn', 'moodle-course-management');
             return false;
         }
         this.markHidden();
@@ -271,7 +271,7 @@ Item.prototype = {
             showbtn.focus();
         }
         this.updated();
-        Y.log('Success: '+this.get('itemname')+' made hidden by AJAX.', 'info', 'moodle-course-management');
+        Y.log('Success: ' + this.get('itemname') + ' made hidden by AJAX.', 'info', 'moodle-course-management');
     },
 
     /**
@@ -280,7 +280,7 @@ Item.prototype = {
      */
     markHidden : function() {
         this.get('node').setAttribute('data-visible', '0');
-        Y.log('Marked '+this.get('itemname')+' as hidden', 'info', 'moodle-course-management');
+        Y.log('Marked ' + this.get('itemname') + ' as hidden', 'info', 'moodle-course-management');
         return true;
     },
 
@@ -308,7 +308,7 @@ Item.prototype = {
         if (this.highlighttimeout) {
             window.clearTimeout(this.highlighttimeout);
         }
-        this.highlighttimeout = window.setTimeout(function(){
+        this.highlighttimeout = window.setTimeout(function() {
             node.removeClass('highlight');
         }, 2500);
     }
