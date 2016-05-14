@@ -20,7 +20,7 @@
     'no-dupe-args': 'error',
     'no-dupe-keys': 'error',
     'no-duplicate-case': 'error',
-    'no-empty': 'error',
+    // Disabled for YUI rollups, enabled by grunt for AMD: 'no-empty': 'error',
     'no-empty-character-class': 'error',
     'no-ex-assign': 'error',
     'no-extra-boolean-cast': 'error',
@@ -83,9 +83,9 @@
 
     // === Variables ===
     'no-delete-var': 'error',
-    'no-undef': 'error',
+    // Disabled for YUI rollups, enabled by grunt for AMD: 'no-undef': 'off',
     //DEFINE POLICY: 'no-undef-init': 'error',
-    'no-unused-vars': 'error',
+    // Disabled for YUI rollups, enabled by grunt for AMD: 'no-unused-vars': 'error',
 
     // === Stylistic Issues ===
     'array-bracket-spacing': 'warn',
