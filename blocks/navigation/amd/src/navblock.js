@@ -21,7 +21,7 @@
  * @copyright  2015 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/tree'], function($, Tree) {
+define(['jquery', 'core/tree', 'core/yui'], function($, Tree, Y) {
     return {
         init: function(instanceid) {
             var navTree = new Tree(".block_navigation .block_tree");
