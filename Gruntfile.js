@@ -289,7 +289,6 @@ module.exports = function(grunt) {
             grunt.task.run('amd');
         } else {
             // Run them all!.
-            grunt.task.run('ignorefiles');
             grunt.task.run('css');
             grunt.task.run('js');
         }
