@@ -187,7 +187,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/ajax', 'tool_lp/d
      * @return {Promise} A deffered object with the scale values.
      */
     ScaleConfig.prototype.getScaleValues = function(scaleid) {
-        return ModScaleValues.get_values(scaleid).then(function(values) {
+        return ModScaleValues.getValues(scaleid).then(function(values) {
             this.scalevalues = values;
             return values;
         }.bind(this));

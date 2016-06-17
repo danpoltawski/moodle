@@ -28,12 +28,11 @@ define(['jquery', 'core/ajax'], function($, ajax) {
         /**
          * Return a promise object that will be resolved into a string eventually (maybe immediately).
          *
-         * @method get_values
+         * @method getValues
          * @param {Number} scaleid The scale id
-         * @return [] {Promise}
+         * @return {Promise}
          */
-        // eslint-disable-next-line camelcase
-        get_values: function(scaleid) {
+        getValues: function(scaleid) {
 
             var deferred = $.Deferred();
 

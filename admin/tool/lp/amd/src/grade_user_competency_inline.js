@@ -94,7 +94,7 @@ define(['jquery',
         var options = [],
             self = this;
 
-        var promise = ScaleValues.get_values(self._scaleId);
+        var promise = ScaleValues.getValues(self._scaleId);
         promise.done(function(scalevalues) {
             options.push({
                 value: '',
