@@ -35,7 +35,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
          * @method query
          * @public
          * @param {Object} args Search parameters
-         * @return {Object} jQuery deferred object
+         * @return {Promise} jQuery Deferred object
          */
         query: function(args) {
             var request = {
@@ -61,7 +61,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
          * @method create
          * @public
          * @param {Object} args Tool type properties
-         * @return {Object} jQuery deferred object
+         * @return {Promise} jQuery Deferred object
          */
         create: function(args) {
             var request = {
@@ -83,7 +83,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
          * @method update
          * @public
          * @param {Object} args Tool type properties
-         * @return {Object} jQuery deferred object
+         * @return {Promise} jQuery Deferred object
          */
         update: function(args) {
             var request = {
@@ -104,7 +104,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
          * @method delete
          * @public
          * @param {Integer} id Tool type ID
-         * @return {Object} jQuery deferred object
+         * @return {Promise} jQuery Deferred object
          */
         delete: function(id) {
             var request = {
@@ -128,7 +128,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
          * @method query
          * @public
          * @param {Integer} id Tool type ID
-         * @return {Object} jQuery deferred object
+         * @return {Promise} jQuery Deferred object
          */
         getFromToolProxyId: function(id) {
             return this.query({toolproxyid: id});
@@ -142,7 +142,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
          * @method isCartridge
          * @public
          * @param {String} url
-         * @return {Object} jQuery deferred object
+         * @return {Promise} jQuery Deferred object
          */
         isCartridge: function(url) {
             var request = {

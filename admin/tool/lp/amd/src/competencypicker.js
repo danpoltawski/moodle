@@ -268,7 +268,7 @@ define(['jquery',
      * Find a node in the dialogue.
      *
      * @param {String} selector
-     * @return {node}
+     * @return {JQuery}
      * @method _find
      */
     Picker.prototype._find = function(selector) {

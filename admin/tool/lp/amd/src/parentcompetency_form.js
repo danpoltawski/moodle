@@ -61,7 +61,7 @@ define(['jquery', 'core/ajax', 'core/str', 'tool_lp/competencypicker', 'core/tem
     /**
      * Set the parent competency in the competency form.
      *
-     * @param {Object} data Data containing selected cmpetency.
+     * @param {Object} data Data containing selected competency.
      * @method setParent
      */
     ParentCompetencyForm.prototype.setParent = function(data) {

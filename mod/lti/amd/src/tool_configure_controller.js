@@ -291,7 +291,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method addTool
      * @private
-     * @return {Object} jQuery deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var addTool = function() {
         var url = $.trim(getToolURL());

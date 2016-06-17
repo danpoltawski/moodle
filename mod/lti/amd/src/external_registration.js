@@ -48,7 +48,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method getExternalRegistrationCancelButton
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getExternalRegistrationCancelButton = function() {
         return $(SELECTORS.EXTERNAL_REGISTRATION_CANCEL_BUTTON);
@@ -60,7 +60,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method getExternalRegistrationContainer
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getExternalRegistrationContainer = function() {
         return $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER);
@@ -72,7 +72,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method getExternalRegistrationTemplateContainer
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getExternalRegistrationTemplateContainer = function() {
         return $(SELECTORS.EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER);
@@ -85,7 +85,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method getToolTypeCapabilitiesContainer
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getToolTypeCapabilitiesContainer = function() {
         return $(SELECTORS.TOOL_TYPE_CAPABILITIES_CONTAINER);
@@ -97,7 +97,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method getToolTypeCapabilitiesTemplateContainer
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getToolTypeCapabilitiesTemplateContainer = function() {
         return $(SELECTORS.TOOL_TYPE_CAPABILITIES_TEMPLATE_CONTAINER);
@@ -275,7 +275,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @method getRegistrationRequest
      * @private
      * @param {Integer} id Tool Proxy ID
-     * @return {Object} jQuery Deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var getRegistrationRequest = function(id) {
         var request = {
@@ -294,7 +294,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method cancelRegistration
      * @private
-     * @return {Object} jQuery Deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var cancelRegistration = function() {
         startLoadingCancel();
@@ -339,7 +339,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @method renderExternalRegistrationWindow
      * @private
      * @param {Object} registrationRequest
-     * @return {Object} jQuery Deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var renderExternalRegistrationWindow = function(registrationRequest) {
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
@@ -364,7 +364,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @private
      * @param {Object} typeData A set of data representing a type, as returned by a request to get a type
      *               from the Moodle server.
-     * @return {Object} jQuery Deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var setTypeStatusActive = function(typeData) {
         return toolType.update({
@@ -383,7 +383,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @private
      * @param {Object} typeData A set of data representing a type, as returned by a request to get a type
      *               from the Moodle server.
-     * @return {Object} jQuery Deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var promptForToolTypeCapabilitiesAgreement = function(typeData) {
         var promise = $.Deferred();
@@ -438,7 +438,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @method createAndRegisterToolProxy
      * @private
      * @param {String} url Tool registration URL to register
-     * @return {Object} jQuery Deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var createAndRegisterToolProxy = function(url) {
         var promise = $.Deferred();
@@ -478,7 +478,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @method registerProxy
      * @private
      * @param {Integer} id Proxy id to register
-     * @return {Object} jQuery Deferred object to fail or resolve
+     * @return {Promise} jQuery Deferred object to fail or resolve
      */
     var registerProxy = function(id) {
         var promise = $.Deferred();

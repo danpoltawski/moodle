@@ -54,7 +54,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
      *
      * @method getSubmitButton
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getSubmitButton = function() {
         return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
@@ -65,7 +65,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
      *
      * @method getCancelButton
      * @private
-     * @return {Object} jQuery object
+     * @return {JQuery} jQuery object
      */
     var getCancelButton = function() {
         return $(SELECTORS.REGISTRATION_CANCEL_BUTTON);
@@ -134,7 +134,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
      *
      * @method submitCartridgeURL
      * @private
-     * @return {Object} jQuery deferred object
+     * @return {Promise} jQuery Deferred object
      */
     var submitCartridgeURL = function() {
         if (isLoading()) {

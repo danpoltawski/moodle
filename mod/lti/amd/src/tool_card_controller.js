@@ -46,8 +46,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method getDeleteButton
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {JQuery} jQuery object
      */
     var getDeleteButton = function(element) {
         return element.find(SELECTORS.DELETE_BUTTON);
@@ -58,8 +58,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method getNameElement
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {JQuery} jQuery object
      */
     var getNameElement = function(element) {
         return element.find(SELECTORS.NAME_ELEMENT);
@@ -70,8 +70,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method getDescriptionElement
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {JQuery} jQuery object
      */
     var getDescriptionElement = function(element) {
         return element.find(SELECTORS.DESCRIPTION_ELEMENT);
@@ -94,7 +94,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method hasActivateButton
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      * @return {Boolean} true if has active buton
      */
     var hasActivateButton = function(element) {
@@ -120,7 +120,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method hasCapabilitiesContainer
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      * @return {Boolean} true if has capbilities.
      */
     var hasCapabilitiesContainer = function(element) {
@@ -144,7 +144,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method clearAllAnnouncements
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var clearAllAnnouncements = function(element) {
         element.removeClass('announcement loading success fail capabilities');
@@ -155,7 +155,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method startLoading
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var startLoading = function(element) {
         clearAllAnnouncements(element);
@@ -167,7 +167,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method stopLoading
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var stopLoading = function(element) {
         element.removeClass('announcement loading');
@@ -179,8 +179,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method announceSuccess
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery Deferred object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {Promise} jQuery Deferred object
      */
     var announceSuccess = function(element) {
         var promise = $.Deferred();
@@ -201,8 +201,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method announceFailure
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery Deferred object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {Promise} jQuery Deferred object
      */
     var announceFailure = function(element) {
         var promise = $.Deferred();
@@ -223,8 +223,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method deleteType
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery Deferred object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {Promise} jQuery Deferred object
      */
     var deleteType = function(element) {
         var promise = $.Deferred();
@@ -291,7 +291,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method setValueSnapshot
      * @private
-     * @param {Object} element jQuery object representing the element.
+     * @param {JQuery} element jQuery object representing the element.
      * @param {String} value to be saved.
      */
     var setValueSnapshot = function(element, value) {
@@ -303,7 +303,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method getValueSnapshot
      * @private
-     * @param {Object} element jQuery object representing the element.
+     * @param {JQuery} element jQuery object representing the element.
      * @return {String} the saved value.
      */
     var getValueSnapshot = function(element) {
@@ -315,7 +315,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method snapshotDescription
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var snapshotDescription = function(element) {
         var descriptionElement = getDescriptionElement(element);
@@ -334,8 +334,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method updateDescription
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery Deferred object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {Promise} jQuery Deferred object
      */
     var updateDescription = function(element) {
         var typeId = getTypeId(element);
@@ -387,7 +387,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method snapshotName
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var snapshotName = function(element) {
         var nameElement = getNameElement(element);
@@ -406,8 +406,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method updateName
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery Deferred object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {Promise} jQuery Deferred object
      */
     var updateName = function(element) {
         var typeId = getTypeId(element);
@@ -459,8 +459,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method setStatusActive
      * @private
-     * @param {Object} element jQuery object representing the tool card.
-     * @return {Object} jQuery Deferred object
+     * @param {JQuery} element jQuery object representing the tool card.
+     * @return {Promise} jQuery Deferred object
      */
     var setStatusActive = function(element) {
         var id = getTypeId(element);
@@ -505,7 +505,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method displayCapabilitiesApproval
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var displayCapabilitiesApproval = function(element) {
         element.addClass('announcement capabilities');
@@ -516,7 +516,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method hideCapabilitiesApproval
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var hideCapabilitiesApproval = function(element) {
         element.removeClass('announcement capabilities');
@@ -529,7 +529,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method activateToolType
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var activateToolType = function(element) {
         if (hasCapabilitiesContainer(element)) {
@@ -544,7 +544,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      *
      * @method registerEventListeners
      * @private
-     * @param {Object} element jQuery object representing the tool card.
+     * @param {JQuery} element jQuery object representing the tool card.
      */
     var registerEventListeners = function(element) {
         var deleteButton = getDeleteButton(element);
@@ -638,7 +638,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
         /**
          * Initialise this module.
          *
-         * @param {Object} element jQuery object representing the tool card.
+         * @param {JQuery} element jQuery object representing the tool card.
          */
         init: function(element) {
             registerEventListeners(element);

@@ -180,7 +180,7 @@ define(['jquery',
      * Find a node in the dialogue.
      *
      * @param {String} selector
-     * @return {node} the node
+     * @return {JQuery}
      * @method _find
      * @protected
      */
