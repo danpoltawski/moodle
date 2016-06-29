@@ -1,5 +1,6 @@
 YUI.add('moodle-course-toolboxes', function (Y, NAME) {
 
+/* eslint-disable no-unused-vars */
 /**
  * Resource and activity toolbox class.
  *
@@ -198,7 +199,6 @@ Y.extend(TOOLBOX, Y.Base, {
     }
 }
 );
-
 /**
  * Resource and activity toolbox class.
  *

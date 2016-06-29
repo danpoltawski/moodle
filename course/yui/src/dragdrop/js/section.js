@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * Section drag and drop.
  *
@@ -5,6 +6,7 @@
  * @constructor
  * @extends M.core.dragdrop
  */
+
 var DRAGSECTION = function() {
     DRAGSECTION.superclass.constructor.apply(this, arguments);
 };

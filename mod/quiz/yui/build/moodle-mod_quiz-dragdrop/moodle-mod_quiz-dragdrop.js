@@ -1,5 +1,6 @@
 YUI.add('moodle-mod_quiz-dragdrop', function (Y, NAME) {
 
+/* eslint-disable no-unused-vars */
 /**
  * Drag and Drop for Quiz sections and slots.
  *

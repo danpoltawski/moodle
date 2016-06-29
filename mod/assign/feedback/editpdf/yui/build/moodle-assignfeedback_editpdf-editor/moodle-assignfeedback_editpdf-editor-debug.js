@@ -14,6 +14,7 @@ YUI.add('moodle-assignfeedback_editpdf-editor', function (Y, NAME) {
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* eslint-disable no-unused-vars */
 
 /**
  * A list of globals used by this module.
@@ -2166,6 +2167,7 @@ Y.extend(COMMENTMENU, M.assignfeedback_editpdf.dropdown, {
 
 M.assignfeedback_editpdf = M.assignfeedback_editpdf || {};
 M.assignfeedback_editpdf.commentmenu = COMMENTMENU;
+/* eslint-disable no-unused-vars */
 var COMMENTSEARCHNAME = "commentsearch",
     COMMENTSEARCH;
 
@@ -3063,6 +3065,7 @@ M.assignfeedback_editpdf.quickcommentlist = QUICKCOMMENTLIST;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* eslint-disable no-unused-vars */
 
 /**
  * Provides an in browser PDF editor.

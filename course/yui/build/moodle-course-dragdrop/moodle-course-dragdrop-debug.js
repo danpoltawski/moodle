@@ -1,5 +1,6 @@
 YUI.add('moodle-course-dragdrop', function (Y, NAME) {
 
+/* eslint-disable no-unused-vars */
 /**
  * Drag and Drop for course sections and course modules.
  *
@@ -29,6 +30,7 @@ var CSS = {
 };
 
 M.course = M.course || {};
+/* eslint-disable no-unused-vars */
 /**
  * Section drag and drop.
  *
@@ -36,6 +38,7 @@ M.course = M.course || {};
  * @constructor
  * @extends M.core.dragdrop
  */
+
 var DRAGSECTION = function() {
     DRAGSECTION.superclass.constructor.apply(this, arguments);
 };

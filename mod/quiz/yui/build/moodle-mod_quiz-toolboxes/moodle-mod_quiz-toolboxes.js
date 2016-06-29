@@ -1,5 +1,6 @@
 YUI.add('moodle-mod_quiz-toolboxes', function (Y, NAME) {
 
+/* eslint-disable no-unused-vars */
 /**
  * Resource and activity toolbox class.
  *
@@ -220,6 +221,7 @@ Y.extend(TOOLBOX, Y.Base, {
     }
 }
 );
+/* eslint-disable no-unused-vars */
 /**
  * Resource and activity toolbox class.
  *
