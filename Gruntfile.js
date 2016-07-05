@@ -169,6 +169,15 @@ module.exports = function(grunt) {
                 recursive: true,
                 paths: [cwd]
             }
+        },
+        stylelint: {
+            less: {
+                options: {syntax: 'less'},
+                src: ['theme/**/*less', '!theme/bootstrapbase/less/bootstrap/*'],
+            },
+           css: {
+               src: ['**/*.css', '!theme/bootstrapbase/**', '!vendor/**', '!node_modules/**', '!lib/yuilib/**'],
+           },
         }
     });
 
@@ -308,6 +317,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-eslint');
+    grunt.loadNpmTasks('grunt-stylelint');
 
     // Register JS tasks.
     grunt.registerTask('shifter', 'Run Shifter against the current directory', tasks.shifter);
@@ -317,7 +327,7 @@ module.exports = function(grunt) {
     grunt.registerTask('js', ['amd', 'yui']);
 
     // Register CSS taks.
-    grunt.registerTask('css', ['less:bootstrapbase']);
+    grunt.registerTask('css', ['stylelint:less', 'less:bootstrapbase']);
 
     // Register the startup task.
     grunt.registerTask('startup', 'Run the correct tasks for the current directory', tasks.startup);
