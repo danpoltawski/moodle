@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * Section drag and drop.
  *
