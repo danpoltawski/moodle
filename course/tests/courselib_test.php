@@ -2788,7 +2788,7 @@ class core_course_courselib_testcase extends advanced_testcase {
         try {
             core_external::update_inplace_editable('core_course', 'activityname', $forum->cmid, 'New forum name');
             $this->fail('Exception expected');
-        } catch (moodle_exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Course or activity not accessible. (Not enrolled)',
                 $e->getMessage());
         }

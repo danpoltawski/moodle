@@ -107,20 +107,6 @@ function report_outline_page_type_list($pagetype, $parentcontext, $currentcontex
 }
 
 /**
- * Callback to verify if the given instance of store is supported by this report or not.
- *
- * @param string $instance store instance.
- *
- * @return bool returns true if the store is supported by the report, false otherwise.
- */
-function report_outline_supports_logstore($instance) {
-    if ($instance instanceof \core\log\sql_internal_table_reader || $instance instanceof \logstore_legacy\log\store) {
-        return true;
-    }
-    return false;
-}
-
-/**
  * Add nodes to myprofile page.
  *
  * @param \core_user\output\myprofile\tree $tree Tree object

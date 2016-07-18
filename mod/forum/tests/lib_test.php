@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use \core_rating\callback\can_see_item_ratings;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -1895,12 +1897,12 @@ class mod_forum_lib_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests for mod_forum_rating_can_see_item_ratings().
+     * Tests for ratings can_see_item_ratings() callback.
      *
      * @throws coding_exception
      * @throws rating_exception
      */
-    public function test_mod_forum_rating_can_see_item_ratings() {
+    public function test_rating_can_see_item_ratings() {
         global $DB;
 
         $this->resetAfterTest();
@@ -1963,37 +1965,37 @@ class mod_forum_lib_testcase extends advanced_testcase {
                         'itemid' => $post->id,
                         'scaleid' => 2);
         $this->setUser($user1);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user2);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user3);
-        $this->assertFalse(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertFalse((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user4);
-        $this->assertFalse(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertFalse((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
 
         // Now try with accessallgroups cap and make sure everything is visible.
         assign_capability('moodle/site:accessallgroups', CAP_ALLOW, $role->id, $context->id);
         $this->setUser($user1);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user2);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user3);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user4);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
 
         // Change group mode and verify visibility.
         $course->groupmode = VISIBLEGROUPS;
         $DB->update_record('course', $course);
         unassign_capability('moodle/site:accessallgroups', $role->id);
         $this->setUser($user1);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user2);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user3);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
         $this->setUser($user4);
-        $this->assertTrue(mod_forum_rating_can_see_item_ratings($params));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_forum')->is_visible());
 
     }
 

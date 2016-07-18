@@ -1,5 +1,13 @@
 This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
+=== 3.2 ===
+* component_callback 'output_fragment_<fragmentname>' has been converted to callback '\core\callback\output_fragment'
+* component_callback 'rescale_activity_grades' has been converted to callback '\core\callback\rescale_activity_grades'
+* component_callback 'get_shortcuts' has been converted to callback '\core_course\callback\activity_chooser_shortcuts'
+* component_callback 'print_recent_activity' has been converted to callback '\core\callback\print_recent_activity'
+* component_callback 'inplace_editable' has been converted to callback '\core\callback\inplace_editable'
+* component_callback 'restore_group_member' has been converted to callback '\core\callback\restore_group_member'
+* component_callback 'restore_role_assignment' has been converted to callback '\core\callback\restore_role_assignment'
 
 === 3.2 ===
 

@@ -126,7 +126,6 @@ class manager implements \core\log\manager {
             return array();
         }
 
-        $reports = get_plugin_list_with_function('report', 'supports_logstore', 'lib.php');
         $enabled = $this->stores;
 
         if (empty($enabled[$logstore])) {
@@ -136,12 +135,14 @@ class manager implements \core\log\manager {
         } else {
             $instance = $enabled[$logstore];
         }
+        $callback = \core\callback\report_supports_logstore::create(array('logstore' => $instance));
+        $callback->dispatch();
+
+        $supported = $callback->get_supported_components();
 
         $return = array();
-        foreach ($reports as $report => $fulldir) {
-            if (component_callback($report, 'supports_logstore', array($instance), false)) {
-                $return[$report] = get_string('pluginname', $report);
-            }
+        foreach ($supported as $report) {
+            $return[$report] = get_string('pluginname', $report);
         }
 
         return $return;
@@ -160,16 +161,14 @@ class manager implements \core\log\manager {
         $allstores = self::get_store_plugins();
         $enabled = $this->stores;
 
-        $function = component_callback_exists($component, 'supports_logstore');
-        if (!$function) {
-            // The report doesn't define the callback, most probably it doesn't need log stores.
-            return false;
-        }
-
         $return = array();
         foreach ($allstores as $store => $logclass) {
             $instance = empty($enabled[$store]) ? new $logclass($this) : $enabled[$store];
-            if ($function($instance)) {
+
+            $callback = \core\callback\report_supports_logstore::create(array('logstore' => $instance));
+
+            // Dispatch to a single component and use the is_supported method to see if the last called component is supported.
+            if ($callback->dispatch($component)->is_supported()) {
                 $return[$store] = get_string('pluginname', $store);
             }
         }

@@ -1275,7 +1275,9 @@ function get_module_metadata($course, $modnames, $sectionreturn = null) {
 
         // Each module can implement callback modulename_get_shortcuts() in its lib.php and return the list
         // of elements to be added to activity chooser.
-        $items = component_callback($modname, 'get_shortcuts', array($defaultmodule), null);
+        $callback = \core_course\callback\activity_chooser_shortcuts::create((array) $defaultmodule);
+        $items = $callback->dispatch($modname)->get_shortcuts();
+
         if ($items !== null) {
             foreach ($items as $item) {
                 // Add all items to the return array. All items must have different links, use them as a key in the return array.
@@ -3940,20 +3942,6 @@ function course_get_tagged_courses($tag, $exclusivemode = false, $fromctx = 0, $
 
     return new core_tag\output\tagindex($tag, 'core', 'course', $content,
             $exclusivemode, $fromctx, $ctx, $rec, $page, $totalpages);
-}
-
-/**
- * Implements callback inplace_editable() allowing to edit values in-place
- *
- * @param string $itemtype
- * @param int $itemid
- * @param mixed $newvalue
- * @return \core\output\inplace_editable
- */
-function core_course_inplace_editable($itemtype, $itemid, $newvalue) {
-    if ($itemtype === 'activityname') {
-        return \core_course\output\course_module_name::update($itemid, $newvalue);
-    }
 }
 
 /**

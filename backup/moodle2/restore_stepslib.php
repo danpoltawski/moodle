@@ -1344,11 +1344,9 @@ class restore_groups_members_structure_step extends restore_structure_step {
                     }
 
                 } else {
-                    $dir = core_component::get_component_directory($data->component);
-                    if ($dir and is_dir($dir)) {
-                        if (component_callback($data->component, 'restore_group_member', array($this, $data), true)) {
-                            return;
-                        }
+                    $callback = \core\callback\restore_group_member::create(array('step' => $this, 'data' => $data));
+                    if ($callback->dispatch($data->component)->is_groupmemberrestored()) {
+                        return;
                     }
                     // Bad luck, plugin could not restore the data, let's add normal membership.
                     groups_add_member($data->groupid, $data->userid);
@@ -2057,11 +2055,10 @@ class restore_ras_and_caps_structure_step extends restore_structure_step {
             $data->roleid    = $newroleid;
             $data->userid    = $newuserid;
             $data->contextid = $contextid;
-            $dir = core_component::get_component_directory($data->component);
-            if ($dir and is_dir($dir)) {
-                if (component_callback($data->component, 'restore_role_assignment', array($this, $data), true)) {
-                    return;
-                }
+
+            $callback = \core\callback\restore_role_assignment::create(array('step' => $this, 'data' => $data));
+            if ($callback->dispatch($data->component)->is_roleassignmentrestored()) {
+                return;
             }
             // Bad luck, plugin could not restore the data, let's add normal membership.
             role_assign($data->roleid, $data->userid, $data->contextid);

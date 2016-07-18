@@ -176,7 +176,8 @@ class core_tag_external_testcase extends externallib_advanced_testcase {
         $this->assertEquals('New tag name', $DB->get_field('tag', 'rawname', array('id' => $tag->id)));
 
         // Call callback core_tag_inplace_editable() directly.
-        $tmpl = component_callback('core_tag', 'inplace_editable', array('tagname', $tag->id, 'Rename me again'));
+        $params = array('itemtype' => 'tagname', 'itemid' => $tag->id, 'value' => 'Rename me again');
+        $tmpl = \core\callback\inplace_editable::create($params)->dispatch('core_tag')->get_inplaceeditable();
         $this->assertInstanceOf('core\output\inplace_editable', $tmpl);
         $res = $tmpl->export_for_template($PAGE->get_renderer('core'));
         $this->assertEquals('Rename me again', $res['value']);

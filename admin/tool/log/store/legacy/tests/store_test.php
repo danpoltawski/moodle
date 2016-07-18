@@ -256,6 +256,7 @@ class logstore_legacy_store_testcase extends advanced_testcase {
     public function test_get_supported_reports() {
         $logmanager = get_log_manager();
         $allreports = \core_component::get_plugin_list('report');
+        $allreports = array_keys($allreports);
 
         $supportedreports = array(
             'report_log' => '/report/log',
@@ -265,11 +266,18 @@ class logstore_legacy_store_testcase extends advanced_testcase {
             'report_stats' => '/report/stats'
         );
 
+        foreach ($supportedreports as $component => $dir) {
+            // Remove report_ from the component name.
+            $pluginname = substr($component, 7);
+            if (!in_array($pluginname, $allreports)) {
+                unset($supportedreports[$component]);
+            }
+        }
+
         // Make sure all supported reports are installed.
-        $expectedreports = array_keys(array_intersect_key($allreports, $supportedreports));
         $reports = $logmanager->get_supported_reports('logstore_legacy');
         $reports = array_keys($reports);
-        foreach ($expectedreports as $expectedreport) {
+        foreach ($supportedreports as $expectedreport => $dir) {
             $this->assertContains($expectedreport, $reports);
         }
     }

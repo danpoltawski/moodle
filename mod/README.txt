@@ -33,9 +33,6 @@ Each of these modules contains a number of expected components:
 
          modulename_cron()
 
-         modulename_print_recent_activity()
-
-
 If you are a developer and interested in developing new Modules see:
 
    Moodle Documentation:  http://moodle.org/doc

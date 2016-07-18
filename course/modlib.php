@@ -580,14 +580,17 @@ function update_moduleinfo($cm, $moduleinfo, $course, $mform = null) {
                                                 'courseid' => $moduleinfo->course));
         if ($newgradeitem && $oldgradeitem->gradetype == GRADE_TYPE_VALUE && $newgradeitem->gradetype == GRADE_TYPE_VALUE) {
             $params = array(
-                $course,
-                $cm,
-                $oldgradeitem->grademin,
-                $oldgradeitem->grademax,
-                $newgradeitem->grademin,
-                $newgradeitem->grademax
+                'course' => $course,
+                'module' => $cm,
+                'oldgrademin' => $oldgradeitem->grademin,
+                'oldgrademax' => $oldgradeitem->grademin,
+                'newgrademin' => $newgradeitem->grademin,
+                'newgrademax' => $newgradeitem->grademax,
+                'itemnumber' => '0'
             );
-            if (!component_callback('mod_' . $moduleinfo->modulename, 'rescale_activity_grades', $params)) {
+
+            $callback = \core\callback\rescale_activity_grades::create($params);
+            if (!$callback->dispatch('mod_' . $moduleinfo->modulename)->is_gradesscaled()) {
                 print_error('cannotreprocessgrades', '', course_get_url($course, $cm->section), $moduleinfo->modulename);
             }
         }

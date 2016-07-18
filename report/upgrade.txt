@@ -1,5 +1,7 @@
 This files describes API changes in /report/* - plugins,
 information provided here is intended especially for developers.
+=== 3.2 ===
+* supports_logstore has been converted to use the "callbacks API". This is backwards compatible.
 
 === 3.2 ===
 * Callback delete_course is deprecated and should be replaced with observer for event \core\event\course_content_deleted

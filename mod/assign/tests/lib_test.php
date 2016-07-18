@@ -197,7 +197,8 @@ class mod_assign_lib_testcase extends mod_assign_base_testcase {
 
         $this->setUser($this->editingteachers[0]);
         $this->expectOutputRegex('/submitted:/');
-        assign_print_recent_activity($this->course, true, time() - 3600);
+        $params = array('course' => $this->course, 'viewfullnames' => true, 'timestart' => time() - 3600);
+        \core\callback\print_recent_activity::create($params)->dispatch('mod_assign');
 
         $sink->close();
     }
@@ -220,7 +221,8 @@ class mod_assign_lib_testcase extends mod_assign_base_testcase {
         $this->setUser($this->editingteachers[0]);
         $this->expectOutputRegex('/submitted:/');
         set_config('fullnamedisplay', 'firstname, lastnamephonetic');
-        assign_print_recent_activity($this->course, false, time() - 3600);
+        $params = array('course' => $this->course, 'viewfullnames' => false, 'timestart' => time() - 3600);
+        \core\callback\print_recent_activity::create($params)->dispatch('mod_assign');
 
         $sink->close();
     }
@@ -244,7 +246,8 @@ class mod_assign_lib_testcase extends mod_assign_base_testcase {
         $uniqueid = $assign->get_uniqueid_for_user($data->userid);
         $expectedstr = preg_quote(get_string('participant', 'mod_assign'), '/') . '.*' . $uniqueid;
         $this->expectOutputRegex("/{$expectedstr}/");
-        assign_print_recent_activity($this->course, false, time() - 3600);
+        $params = array('course' => $this->course, 'viewfullnames' => false, 'timestart' => time() - 3600);
+        \core\callback\print_recent_activity::create($params)->dispatch('mod_assign');
 
         $sink->close();
     }

@@ -194,7 +194,7 @@ class block_recent_activity extends block_base {
     /**
      * Returns list of recent activity within modules
      *
-     * For each used module type executes callback MODULE_print_recent_activity()
+     * For each used module type executes callback \core\callback\print_recent_activity().
      *
      * @return array array of pairs moduletype => content
      */
@@ -209,8 +209,12 @@ class block_recent_activity extends block_base {
         foreach ($usedmodules as $modname => $modfullname) {
             // Each module gets it's own logs and prints them
             ob_start();
-            $hascontent = component_callback('mod_'. $modname, 'print_recent_activity',
-                    array($this->page->course, $viewfullnames, $this->get_timestart()), false);
+            $params = array(
+                'course' => $this->page->course,
+                'viewfullnames' => $viewfullnames,
+                'timestart' => $this->get_timestart()
+            );
+            $hascontent = \core\callback\print_recent_activity::create($params)->dispatch('mod_' . $modname)->has_content();
             if ($hascontent) {
                 $recentactivity[$modname] = ob_get_contents();
             }

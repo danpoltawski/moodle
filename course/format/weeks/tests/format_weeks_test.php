@@ -203,7 +203,9 @@ class format_weeks_testcase extends advanced_testcase {
         $section = $DB->get_record('course_sections', array('course' => $course->id, 'section' => 2));
 
         // Call callback format_weeks_inplace_editable() directly.
-        $tmpl = component_callback('format_weeks', 'inplace_editable', array('sectionname', $section->id, 'Rename me again'));
+        $params = array('itemtype' => 'sectionname', 'itemid' => $section->id, 'value' => 'Rename me again');
+        $callback = \core\callback\inplace_editable::create($params);
+        $tmpl = $callback->dispatch('format_weeks')->get_inplaceeditable();
         $this->assertInstanceOf('core\output\inplace_editable', $tmpl);
         $res = $tmpl->export_for_template($PAGE->get_renderer('core'));
         $this->assertEquals('Rename me again', $res['value']);
@@ -211,7 +213,9 @@ class format_weeks_testcase extends advanced_testcase {
 
         // Try updating using callback from mismatching course format.
         try {
-            $tmpl = component_callback('format_topics', 'inplace_editable', array('sectionname', $section->id, 'New name'));
+            $params = array('itemtype' => 'sectionname', 'itemid' => $section->id, 'value' => 'New name');
+            $callback = \core\callback\inplace_editable::create($params);
+            $callback->dispatch('format_topics');
             $this->fail('Exception expected');
         } catch (moodle_exception $e) {
             $this->assertEquals(1, preg_match('/^Can not find data record in database/', $e->getMessage()));

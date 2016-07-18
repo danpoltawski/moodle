@@ -1,5 +1,7 @@
 This files describes API changes in /enrol/* - plugins,
 information provided here is intended especially for developers.
+=== 3.2 ===
+* component_callback 'allow_group_member_remove' has been converted to callback '\core\callback\allow_group_member_remove'
 
 === 3.2 ===
 

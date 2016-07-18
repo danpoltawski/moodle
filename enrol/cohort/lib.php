@@ -517,17 +517,6 @@ class enrol_cohort_plugin extends enrol_plugin {
 }
 
 /**
- * Prevent removal of enrol roles.
- * @param int $itemid
- * @param int $groupid
- * @param int $userid
- * @return bool
- */
-function enrol_cohort_allow_group_member_remove($itemid, $groupid, $userid) {
-    return false;
-}
-
-/**
  * Create a new group with the cohorts name.
  *
  * @param int $courseid

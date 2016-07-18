@@ -526,14 +526,12 @@ class rating_manager {
 
         // Get the item table name, the item id field, and the item user field for the given rating item
         // from the related component.
-        list($type, $name) = core_component::normalize_component($options->component);
-        $default = array(null, 'id', 'userid');
-        list($itemtablename, $itemidcol, $itemuseridcol) = plugin_callback($type,
-                                                                           $name,
-                                                                           'rating',
-                                                                           'get_item_fields',
-                                                                           array($options),
-                                                                           $default);
+
+        $callback = \core_rating\callback\get_item_fields::create((array)$options)->dispatch($options->component);
+
+        $itemtablename = $callback->get_itemtablename();
+        $itemidcol = $callback->get_itemidfield();
+        $itemuseridcol = $callback->get_itemuserfield();
 
         // Create an array of item IDs.
         $itemids = array();
@@ -939,13 +937,13 @@ class rating_manager {
         // Deny by default.
         $defaultpluginpermissions = array('rate' => false, 'view' => false, 'viewany' => false, 'viewall' => false);
         if (!empty($component)) {
-            list($type, $name) = core_component::normalize_component($component);
-            $pluginpermissionsarray = plugin_callback($type,
-                                                      $name,
-                                                      'rating',
-                                                      'permissions',
-                                                      array($contextid, $component, $ratingarea),
-                                                      $defaultpluginpermissions);
+            $params = array(
+                'contextid' => $contextid,
+                'component' => $component,
+                'ratingarea' => $ratingarea
+            );
+            $callback = \core_rating\callback\permissions::create($params)->dispatch($component);
+            $pluginpermissionsarray = $callback->get_permissions_array();
         } else {
             $pluginpermissionsarray = $defaultpluginpermissions;
         }
@@ -987,11 +985,7 @@ class rating_manager {
             throw new coding_exception('The rateduserid option is now a required option when checking rating validity');
         }
 
-        list($plugintype, $pluginname) = core_component::normalize_component($params['component']);
-
-        // This looks for a function like forum_rating_validate() in mod_forum lib.php
-        // wrapping the params array in another array as call_user_func_array() expands arrays into multiple arguments.
-        $isvalid = plugin_callback($plugintype, $pluginname, 'rating', 'validate', array($params), null);
+        $isvalid = \core_rating\callback\validate::create($params)->dispatch($params['component'])->is_valid();
 
         // If null then the callback does not exist.
         if ($isvalid === null) {

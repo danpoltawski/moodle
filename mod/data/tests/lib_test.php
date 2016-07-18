@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use \core_rating\callback\can_see_item_ratings;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -496,12 +498,12 @@ class mod_data_lib_testcase extends advanced_testcase {
     }
 
     /**
-     * Tests for mod_data_rating_can_see_item_ratings().
+     * Tests for rating callback "can_see_item_ratings".
      *
      * @throws coding_exception
      * @throws rating_exception
      */
-    public function test_mod_data_rating_can_see_item_ratings() {
+    public function test_rating_can_see_item_ratings() {
         global $DB;
 
         $this->resetAfterTest();
@@ -578,49 +580,49 @@ class mod_data_lib_testcase extends advanced_testcase {
                         'scaleid' => 2);
 
         $this->setUser($user1);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user2);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user3);
-        $this->assertFalse(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertFalse((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user4);
-        $this->assertFalse(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertFalse((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
 
         // Now try with accessallgroups cap and make sure everything is visible.
         assign_capability('moodle/site:accessallgroups', CAP_ALLOW, $role->id, $context->id);
         $this->setUser($user1);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user2);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user3);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user4);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
 
         // Change group mode and verify visibility.
         $course->groupmode = VISIBLEGROUPS;
         $DB->update_record('course', $course);
         unassign_capability('moodle/site:accessallgroups', $role->id);
         $this->setUser($user1);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user2);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user3);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
         $this->setUser($user4);
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params));
-        $this->assertTrue(mod_data_rating_can_see_item_ratings($params1));
+        $this->assertTrue((new can_see_item_ratings($params))->dispatch('mod_data')->is_visible());
+        $this->assertTrue((new can_see_item_ratings($params1))->dispatch('mod_data')->is_visible());
 
     }
 }

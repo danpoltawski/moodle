@@ -58,7 +58,10 @@ class cohortidnumber extends \core\output\inplace_editable {
      * @return static
      */
     public static function update($cohortid, $newvalue) {
-        global $DB;
+        global $DB, $CFG;
+
+        require_once($CFG->dirroot . '/cohort/lib.php');
+
         $cohort = $DB->get_record('cohort', array('id' => $cohortid), '*', MUST_EXIST);
         $cohortcontext = \context::instance_by_id($cohort->contextid);
         \external_api::validate_context($cohortcontext);

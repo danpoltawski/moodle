@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_rating\callback\can_see_item_ratings;
+
 require_once("../config.php");
 require_once("lib.php");
 
@@ -55,13 +57,16 @@ if ($popup) {
     $PAGE->set_pagelayout('popup');
 }
 
-$params = array('contextid' => $contextid,
-                'component' => $component,
-                'ratingarea' => $ratingarea,
-                'itemid' => $itemid,
-                'scaleid' => $scaleid);
+$callback = new can_see_item_ratings(array(
+    'contextid' => $contextid,
+    'component' => $component,
+    'ratingarea' => $ratingarea,
+    'itemid' => $itemid,
+    'scaleid' => $scaleid
+));
+
 if (!has_capability('moodle/rating:view', $context) ||
-        !component_callback($component, 'rating_can_see_item_ratings', array($params), true)) {
+        !$callback->dispatch($component)->is_visible()) {
     print_error('noviewrate', 'rating');
 }
 

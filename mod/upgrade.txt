@@ -1,5 +1,8 @@
 This files describes API changes in /mod/* - activity modules,
 information provided here is intended especially for developers.
+=== 3.2 ===
+* Ratings API has been converted to use classes from \core\callback\*. Database and Forum have been updated to the new API.
+* Print Recent Activity API has been converted to use classes from \core\callback\*. All modules have been updated to the new API.
 
 === 3.2 ===
 

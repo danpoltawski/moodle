@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_rating\callback\can_see_item_ratings;
+
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/rating/lib.php");
 
@@ -96,13 +98,17 @@ class core_rating_external extends external_api {
         self::validate_context($context);
 
         // Minimal capability required.
-        $callbackparams = array('contextid' => $context->id,
-                        'component' => $component,
-                        'ratingarea' => $ratingarea,
-                        'itemid' => $itemid,
-                        'scaleid' => $scaleid);
+        $callback = new can_see_item_ratings(array(
+            'contextid' => $context->id,
+            'component' => $component,
+            'ratingarea' => $ratingarea,
+            'itemid' => $itemid,
+            'scaleid' => $scaleid
+        ));
+
+        // Call the plugin to check visiblity.
         if (!has_capability('moodle/rating:view', $context) ||
-                !component_callback($component, 'rating_can_see_item_ratings', array($callbackparams), true)) {
+                !$callback->dispatch($component)->is_visible()) {
             throw new moodle_exception('noviewrate', 'rating');
         }
 
