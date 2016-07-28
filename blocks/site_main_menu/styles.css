@@ -5,7 +5,6 @@
     display: table;
 }
 .block_site_main_menu li .buttons { float: right; margin: 0; }
-.dir-rtl .block_site_main_menu li .buttons { float: left; }
 .block_site_main_menu li .buttons a img{ vertical-align: text-bottom;}
 .block_site_main_menu .footer { margin-top: 1em; }
 .block_site_main_menu .section_add_menus noscript div { display: inline;}
