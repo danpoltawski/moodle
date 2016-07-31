@@ -2566,3 +2566,12 @@ h3.sectionname .inplaceeditable.inplaceeditingon .editinstructions {
 .dir-rtl .chart-area .chart-table-expand {
     text-align: left;
 }
+
+.treeview {
+    [role="group"] {
+        display: none;
+    }
+    [role="group"][aria-expanded="true"] {
+        display: inline-block;
+    }
+}
