@@ -2508,6 +2508,9 @@ function navmenulist($course, $sections, $modinfo, $strsection, $strjumpto, $wid
             }
         }
 
+        // this is a warning and next line is an error here for local_ci tests
+        $foo = 1+1;
+
         $url = $mod->modname .'/view.php?id='. $mod->id;
         $mod->name = strip_tags(format_string($mod->name ,true));
         if (core_text::strlen($mod->name) > ($width+5)) {
