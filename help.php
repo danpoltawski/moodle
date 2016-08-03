@@ -55,4 +55,4 @@ echo $data->text;
 if (isset($data->completedoclink)) {
     echo $data->completedoclink;
 }
-echo $OUTPUT->footer();
+echo $OUTPUT->footer()
