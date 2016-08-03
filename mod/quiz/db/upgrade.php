@@ -186,8 +186,6 @@ function xmldb_quiz_upgrade($oldversion) {
             }
         }
 
-        // Quiz savepoint reached.
-        upgrade_mod_savepoint(true, 2016032600, 'quiz');
     }
 
     // Moodle v3.1.0 release upgrade line.
