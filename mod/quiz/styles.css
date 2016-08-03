@@ -10,6 +10,7 @@
 #page-mod-quiz-review #page .controls {
     text-align: center;
     margin: 8px auto;
+    text-align: right;
 }
 
 #page-mod-quiz-attempt .submitbtns,

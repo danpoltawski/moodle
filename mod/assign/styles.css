@@ -1,6 +1,7 @@
 .path-mod-assign div.gradingnavigation div {
     float: left;
     margin-left: 2em;
+    local-ci-fake-property: 0;
 }
 
 .path-mod-assign div.submissionstatustable,
