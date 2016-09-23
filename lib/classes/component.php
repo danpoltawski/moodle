@@ -73,6 +73,7 @@ class core_component {
     );
     /** @var array associative array of PRS-4 namespaces and corresponding paths. */
     protected static $psr4namespaces = array(
+        'IMSGlobal\LTI' => 'lib/ltiprovider/src'
     );
 
     /**

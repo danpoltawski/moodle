@@ -260,4 +260,11 @@
     <license>MIT</license>
     <version>2.1.6</version>
   </library>
+  <library>
+    <location>ltiprovider</location>
+    <name>LTI Tool Provider Library PHP</name>
+    <license>Apache</license>
+    <version>3.0.1</version>
+    <licenseversion>2.0</licenseversion>
+  </library>
 </libraries>
