@@ -15,27 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The main entry point for the external system.
+ * Tool proxy.
  *
  * @package    enrol_lti
- * @copyright  2016 Mark Nelson <markn@moodle.com>
+ * @copyright  2016 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
 
-$toolid = required_param('id', PARAM_INT);
+$toolid = null;
+$token = null;
+$filearguments = get_file_argument();
+$arguments = explode('/', trim($filearguments, '/'));
+if (count($arguments) == 2) {
+    list($toolid, $token) = $arguments;
+}
+
+$toolid = optional_param('id', $toolid, PARAM_INT);
+$token = optional_param('token', $token, PARAM_ALPHANUM);
 
 $PAGE->set_context(context_system::instance());
-$url = new moodle_url('/enrol/lti/tool.php');
+$url = new moodle_url('/enrol/lti/tp.php');
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('popup');
-$PAGE->set_title(get_string('opentool', 'enrol_lti'));
+$PAGE->set_title(get_string('registration', 'enrol_lti'));
 
-// Get the tool.
+// Only show the proxy if the token parameter is correct.
+// If we do not compare with a shared secret, someone could very easily
+// guess an id for the enrolment.
+if (!\enrol_lti\helper::verify_proxy_token($toolid, $token)) {
+    throw new \moodle_exception('incorrecttoken', 'enrol_lti');
+}
 $tool = \enrol_lti\helper::get_lti_tool($toolid);
 
-// Check if the authentication plugin is disabled.
 if (!is_enabled_auth('lti')) {
     print_error('pluginnotenabled', 'auth', '', get_string('pluginname', 'auth_lti'));
     exit();
@@ -53,31 +66,12 @@ if ($tool->status != ENROL_INSTANCE_ENABLED) {
     exit();
 }
 
-$consumerkey = required_param('oauth_consumer_key', PARAM_TEXT);
-$ltiversion = optional_param('lti_version', null, PARAM_TEXT);
 $messagetype = required_param('lti_message_type', PARAM_TEXT);
 
-// Only accept launch requests from this endpoint.
-if ($messagetype != "basic-lti-launch-request") {
+// Only accept proxy registration requests from this endpoint.
+if ($messagetype != "ToolProxyRegistrationRequest") {
     print_error('invalidrequest', 'enrol_lti');
     exit();
-}
-
-// Special handling for LTIv1 launch requests.
-if ($ltiversion === \IMSGlobal\LTI\ToolProvider\ToolProvider::LTI_VERSION1) {
-    $dataconnector = new \enrol_lti\data_connector();
-    $consumer = new \IMSGlobal\LTI\ToolProvider\ToolConsumer($consumerkey, $dataconnector);
-    // Check if the consumer has already been registered to the enrol_lti_lti2_consumer table. Register if necessary.
-    $consumer->ltiVersion = \IMSGlobal\LTI\ToolProvider\ToolProvider::LTI_VERSION1;
-    // For LTIv1, set the tool secret as the consumer secret.
-    $consumer->secret = $tool->secret;
-    $consumer->name = optional_param('tool_consumer_instance_description', null, PARAM_TEXT);
-    $consumer->consumerName = optional_param('tool_consumer_instance_name', null, PARAM_TEXT);
-    $consumer->consumerGuid = optional_param('tool_consumer_instance_guid', null, PARAM_TEXT);
-    $consumer->consumerVersion = optional_param('tool_consumer_info_version', null, PARAM_TEXT);
-    $consumer->enabled = true;
-    $consumer->protected = true;
-    $consumer->save();
 }
 
 $toolprovider = new \enrol_lti\tool_provider($toolid);
