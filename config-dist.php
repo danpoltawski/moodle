@@ -63,6 +63,16 @@ $CFG->dboptions = array(
                                 // support advanced options on connection.
                                 // If you set those in the database then
                                 // the advanced settings will not be sent.
+
+    // The following options are somewhat specific to certain database drivers
+    // as indicated in parentheses below.
+    // See documentation for each database product for more details.
+    'ssl'        => false, // (PostgreSQL) If true, use SSL,
+                           // if not, the following are ignored.
+    'sslmode'    => null,  // (PostgreSQL) SSL mode.
+    'sslkey'     => null,  // (PostgreSQL) Path to client key.
+    'sslcert'    => null,  // (PostgreSQL) Path to client certificate.
+    'sslca'      => null,  // (PostgreSQL) Path to CA certificate.
 );
 
 
