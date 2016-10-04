@@ -64,16 +64,17 @@ $CFG->dboptions = array(
                                 // If you set those in the database then
                                 // the advanced settings will not be sent.
 
-    // The following options are based on MySQL, and mirror those desribed in
-    // more detail at:
-    // https://dev.mysql.com/doc/refman/5.7/en/secure-connection-options.html
-    // Support for ssl, sslkey, sslcert and sslca is also available for pgsql.
-    'ssl'        => false, // If true, use SSL, if not, the following are ignored.
-    'sslkey'     => NULL,  // If set, ignore password and use client certificate
-    'sslcert'    => NULL,  // If set, ignore password and use client certificate
-    'sslca'      => NULL,  // If set, validate server certificate against CA
-    'sslcapath'  => NULL,  // If set, validate server certificate against CA dir
-    'sslcipher'  => NULL,  // If set, allow only these ciphers
+    // The following options are somewhat specific to certain database drivers
+    // as indicated in parentheses below.
+    // See documentation for each database product for more details.
+    'ssl'        => false, // (MySQL/PostgreSQL) If true, use SSL,
+                           // if not, the following are ignored.
+    'sslmode'    => NULL,  // (PostgreSQL) SSL mode
+    'sslkey'     => NULL,  // (MySQL/PostgreSQL) Path to client key
+    'sslcert'    => NULL,  // (MySQL/PostgreSQL) Path to client certificate
+    'sslca'      => NULL,  // (MySQL/PostgreSQL) Path to CA certificate
+    'sslcapath'  => NULL,  // (MySQL) Path to CA certificate directory
+    'sslcipher'  => NULL,  // (MySQL) Allowed ciphers
 );
 
 
