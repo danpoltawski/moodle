@@ -413,7 +413,7 @@ class enrol_self_plugin extends enrol_plugin {
         if ($rusers) {
             $contact = reset($rusers);
         } else {
-            $contact = core_user::get_support_user();
+            $contact = core_user::get_noreply_user();
         }
 
         // Directly emailing welcome message rather than using messaging.
