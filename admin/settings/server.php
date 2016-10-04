@@ -224,7 +224,7 @@ foreach ($plugins as $plugin) {
     /** @var \core\plugininfo\message $plugin */
     $plugin->load_settings($ADMIN, 'outgoingmailconfig', $hassiteconfig);
 }
-    
+
 // "update notifications" settingpage
 if (empty($CFG->disableupdatenotifications)) {
     $temp = new admin_settingpage('updatenotifications', new lang_string('updatenotifications', 'core_admin'));

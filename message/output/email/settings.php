@@ -34,12 +34,10 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configpasswordunmask('smtppass', get_string('smtppass', 'message_email'), get_string('configsmtpuser', 'message_email'), ''));
     $settings->add(new admin_setting_configtext('smtpmaxbulk', get_string('smtpmaxbulk', 'message_email'), get_string('configsmtpmaxbulk', 'message_email'), 1, PARAM_INT));
     $settings->add(new admin_setting_configtext('noreplyaddress', get_string('noreplyaddress', 'message_email'), get_string('confignoreplyaddress', 'message_email'), 'noreply@' . get_host_from_url($CFG->wwwroot), PARAM_NOTAGS));
-    $sendemailoptions = array(0 => get_string('sendusinguseremail', 'message_email'), 1 => get_string('yes'));
-    $settings->add(new admin_setting_configselect('emailonlyfromnoreplyaddress',
-            get_string('emailonlyfromnoreplyaddress', 'message_email'),
-            get_string('configemailonlyfromnoreplyaddress', 'message_email'),
-            1, $sendemailoptions));
-    $settings->add(new admin_setting_configtext('maildomain', get_string('maildomain', 'message_email'), get_string('configmaildomain', 'message_email'), '', PARAM_RAW));
+    $settings->add(new admin_setting_configtextarea('allowedemaildomains',
+            get_string('allowedemaildomains', 'message_email'),
+            get_string('configallowedemaildomains', 'message_email'),
+            ''));
     $charsets = get_list_of_charsets();
     unset($charsets['UTF-8']); // not needed here
     $options = array();

@@ -5666,13 +5666,6 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         return true;
     }
 
-    // Check from address and prevent emails to be sent from support email address.
-    $supportuser = core_user::get_support_user();
-    if ($from->email == $supportuser->email) {
-        debugging('Support user email address should not be used for email sending.', DEBUG_NORMAL);
-        return false;
-    }
-
     if (email_should_be_diverted($user->email)) {
         $subject = "[DIVERTED {$user->email}] $subject";
         $user = clone($user);
@@ -5735,28 +5728,43 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         $mail->Sender = $CFG->noreplyaddress;
     }
 
+    $alloweddomains = null;
+    if (!empty($CFG->allowedemaildomains)) {
+        $alloweddomains = explode(PHP_EOL, $CFG->allowedemaildomains);
+    }
+
     // Email will be sent using no reply address.
-    if ($CFG->emailonlyfromnoreplyaddress == true) {
+    if (empty($alloweddomains)) {
         $usetrueaddress = false;
-        if (empty($replyto) && $from->maildisplay) {
-            $replyto = $from->email;
-            $replytoname = fullname($from);
-        }
-    } else {
-        // Use user's email address (if allowed).
-        $usetrueaddress = true;
     }
 
     if (is_string($from)) { // So we can pass whatever we want if there is need.
         $mail->From     = $CFG->noreplyaddress;
         $mail->FromName = $from;
-    } else if ($usetrueaddress and $from->maildisplay) {
-        // If noreplyaddress is set to false, use users email address as from address.
-        $mail->From     = $from->email;
-        $mail->FromName = fullname($from);
+    // Check if using the true address is true, and the email is in the list of allowed domains for sending email,
+    // and that the senders email setting is either displayed to everyone, or display to only other users that are enrolled
+    // in a course with the sender.
+    } else if ($usetrueaddress
+                && \core\ip_utils::is_domain_in_allowed_list(substr($from->email, strpos($from->email, '@') + 1), $alloweddomains)
+                && ($from->maildisplay == core_user::MAILDISPLAY_EVERYONE
+                || ($from->maildisplay == core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY
+                && enrol_get_shared_courses($user, $from, false, true)))) {
+        $mail->From = $from->email;
+        $fromdetails = new stdClass();
+        $fromdetails->name = fullname($from);
+        $fromdetails->url = $CFG->wwwroot;
+        $fromstring = get_string('emailvia', 'core', $fromdetails);
+        $mail->FromName = $fromstring;
+        if (empty($replyto)) {
+            $tempreplyto[] = array($from->email, fullname($from));
+        }
     } else {
-        $mail->From     = $CFG->noreplyaddress;
-        $mail->FromName = fullname($from);
+        $mail->From = $CFG->noreplyaddress;
+        $fromdetails = new stdClass();
+        $fromdetails->name = fullname($from);
+        $fromdetails->url = $CFG->wwwroot;
+        $fromstring = get_string('emailvia', 'core', $fromdetails);
+        $mail->FromName = $fromstring;
         if (empty($replyto)) {
             $tempreplyto[] = array($CFG->noreplyaddress, get_string('noreplyname'));
         }
