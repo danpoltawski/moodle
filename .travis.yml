@@ -217,7 +217,7 @@ script:
     - >
       if [ "$TASK" = 'PHPUNIT' ];
       then
-        vendor/bin/phpunit;
+        vendor/bin/phpunit lib/tests/upgrade_util_test.php;
       fi
 
     - >
