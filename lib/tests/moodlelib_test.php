@@ -2790,8 +2790,9 @@ class core_moodlelib_testcase extends advanced_testcase {
 
         $this->resetAfterTest();
 
-        $user1 = $this->getDataGenerator()->create_user();
-        $user2 = $this->getDataGenerator()->create_user();
+        $user1 = $this->getDataGenerator()->create_user(array('maildisplay' => 1));
+        $user2 = $this->getDataGenerator()->create_user(array('maildisplay' => 1));
+        set_config('allowedemaildomains', 'example.com');
 
         $subject = 'subject';
         $messagetext = 'message text';
@@ -2833,16 +2834,15 @@ class core_moodlelib_testcase extends advanced_testcase {
         email_to_user($user1, $user2, $subject, $messagetext);
         $this->assertDebuggingCalled('Unit tests must not send real emails! Use $this->redirectEmails()');
 
-        // Test $CFG->emailonlyfromnoreplyaddress.
-        set_config('emailonlyfromnoreplyaddress', 1);
-        $this->assertNotEmpty($CFG->emailonlyfromnoreplyaddress);
+        // Test $CFG->allowedemaildomains.
+        $this->assertNotEmpty($CFG->allowedemaildomains);
         $sink = $this->redirectEmails();
         email_to_user($user1, $user2, $subject, $messagetext);
-        unset_config('emailonlyfromnoreplyaddress');
+        unset_config('allowedemaildomains');
         email_to_user($user1, $user2, $subject, $messagetext);
         $result = $sink->get_messages();
-        $this->assertEquals($CFG->noreplyaddress, $result[0]->from);
-        $this->assertNotEquals($CFG->noreplyaddress, $result[1]->from);
+        $this->assertNotEquals($CFG->noreplyaddress, $result[0]->from);
+        $this->assertEquals($CFG->noreplyaddress, $result[1]->from);
         $sink->close();
     }
 
@@ -3201,5 +3201,4 @@ class core_moodlelib_testcase extends advanced_testcase {
     public function test_ip_is_public_public_ips($ip) {
         $this->assertTrue(ip_is_public($ip));
     }
-
 }
