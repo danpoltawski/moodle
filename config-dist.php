@@ -69,12 +69,12 @@ $CFG->dboptions = array(
     // See documentation for each database product for more details.
     'ssl'        => false, // (MySQL/PostgreSQL) If true, use SSL,
                            // if not, the following are ignored.
-    'sslmode'    => NULL,  // (PostgreSQL) SSL mode
-    'sslkey'     => NULL,  // (MySQL/PostgreSQL) Path to client key
-    'sslcert'    => NULL,  // (MySQL/PostgreSQL) Path to client certificate
-    'sslca'      => NULL,  // (MySQL/PostgreSQL) Path to CA certificate
-    'sslcapath'  => NULL,  // (MySQL) Path to CA certificate directory
-    'sslcipher'  => NULL,  // (MySQL) Allowed ciphers
+    'sslmode'    => null,  // (PostgreSQL) SSL mode.
+    'sslkey'     => null,  // (MySQL/PostgreSQL) Path to client key.
+    'sslcert'    => null,  // (MySQL/PostgreSQL) Path to client certificate.
+    'sslca'      => null,  // (MySQL/PostgreSQL) Path to CA certificate.
+    'sslcapath'  => null,  // (MySQL) Path to CA certificate directory.
+    'sslcipher'  => null,  // (MySQL) Allowed ciphers.
 );
 
 

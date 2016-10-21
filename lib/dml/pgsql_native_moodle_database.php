@@ -165,11 +165,11 @@ class pgsql_native_moodle_database extends moodle_database {
             $connection .= " options='" . implode(' ', $options) . "'";
         }
 
-        // If SSL is enabled, add to connection string
+        // If SSL is enabled, add to connection string.
         if (!empty($dboptions['ssl'])) {
             if (isset($dboptions['sslmode'])) {
                 $connection .= " sslmode=" . $dboptions['sslmode'];
-            } else { // default to verify-ca
+            } else { // Default to verify-ca.
                 $connection .= " sslmode=verify-ca";
             }
             if (isset($dboptions['sslkey'])) {

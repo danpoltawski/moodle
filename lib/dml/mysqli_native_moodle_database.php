@@ -76,7 +76,7 @@ class mysqli_native_moodle_database extends moodle_database {
             $dbport = 3306;
         }
         ob_start();
-        $conn = $this->create_connection($dbhost, $dbuser, $dbpass, '', // Connect without db
+        $conn = $this->create_connection($dbhost, $dbuser, $dbpass, '', // Connect without db.
                                          $dbport, $dbsocket, $dboptions);
         $dberr = ob_get_contents();
         ob_end_clean();
@@ -1826,7 +1826,8 @@ class mysqli_native_moodle_database extends moodle_database {
      * this can not be used directly in code.
      * @param string $host The database host.
      * @param string $username The database username.
-     * @param string $dbpass The database username's password.
+     * @param string $password The database password.
+     * @param string $dbname The database name.
      * @param string $port The name of the database being connected to.
      * @param string $socket Socket if needed
      * @param array $dboptions driver specific options
@@ -1834,12 +1835,12 @@ class mysqli_native_moodle_database extends moodle_database {
      */
     protected function create_connection($host,
                                          $username,
-                                         $passwd,
+                                         $password,
                                          $dbname,
                                          $port,
                                          $socket,
                                          $dboptions) {
-        // Check is SSL is enabled, and if so create secure connection
+        // Check is SSL is enabled, and if so create secure connection.
         if (!empty($dboptions['ssl'])) {
             $conn = mysqli_init();
             $conn->ssl_set($dboptions['sslkey'],
@@ -1847,15 +1848,15 @@ class mysqli_native_moodle_database extends moodle_database {
                            $dboptions['sslca'],
                            $dboptions['sslcapath'],
                            $dboptions['sslcipher']);
-            // Ignore password is client certifcate used instead
+            // Ignore password is client certifcate used instead.
             if (isset($dboptions['sslkey'])) {
-                $passwd = NULL;
+                $password = null;
             }
-            $conn->real_connect($host, $username, $passwd, $dbname, $port);
+            $conn->real_connect($host, $username, $password, $dbname, $port);
             return $conn;
         } else {
-            // Fallback to not secure
-            return new mysqli($host, $username, $passwd, $dbname, $port, $socket);
+            // Fallback to not secure.
+            return new mysqli($host, $username, $password, $dbname, $port, $socket);
         }
     }
 }
