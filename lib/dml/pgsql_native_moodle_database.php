@@ -173,11 +173,11 @@ class pgsql_native_moodle_database extends moodle_database {
                 $connection .= " sslmode=verify-ca";
             }
             if (isset($dboptions['sslkey'])) {
-                $connection .= " sslkey=" . $dboptions['sslkey'];
-                $connection .= " sslcert=" . $dboptions['sslcert'];
+                $connection .= " sslkey=" . addcslashes($dboptions['sslkey'], "'\\");
+                $connection .= " sslcert=" . addcslashes($dboptions['sslcert'], "'\\");
             }
             if (isset($dboptions['sslca'])) {
-                $connection .= " sslrootcert=" . $dboptions['sslca'];
+                $connection .= " sslrootcert=" . addcslashes($dboptions['sslca'], "'\\");
             }
         }
 
