@@ -167,15 +167,59 @@ class pgsql_native_moodle_database extends moodle_database {
 
         // If SSL is enabled, add to connection string.
         if (!empty($dboptions['ssl'])) {
+            // Catch common unsafe misconfigurations
             if (isset($dboptions['sslmode'])) {
-                $connection .= " sslmode=" . $dboptions['sslmode'];
-            } else { // Default to verify-ca.
-                $connection .= " sslmode=verify-ca";
+                switch ($dboptions['sslmode']) {
+                    case "verify-ca":
+                    case "verify-full":
+                        if (!isset($dboptions['sslca'])) {
+                            throw new dml_connection_exception('sslmode is set to require server verification, but no CA path is set.');
+                        }
+                        break;
+                    case "disable":
+                        if (isset($dboptions['sslkey']) || isset($dboptions['sslcert']) || isset($dboptions['sslca'])) {
+                            throw new dml_connection_exception('sslmode is set to disable, but sslkey, sslcert or sslca are defined.');
+                        }
+                        break;
+                    case "require":
+                    case "prefer":
+                    case "allow":
+                        if (isset($dboptions['sslca'])) {
+                            throw new dml_connection_exception('sslca path is set, but sslmode does not provent MITM.');
+                        }
+                        break;
+                    default:
+                        throw new dml_connection_exception('unrecognized sslmode for postgresql.');
+                }
+                // These should always be set together
+                if (isset($dboptions['sslkey']) || isset($dboptions['sslcert'])) {
+                    if (!isset($dboptions['sslkey']) || !isset($dboptions['sslcert'])) {
+                        throw new dml_connection_exception('both sslkey and sslcert must be set if either is set');
+                    }
+                }
+
+                // Unsupported options for postgresql
+                if (isset($dboptions['sslcapath'])) {
+                    throw new dml_connection_exception('sslcapath not supported for postgresql. look at using sslca instead.');
+                }
+                if (isset($dboptions['sslcipher'])) {
+                    throw new dml_connection_exception('sslcipher not supported for postgresql.');
+                }
+            } else {
+                throw new dml_connection_exception('sslmode option must be specified for postgresql.');
             }
+
+            // Assumes sanity checks already performed above
+            $connection .= " sslmode=" . $dboptions['sslmode'];
+
             if (isset($dboptions['sslkey'])) {
                 $connection .= " sslkey=" . addcslashes($dboptions['sslkey'], "'\\");
+            }
+
+            if (isset($dboptions['sslcert'])) {
                 $connection .= " sslcert=" . addcslashes($dboptions['sslcert'], "'\\");
             }
+
             if (isset($dboptions['sslca'])) {
                 $connection .= " sslrootcert=" . addcslashes($dboptions['sslca'], "'\\");
             }
