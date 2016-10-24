@@ -1842,6 +1842,16 @@ class mysqli_native_moodle_database extends moodle_database {
                                          $dboptions) {
         // Check is SSL is enabled, and if so create secure connection.
         if (!empty($dboptions['ssl'])) {
+            // These should always be set together
+            if (isset($dboptions['sslkey']) || isset($dboptions['sslcert'])) {
+                if (!isset($dboptions['sslkey']) || !isset($dboptions['sslcert'])) {
+                    throw new dml_connection_exception('both sslkey and sslcert must be set if either is set');
+                }
+            }
+
+            // since we are unable to set an sslmode with our driver, sadly there isn't much
+            // additional sanity checking we can do here, so we hope MySQL does it for us.
+
             $conn = mysqli_init();
             $conn->ssl_set($dboptions['sslkey'],
                            $dboptions['sslcert'],
