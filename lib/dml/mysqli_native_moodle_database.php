@@ -1849,6 +1849,11 @@ class mysqli_native_moodle_database extends moodle_database {
                 }
             }
 
+            // Unsupported options for mysql
+            if (isset($dboptions['sslmode'])) {
+                throw new dml_connection_exception('sslmode not supported for mysql.');
+            }
+
             // since we are unable to set an sslmode with our driver, sadly there isn't much
             // additional sanity checking we can do here, so we hope MySQL does it for us.
 
