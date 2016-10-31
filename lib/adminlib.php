@@ -2420,6 +2420,7 @@ class admin_setting_configpasswordunmask extends admin_setting_configtext {
             'size' => $this->size,
             'value' => $data,
             'forceltr' => $this->get_force_ltr(),
+            'behatsiterunning' => defined('BEHAT_SITE_RUNNING'),
         ];
         $element = $OUTPUT->render_from_template('core_admin/setting_configpasswordunmask', $context);
         return format_admin_setting($this, $this->visiblename, $element, $this->description, true, '', null, $query);
