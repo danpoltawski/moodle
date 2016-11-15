@@ -161,17 +161,17 @@ $deletegroup_disabled = count($groupids) > 0 ? '' : $disabled;
 
 echo $OUTPUT->heading(format_string($course->shortname, true, array('context' => $context)) .' '.$strgroups, 3);
 echo '<form id="groupeditform" action="index.php" method="post">'."\n";
-echo '<div>'."\n";
 echo '<input type="hidden" name="id" value="' . $courseid . '" />'."\n";
-
-echo html_writer::start_tag('div', array('class' => 'groupmanagementtable boxaligncenter'));
-echo html_writer::start_tag('div', array('class' => 'groups'));
+echo html_writer::start_tag('div', array('class' => 'container')); 
+echo html_writer::start_tag('div', array('class' => 'groupmanagementtable row'));
+echo html_writer::start_tag('div', array('class' => 'groups span6 col-md-6'));
 
 echo '<p><label for="groups"><span id="groupslabel">'.get_string('groups').':</span><span id="thegrouping">&nbsp;</span></label></p>'."\n";
 
 $onchange = 'M.core_group.membersCombo.refreshMembers();';
 
-echo '<select name="groups[]" multiple="multiple" id="groups" size="15" class="select" onchange="'.$onchange.'">'."\n";
+echo html_writer::start_tag('div', array('class' => 'form-group row'));
+echo '<select name="groups[]" multiple="multiple" id="groups" size="15" class="select form-control" onchange="'.$onchange.'">'."\n";
 
 $groups = groups_get_all_groups($courseid);
 $selectedname = '&nbsp;';
@@ -202,30 +202,34 @@ if ($groups) {
 }
 
 echo '</select>'."\n";
-echo '<p><input type="submit" name="act_updatemembers" id="updatemembers" value="'
-        . get_string('showmembersforgroup', 'group') . '" /></p>'."\n";
-echo '<p><input type="submit" '. $showeditgroupsettingsform_disabled . ' name="act_showgroupsettingsform" id="showeditgroupsettingsform" value="'
-        . get_string('editgroupsettings', 'group') . '" /></p>'."\n";
-echo '<p><input type="submit" '. $deletegroup_disabled . ' name="act_deletegroup" id="deletegroup" value="'
-        . get_string('deleteselectedgroup', 'group') . '" /></p>'."\n";
-
-echo '<p><input type="submit" name="act_showcreateorphangroupform" id="showcreateorphangroupform" value="'
-        . get_string('creategroup', 'group') . '" /></p>'."\n";
-
-echo '<p><input type="submit" name="act_showautocreategroupsform" id="showautocreategroupsform" value="'
-        . get_string('autocreategroups', 'group') . '" /></p>'."\n";
-
-echo '<p><input type="submit" name="act_showimportgroups" id="showimportgroups" value="'
-        . get_string('importgroups', 'core_group') . '" /></p>'."\n";
-
 echo html_writer::end_tag('div');
-echo html_writer::start_tag('div', array('class' => 'members'));
+$buttonclasses = 'btn btn-secondary';
+echo html_writer::start_tag('div', array('class' => 'form-group row'));
+echo '<input type="submit" name="act_updatemembers" id="updatemembers" value="'
+        . get_string('showmembersforgroup', 'group') . '" class="' .$buttonclasses .'">'."\n";
+echo '<input type="submit" '. $showeditgroupsettingsform_disabled . ' name="act_showgroupsettingsform" id="showeditgroupsettingsform" value="'
+        . get_string('editgroupsettings', 'group') . '" class="' .$buttonclasses .'" >'."\n";
+echo '<input type="submit" '. $deletegroup_disabled . ' name="act_deletegroup" id="deletegroup" value="'
+        . get_string('deleteselectedgroup', 'group') . '"  class="' .$buttonclasses .'">'."\n";
+echo html_writer::end_tag('div');
+echo html_writer::start_tag('div', array('class' => 'form-group row'));
+echo '<input type="submit" name="act_showcreateorphangroupform" id="showcreateorphangroupform" value="'
+        . get_string('creategroup', 'group') . '" class="' .$buttonclasses .'">'."\n";
+echo '<input type="submit" name="act_showautocreategroupsform" id="showautocreategroupsform" value="'
+        . get_string('autocreategroups', 'group') . '" class="' .$buttonclasses .'">'."\n";
+echo '<input type="submit" name="act_showimportgroups" id="showimportgroups" value="'
+        . get_string('importgroups', 'core_group') . '" class="' .$buttonclasses .'">'."\n";
+echo html_writer::end_tag('div');
+echo html_writer::end_tag('div');
+echo html_writer::start_tag('div', array('class' => 'members span6 col-md-6'));
 
 echo '<p><label for="members"><span id="memberslabel">'.
     get_string('membersofselectedgroup', 'group').
     ' </span><span id="thegroup">'.$selectedname.'</span></label></p>'."\n";
+
 //NOTE: the SELECT was, multiple="multiple" name="user[]" - not used and breaks onclick.
-echo '<select name="user" id="members" size="15" class="select"'."\n";
+echo html_writer::start_tag('div', array('class' => 'form-group row'));
+echo '<select name="user" id="members" size="15" class="select form-control"'."\n";
 echo ' onclick="window.status=this.options[this.selectedIndex].title;" onmouseout="window.status=\'\';">'."\n";
 
 $member_names = array();
@@ -250,14 +254,15 @@ if (!$atleastonemember) {
 }
 
 echo '</select>'."\n";
+echo html_writer::end_tag('div');
 
-echo '<p><input type="submit" ' . $showaddmembersform_disabled . ' name="act_showaddmembersform" '
-        . 'id="showaddmembersform" value="' . get_string('adduserstogroup', 'group'). '" /></p>'."\n";
+echo html_writer::start_tag('div', array('class' => 'form-group row'));
+echo '<input type="submit" ' . $showaddmembersform_disabled . ' name="act_showaddmembersform" '
+        . 'id="showaddmembersform" value="' . get_string('adduserstogroup', 'group'). '"  class="' .$buttonclasses .'">'."\n";
 echo html_writer::end_tag('div');
 echo html_writer::end_tag('div');
 
-//<input type="hidden" name="rand" value="om" />
-echo '</div>'."\n";
+echo html_writer::end_tag('div');
 echo '</form>'."\n";
 
 $PAGE->requires->js_init_call('M.core_group.init_index', array($CFG->wwwroot, $courseid));
