@@ -197,12 +197,11 @@ class mod_lesson_mod_form extends moodleform_mod {
         $mform->setDefault('usepassword', $lessonconfig->password);
         $mform->setAdvanced('usepassword', $lessonconfig->password_adv);
 
-        $mform->addElement('passwordunmask', 'password', get_string('password', 'lesson'));
+        $mform->addElement('sharedsecret', 'password', get_string('password', 'lesson'));
         $mform->setDefault('password', '');
         $mform->setAdvanced('password', $lessonconfig->password_adv);
         $mform->setType('password', PARAM_RAW);
         $mform->disabledIf('password', 'usepassword', 'eq', 0);
-        $mform->disabledIf('passwordunmask', 'usepassword', 'eq', 0);
 
         // Dependent on.
         if ($this->current && isset($this->current->dependency) && $this->current->dependency) {

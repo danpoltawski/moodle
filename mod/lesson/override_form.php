@@ -171,7 +171,7 @@ class lesson_override_form extends moodleform {
         // Password.
         // This field has to be above the date and timelimit fields,
         // otherwise browsers will clear it when those fields are changed.
-        $mform->addElement('passwordunmask', 'password', get_string('usepassword', 'lesson'));
+        $mform->addElement('sharedsecret', 'password', get_string('usepassword', 'lesson'));
         $mform->setType('password', PARAM_TEXT);
         $mform->addHelpButton('password', 'usepassword', 'lesson');
         $mform->setDefault('password', $this->lesson->password);;

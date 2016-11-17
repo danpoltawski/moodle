@@ -203,7 +203,7 @@ class mod_lti_mod_form extends moodleform_mod {
         }
         $mform->setForceLtr('resourcekey');
 
-        $mform->addElement('passwordunmask', 'password', get_string('password', 'lti'));
+        $mform->addElement('sharedsecret', 'password', get_string('password', 'lti'));
         $mform->setType('password', PARAM_TEXT);
         $mform->setAdvanced('password');
         $mform->addHelpButton('password', 'password', 'lti');

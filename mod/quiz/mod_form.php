@@ -285,7 +285,7 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->addElement('header', 'security', get_string('extraattemptrestrictions', 'quiz'));
 
         // Require password to begin quiz attempt.
-        $mform->addElement('passwordunmask', 'quizpassword', get_string('requirepassword', 'quiz'));
+        $mform->addElement('sharedsecret', 'quizpassword', get_string('requirepassword', 'quiz'));
         $mform->setType('quizpassword', PARAM_TEXT);
         $mform->addHelpButton('quizpassword', 'requirepassword', 'quiz');
         $mform->setAdvanced('quizpassword', $quizconfig->password_adv);

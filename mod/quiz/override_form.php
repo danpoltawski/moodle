@@ -173,7 +173,7 @@ class quiz_override_form extends moodleform {
         // Password.
         // This field has to be above the date and timelimit fields,
         // otherwise browsers will clear it when those fields are changed.
-        $mform->addElement('passwordunmask', 'password', get_string('requirepassword', 'quiz'));
+        $mform->addElement('sharedsecret', 'password', get_string('requirepassword', 'quiz'));
         $mform->setType('password', PARAM_TEXT);
         $mform->addHelpButton('password', 'requirepassword', 'quiz');
         $mform->setDefault('password', $this->quiz->password);

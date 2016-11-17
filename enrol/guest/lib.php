@@ -404,7 +404,7 @@ class enrol_guest_plugin extends enrol_plugin {
         $mform->setDefault('status', $this->get_config('status'));
         $mform->setAdvanced('status', $this->get_config('status_adv'));
 
-        $mform->addElement('passwordunmask', 'password', get_string('password', 'enrol_guest'));
+        $mform->addElement('sharedsecret', 'password', get_string('password', 'enrol_guest'));
         $mform->addHelpButton('password', 'password', 'enrol_guest');
 
         // If we have a new instance and the password is required - make sure it is set. For existing

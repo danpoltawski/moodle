@@ -749,7 +749,7 @@ class enrol_self_plugin extends enrol_plugin {
         $mform->disabledIf('customint6', 'status', 'eq', ENROL_INSTANCE_DISABLED);
 
         $passattribs = array('size' => '20', 'maxlength' => '50');
-        $mform->addElement('passwordunmask', 'password', get_string('password', 'enrol_self'), $passattribs);
+        $mform->addElement('sharedsecret', 'password', get_string('password', 'enrol_self'), $passattribs);
         $mform->addHelpButton('password', 'password', 'enrol_self');
         if (empty($instance->id) and $this->get_config('requirepassword')) {
             $mform->addRule('password', get_string('required'), 'required', null, 'client');
