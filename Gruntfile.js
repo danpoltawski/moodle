@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /* jshint node: true, browser: false */
-/* eslint-env node */
+/* eslint-env node, es6  */
 
 /**
  * @copyright  2014 Andrew Nicols
@@ -141,7 +141,18 @@ module.exports = function(grunt) {
                     src: amdSrc,
                     rename: uglifyRename
                 }],
-                options: {report: 'none'}
+            },
+            yui: {
+                files: [{
+                    expand: true,
+                    src: ['**/yui/build/*/*.js', '!**/yui/build/*/*-debug.js', '!**/yui/build/*/*-min.js'],
+                    rename: function(dest, src) {
+                        return src.replace('.js', '-min.js');
+                    },
+                }]
+            },
+            options: {
+                report: 'none'
             }
         },
         less: {
@@ -318,6 +329,119 @@ module.exports = function(grunt) {
         }, done);
     };
 
+    var cleanMetaData = function(data) {
+        delete data.condition;
+        return data;
+    };
+
+    var getModuleMetaData = function(moduleName, requirements) {
+        if (!requirements) {
+            return false;
+        }
+
+        if (requirements[moduleName]) {
+            // Usual case, the metadata if for this module itself.
+            return cleanMetaData(requirements[moduleName]);
+        }
+
+        // Ok looks like we've got submodules, we're going to need to search them
+        // for the metadata...
+
+        // Find the module which contained our submodule.
+        var mod = Object.keys(requirements).find(function(name) {
+            if (requirements[name].submodules[moduleName]) {
+                return true;
+            }
+            return false;
+        });
+
+        if (mod) {
+            return cleanMetaData(requirements[mod].submodules[moduleName]);
+        } else {
+            return false;
+        }
+    };
+
+    var yuistringify = function(config) {
+        config = config || {};
+        var str = JSON.stringify(config);
+        if (str.length > 100) {
+            str = JSON.stringify(config, null, 4);
+        } else {
+            str = str.replace(/:/g, ': ').replace(/,/g, ', ');
+        }
+        if (str === '{}' || str === '[]') {
+            str = '';
+        }
+        if (str !== '') {
+            str = ', ' + str;
+        }
+        return str;
+    };
+
+    tasks.yuibuild = function() {
+        var files = grunt.file.expand('**/yui/src/**/build.json');
+        files.forEach(function(file) {
+            var buildconfig = grunt.file.readJSON(file);
+            // Path to build.
+            var yuisrc = path.dirname(file);
+            var metafiles = grunt.file.expand(yuisrc + '/meta/*.json');
+            if (metafiles.length > 1) {
+                grunt.fail.fatal(`More than one meta file found in ${yuisrc}/meta/`);
+            }
+            var requirements = null;
+            if (metafiles.length) {
+                requirements = grunt.file.readJSON(metafiles[0]);
+            }
+
+
+            // ../../
+            var yuibase = path.dirname(path.dirname(yuisrc));
+
+            var modules = Object.keys(buildconfig.builds);
+
+            modules.forEach(function(moduleName) {
+                var builddir = path.join(yuibase, '/build/', moduleName);
+                var modulemetadata = yuistringify(getModuleMetaData(moduleName, requirements));
+                
+                var fileContent = '';
+
+                if (buildconfig.builds[moduleName].prependfiles) {
+                    buildconfig.builds[moduleName].prependfiles.forEach(function(fileName) {
+                        var filePath = path.join(yuisrc, '/js/', fileName);
+                        fileContent += grunt.file.read(filePath);
+                        fileContent += "\n";
+                    });
+                }
+                fileContent += `YUI.add('${moduleName}', function (Y, NAME) {`;
+                fileContent += "\n\n";
+                buildconfig.builds[moduleName].jsfiles.forEach(function(fileName) {
+                    var filePath = path.join(yuisrc, '/js/', fileName);
+                    fileContent += grunt.file.read(filePath);
+                });
+                fileContent += "\n\n";
+                fileContent += `}, '@VERSION@'${modulemetadata});`;
+                if (buildconfig.builds[moduleName].appendfiles) {
+                    buildconfig.builds[moduleName].appendfiles.forEach(function(fileName) {
+                        var filePath = path.join(yuisrc, '/js/', fileName);
+                        fileContent += grunt.file.read(filePath);
+                    });
+                }
+
+                fileContent += "\n";
+
+                var debugFileName = path.join(builddir, moduleName + '-debug.js');
+                grunt.file.write(debugFileName, fileContent);
+
+                // Now strip logging for the non-debug file.
+                fileContent = fileContent.replace(/^.*?Y.log.*?(?:;|\).*;|(?:\r?\n.*?)*?\).*;).*;?.*?\r?\n/mg, '');
+                var buildFileName = path.join(builddir, moduleName + '.js');
+                grunt.file.write(buildFileName, fileContent);
+            });
+        });
+    };
+
+
     tasks.startup = function() {
         // Are we in a YUI directory?
         if (path.basename(path.resolve(cwd, '../../')) == 'yui') {
@@ -360,9 +484,10 @@ module.exports = function(grunt) {
 
     // Register JS tasks.
     grunt.registerTask('shifter', 'Run Shifter against the current directory', tasks.shifter);
+    grunt.registerTask('yui:build', 'Run Shifter against the current directory', tasks.yuibuild);
     grunt.registerTask('ignorefiles', 'Generate ignore files for linters', tasks.ignorefiles);
-    grunt.registerTask('yui', ['eslint:yui', 'shifter']);
-    grunt.registerTask('amd', ['eslint:amd', 'uglify']);
+    grunt.registerTask('yui', ['eslint:yui', 'yui:build', 'uglify:yui']);
+    grunt.registerTask('amd', ['eslint:amd', 'uglify:amd']);
     grunt.registerTask('js', ['amd', 'yui']);
 
     // Register CSS taks.
