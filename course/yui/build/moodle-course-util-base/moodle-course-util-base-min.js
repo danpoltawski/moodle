@@ -1,1 +1,1 @@
-YUI.add("moodle-course-util-base",function(e,t){e.namespace("Moodle.core_course.util")},"@VERSION@");
+YUI.add("moodle-course-util-base",function(a,b){a.namespace("Moodle.core_course.util")},"@VERSION@");
