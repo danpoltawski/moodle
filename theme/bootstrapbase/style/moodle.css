@@ -14350,9 +14350,41 @@ textarea[data-auto-rows] {
   overflow-x: hidden;
 }
 div[data-passwordunmask="wrapper"] {
-  height: 30px;
-  line-height: 30px;
+  height: 20px;
+  line-height: 24px;
   margin-bottom: 10px;
+  font-size: 0;
+}
+div[data-passwordunmask="wrapper"] .password-unmask-input {
+  display: inline-block;
+  padding: 4px 6px;
+  font-size: 14px;
+  min-width: 160px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  -webkit-border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+div[data-passwordunmask="wrapper"] .password-unmask-input input {
+  margin: 0;
+  padding: 0;
+}
+div[data-passwordunmask="wrapper"] .password-unmask-btn {
+  display: inline-block;
+  padding: 4px 6px;
+  min-width: 16px;
+  font-size: 14px;
+  text-align: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-left: 0;
+  -webkit-border-radius: 0 4px 4px 0;
+  -moz-border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
 }
 body.modal-open {
   overflow: hidden;
