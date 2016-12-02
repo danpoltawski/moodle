@@ -57,6 +57,7 @@ $string['optional'] = 'Optional';
 $string['othersettings'] = 'Other settings';
 $string['passwordunmaskedithint'] = 'Edit password';
 $string['passwordunmaskrevealhint'] = 'Reveal';
+$string['passwordunmaskmaskhint'] = 'Mask';
 $string['passwordunmaskinstructions'] = 'Press enter to save changes';
 $string['requiredelement'] = 'Required field';
 $string['security'] = 'Security';

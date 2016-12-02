@@ -354,14 +354,71 @@ textarea[data-auto-rows] {
     background-size: ($input-height / 2) ($input-height / 2);
 }
 
-// Some tweaks to the password unmask form, which mimics standard BS inputs.
-.password-unmask-input {
-    // Minimum with approx same size as the input element which will replace it.
-    min-width: 13rem;
-}
+.password-unmask-container {
+    .input-group {
+        width: auto;
+    }
 
-// When the the input element is display fit the input inside the 'fake' input.
-[data-passwordunmask-visible="1"] .password-unmask-input {
-    padding: 0;
-    margin: -1px;
+    // Some tweaks to the password unmask form, which mimics standard BS inputs.
+    .password-unmask-input {
+        // Minimum with approx same size as the input element which will replace it.
+        min-width: 13rem;
+
+        .click-to-edit {
+            display: inline-block;
+            width: 100%;
+
+            .icon {
+                float: right;
+                margin-right: 0;
+            }
+        }
+
+        @media (min-width: 544px) {
+            input.form-control {
+                width: 100%;
+            }
+        }
+    }
+
+    .password-unmask-instructions {
+        display: none;
+    }
+
+    .password-unmask-btn {
+        .icon {
+            margin: 0;
+        }
+
+        .show-icon {
+            display: block;
+        }
+
+        .hide-icon {
+            display: none;
+        }
+    }
+
+    .popover {
+        transform: translateY(-100%);
+        margin-left: $grid-gutter-width;
+    }
+
+    // When the the input element is display fit the input inside the 'fake' input.
+    &[data-passwordunmask-visible="1"] .password-unmask-input {
+        padding: 0;
+        margin: -1px;
+    }
+
+    &.password-visible {
+        .password-unmask-btn {
+            .show-icon {
+                display: none;
+            }
+
+            .hide-icon {
+                display: block;
+            }
+        }
+    }
 }

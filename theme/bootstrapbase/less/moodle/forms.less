@@ -533,7 +533,7 @@ textarea[data-auto-rows] {
 
 // For the password unmask element, we are mimicking a bootstrap standard text input with
 // an .add-on.
-div[data-passwordunmask="wrapper"] {
+.password-unmask-container {
     height: @baseLineHeight;
     line-height: @baseLineHeight + 4px; // Add some space to prevent jumping.
     margin-bottom: 10px;
@@ -564,5 +564,25 @@ div[data-passwordunmask="wrapper"] {
         border: 1px solid #ccc;
         border-left: 0;
         .border-radius(0 @inputBorderRadius @inputBorderRadius 0);
+
+        .show-icon {
+            display: block;
+        }
+
+        .hide-icon {
+            display: none;
+        }
+    }
+
+    &.password-visible {
+        .password-unmask-btn {
+            .show-icon {
+                display: none;
+            }
+
+            .hide-icon {
+                display: block;
+            }
+        }
     }
 }
