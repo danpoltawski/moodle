@@ -629,6 +629,11 @@
         }
       }
     },
+    "eslint-plugin-promise": {
+      "version": "3.4.0",
+      "from": "eslint-plugin-promise@latest",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-promise/-/eslint-plugin-promise-3.4.0.tgz"
+    },
     "espree": {
       "version": "3.3.2",
       "from": "espree@>=3.2.0 <4.0.0",
