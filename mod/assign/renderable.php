@@ -839,7 +839,7 @@ class assign_course_index_summary implements renderable {
  * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assign_files implements renderable {
+class assign_files implements renderable, templatable {
     /** @var context $context */
     public $context;
     /** @var string $context */
@@ -923,6 +923,17 @@ class assign_files implements renderable {
                     $file->portfoliobutton = $button->to_html(PORTFOLIO_ADD_ICON_LINK);
                 }
             }
+            $file->plagiarismlinks = '';
+            if (!empty($CFG->enableplagiarism)) {
+                require_once($CFG->libdir.'/plagiarismlib.php');
+                $file->plagiarismlinks = plagiarism_get_links(array(
+                    'userid' => $file->get_userid(),
+                    'file' => $file,
+                    'cmid' => $this->cm->id,
+                    'course' => $this->course
+                ));
+            }
+
             $path = '/' .
                     $this->context->id .
                     '/' .
@@ -933,11 +944,60 @@ class assign_files implements renderable {
                     $file->get_itemid() .
                     $file->get_filepath() .
                     $file->get_filename();
-            $url = file_encode_url("$CFG->wwwroot/pluginfile.php", $path, true);
-            $filename = $file->get_filename();
-            $file->fileurl = html_writer::link($url, $filename, [
-                    'target' => '_blank',
-                ]);
+            $file->fileurl = file_encode_url("$CFG->wwwroot/pluginfile.php", $path, true);
         }
+    }
+
+    /**
+     * Export the data.
+     *
+     * @param renderer_base $output
+     * @return array data required by template
+     */
+    public function export_for_template(renderer_base $output) {
+        return [
+            'foldersexpanded' => true,
+            'files' => $this->prepare_dir_for_template($this->dir, $output)
+        ];
+    }
+
+    /**
+     * Generates the tree structure required by core/filetree template for a dir
+     *
+     * @param array $dir
+     * @param renderer_base $output
+     * @return array tree structure required by core/filetree template.
+     */
+    protected function prepare_dir_for_template($dir, renderer_base $output) {
+        $files = [];
+        foreach ($dir['subdirs'] as $subdir) {
+            $dirfiles = $this->prepare_dir_for_template($subdir, $output);
+            $files[] = ['title' => $subdir['dirname'], 'isdir' => true, 'files' => $dirfiles];
+        }
+
+        foreach ($dir['files'] as $file) {
+            $files[] = $this->prepare_file_for_template($file, $output);
+        }
+        return $files;
+    }
+
+    /**
+     * Generates the structure required by core/filetree template for a file
+     *
+     * @param array $file
+     * @param renderer_base $output
+     * @return array
+     */
+    protected function prepare_file_for_template($file, renderer_base $output) {
+        global $CFG;
+
+        $data = [];
+        $data['title'] = $file->get_filename();
+        $data['url'] = $file->fileurl;
+        $data['icon'] = $output->pix_icon(file_file_icon($file), $file->get_filename(), 'moodle', array('class' => 'icon'));
+        $data['extrahtml'] = $file->plagiarismlinks . $file->portfoliobutton;
+        $data['isdir'] = false;
+
+        return $data;
     }
 }

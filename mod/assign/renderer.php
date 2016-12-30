@@ -57,11 +57,8 @@ class mod_assign_renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_assign_files(assign_files $tree) {
-        $this->htmlid = html_writer::random_id('assign_files_tree');
-        $this->page->requires->js_init_call('M.mod_assign.init_tree', array(true, $this->htmlid));
-        $html = '<div id="'.$this->htmlid.'">';
-        $html .= $this->htmllize_tree($tree, $tree->dir);
-        $html .= '</div>';
+        $data = $tree->export_for_template($this);
+        $html = $this->render_from_template('core/filetree', $data);
 
         if ($tree->portfolioform) {
             $html .= $tree->portfolioform;
@@ -1363,64 +1360,6 @@ class mod_assign_renderer extends plugin_renderer_base {
         $o .= html_writer::table($table);
 
         return $o;
-    }
-
-
-
-    /**
-     * Internal function - creates htmls structure suitable for YUI tree.
-     *
-     * @param assign_files $tree
-     * @param array $dir
-     * @return string
-     */
-    protected function htmllize_tree(assign_files $tree, $dir) {
-        global $CFG;
-        $yuiconfig = array();
-        $yuiconfig['type'] = 'html';
-
-        if (empty($dir['subdirs']) and empty($dir['files'])) {
-            return '';
-        }
-
-        $result = '<ul>';
-        foreach ($dir['subdirs'] as $subdir) {
-            $image = $this->output->pix_icon(file_folder_icon(),
-                                             $subdir['dirname'],
-                                             'moodle',
-                                             array('class'=>'icon'));
-            $result .= '<li yuiConfig=\'' . json_encode($yuiconfig) . '\'>' .
-                       '<div>' . $image . ' ' . s($subdir['dirname']) . '</div> ' .
-                       $this->htmllize_tree($tree, $subdir) .
-                       '</li>';
-        }
-
-        foreach ($dir['files'] as $file) {
-            $filename = $file->get_filename();
-            if ($CFG->enableplagiarism) {
-                require_once($CFG->libdir.'/plagiarismlib.php');
-                $plagiarismlinks = plagiarism_get_links(array('userid'=>$file->get_userid(),
-                                                             'file'=>$file,
-                                                             'cmid'=>$tree->cm->id,
-                                                             'course'=>$tree->course));
-            } else {
-                $plagiarismlinks = '';
-            }
-            $image = $this->output->pix_icon(file_file_icon($file),
-                                             $filename,
-                                             'moodle',
-                                             array('class'=>'icon'));
-            $result .= '<li yuiConfig=\'' . json_encode($yuiconfig) . '\'>' .
-                       '<div>' . $image . ' ' .
-                                 $file->fileurl . ' ' .
-                                 $plagiarismlinks .
-                                 $file->portfoliobutton . '</div>' .
-                       '</li>';
-        }
-
-        $result .= '</ul>';
-
-        return $result;
     }
 
     /**
