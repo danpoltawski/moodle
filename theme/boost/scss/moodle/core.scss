@@ -2155,3 +2155,53 @@ $footer-link-color: $brand-primary !default;
         top: 0;
     }
 }
+
+
+// Credit to https://two-wrongs.com/draw-a-tree-structure-with-only-css
+.filetree {
+    margin-left: 12px;
+
+    [aria-expanded="false"] > [role="group"] {
+        display: none;
+    }
+
+    .fileitem {
+        position: relative;
+
+        &[aria-expanded="false"] {
+            background: url('[[pix:f/folder]]')  no-repeat;
+            padding-left: 20px;
+        }
+
+        &[aria-expanded="true"] {
+            background: url('[[pix:f/folder-open]]') no-repeat;
+            padding-left: 20px;
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: -12px;
+            border-top: 1px dotted #a6a6a6;
+            top: 9px;
+            width: 8px;
+            height: 0;
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: -12px;
+            border-left: 1px dotted #a6a6a6;
+            height: 100%;
+            width: 0;
+            top: 2px;
+        }
+    }
+
+    > .fileitem:last-child::after,
+    [role="group"] > .fileitem:last-child::after {
+        // Makes a neat end to tree.
+        height: 8px;
+    }
+}

@@ -2473,6 +2473,45 @@ h3.sectionname .inplaceeditable.inplaceeditingon .editinstructions {
   visibility: visible;
   transition: opacity 0.15s 0.5s, visibility 0.15s 0.5s;
 }
+.filetree {
+  margin-left: 12px;
+}
+.filetree [aria-expanded="false"] > [role="group"] {
+  display: none;
+}
+.filetree .fileitem {
+  position: relative;
+}
+.filetree .fileitem[aria-expanded="false"] {
+  background: url('[[pix:f/folder]]') no-repeat;
+  padding-left: 20px;
+}
+.filetree .fileitem[aria-expanded="true"] {
+  background: url('[[pix:f/folder-open]]') no-repeat;
+  padding-left: 20px;
+}
+.filetree .fileitem::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  border-top: 1px dotted #a6a6a6;
+  top: 9px;
+  width: 8px;
+  height: 0;
+}
+.filetree .fileitem::after {
+  content: "";
+  position: absolute;
+  left: -12px;
+  border-left: 1px dotted #a6a6a6;
+  height: 100%;
+  width: 0;
+  top: 2px;
+}
+.filetree > .fileitem:last-child::after,
+.filetree [role="group"] > .fileitem:last-child::after {
+  height: 8px;
+}
 /* admin.less */
 .formtable tbody th {
   font-weight: normal;
