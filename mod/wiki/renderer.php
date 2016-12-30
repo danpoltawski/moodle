@@ -478,16 +478,11 @@ class mod_wiki_renderer extends plugin_renderer_base {
     }
     public function render_wiki_files_tree(wiki_files_tree $tree) {
         if (empty($tree->dir['subdirs']) && empty($tree->dir['files'])) {
-            $html = $this->output->box(get_string('nofilesavailable', 'repository'));
+            return $this->output->box(get_string('nofilesavailable', 'repository'));
         } else {
-            $htmlid = 'wiki_files_tree_'.uniqid();
-            $module = array('name'=>'mod_wiki', 'fullpath'=>'/mod/wiki/module.js');
-            $this->page->requires->js_init_call('M.mod_wiki.init_tree', array(false, $htmlid), false, $module);
-            $html = '<div id="'.$htmlid.'">';
-            $html .= $this->htmllize_tree($tree, $tree->dir);
-            $html .= '</div>';
+            $data = $tree->export_for_template($this);
+            return $this->render_from_template('core/filetree', $data);
         }
-        return $html;
     }
 
     function menu_admin($pageid, $currentselect) {
@@ -504,36 +499,9 @@ class mod_wiki_renderer extends plugin_renderer_base {
         $select->label = get_string('adminmenu', 'wiki') . ': ';
         return $this->output->container($this->output->render($select), 'midpad');
     }
-
-    /**
-     * Internal function - creates htmls structure suitable for YUI tree.
-     */
-    protected function htmllize_tree($tree, $dir) {
-        global $CFG;
-        $yuiconfig = array();
-        $yuiconfig['type'] = 'html';
-
-        if (empty($dir['subdirs']) and empty($dir['files'])) {
-            return '';
-        }
-        $result = '<ul>';
-        foreach ($dir['subdirs'] as $subdir) {
-            $image = $this->output->pix_icon(file_folder_icon(), $subdir['dirname'], 'moodle', array('class'=>'icon'));
-            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.' '.s($subdir['dirname']).'</div> '.$this->htmllize_tree($tree, $subdir).'</li>';
-        }
-        foreach ($dir['files'] as $file) {
-            $url = file_encode_url("$CFG->wwwroot/pluginfile.php", '/'.$tree->context->id.'/mod_wiki/attachments/' . $tree->subwiki->id . '/'. $file->get_filepath() . $file->get_filename(), true);
-            $filename = $file->get_filename();
-            $image = $this->output->pix_icon(file_file_icon($file), $filename, 'moodle', array('class'=>'icon'));
-            $result .= '<li yuiConfig=\''.json_encode($yuiconfig).'\'><div>'.$image.' '.html_writer::link($url, $filename).'</div></li>';
-        }
-        $result .= '</ul>';
-
-        return $result;
-    }
 }
 
-class wiki_files_tree implements renderable {
+class wiki_files_tree implements renderable, templatable {
     public $context;
     public $dir;
     public $subwiki;
@@ -542,5 +510,60 @@ class wiki_files_tree implements renderable {
         $this->context = $context;
         $this->subwiki = $subwiki;
         $this->dir = $fs->get_area_tree($context->id, 'mod_wiki', 'attachments', $subwiki->id);
+    }
+
+    /**
+     * Export the data.
+     *
+     * @param renderer_base $output
+     * @return array data required by template
+     */
+    public function export_for_template(renderer_base $output) {
+        return [
+            'foldersexpanded' => false,
+            'files' => $this->prepare_dir_for_template($this->dir, $output)
+        ];
+    }
+
+    /**
+     * Generates the tree structure required by core/filetree template for a dir
+     *
+     * @param array $dir dir tree from $fs->get_area_tree()
+     * @param renderer_base $output
+     * @return array tree structure required by core/filetree template.
+     */
+    protected function prepare_dir_for_template($dir, $output) {
+        $files = [];
+        foreach ($dir['subdirs'] as $subdir) {
+            $dirfiles = $this->prepare_dir_for_template($subdir, $output);
+            $files[] = ['title' => $subdir['dirname'], 'isdir' => true, 'files' => $dirfiles];
+        }
+
+        foreach ($dir['files'] as $file) {
+            $files[] = $this->prepare_file_for_template($file, $output);
+        }
+        return $files;
+    }
+
+    /**
+     * Generates the structure required by core/filetree template for a file
+     *
+     * @param array $file from $fs->get_area_tree()
+     * @param renderable $page
+     * @return array
+     */
+    protected function prepare_file_for_template($file, $output) {
+        global $CFG;
+
+        $filename = $file->get_filename();
+        $path = "/{$this->context->id}/mod_wiki/attachments/{$this->subwiki->id}/{$file->get_filepath()}$filename";
+
+        $data = [];
+        $data['url'] = file_encode_url("$CFG->wwwroot/pluginfile.php", $path, true);
+        $data['icon'] = $output->pix_icon(file_file_icon($file), $filename, 'moodle', array('class' => 'icon'));
+        $data['title'] = $filename;
+        $data['isdir'] = false;
+
+        return $data;
     }
 }
