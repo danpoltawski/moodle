@@ -57,10 +57,6 @@ class mod_folder_renderer extends plugin_renderer_base {
         }
 
         $foldertree = new folder_tree($folder, $cm);
-        if ($folder->display == FOLDER_DISPLAY_INLINE) {
-            // Display module name as the name of the root directory.
-            $foldertree->dir['dirname'] = $cm->get_formatted_name();
-        }
         $output .= $this->output->box($this->render($foldertree),
                 'generalbox foldertree');
 
@@ -91,62 +87,19 @@ class mod_folder_renderer extends plugin_renderer_base {
     }
 
     public function render_folder_tree(folder_tree $tree) {
-        static $treecounter = 0;
-
-        $content = '';
-        $id = 'folder_tree'. ($treecounter++);
-        $content .= '<div id="'.$id.'" class="filemanager">';
-        $content .= $this->htmllize_tree($tree, array('files' => array(), 'subdirs' => array($tree->dir)));
-        $content .= '</div>';
-        $showexpanded = true;
-        if (empty($tree->folder->showexpanded)) {
-            $showexpanded = false;
-        }
-        $this->page->requires->js_init_call('M.mod_folder.init_tree', array($id, $showexpanded));
-        return $content;
-    }
-
-    /**
-     * Internal function - creates htmls structure suitable for YUI tree.
-     */
-    protected function htmllize_tree($tree, $dir) {
-        global $CFG;
-
-        if (empty($dir['subdirs']) and empty($dir['files'])) {
-            return '';
-        }
-        $result = '<ul>';
-        foreach ($dir['subdirs'] as $subdir) {
-            $image = $this->output->pix_icon(file_folder_icon(24), $subdir['dirname'], 'moodle');
-            $filename = html_writer::tag('span', $image, array('class' => 'fp-icon')).
-                    html_writer::tag('span', s($subdir['dirname']), array('class' => 'fp-filename'));
-            $filename = html_writer::tag('div', $filename, array('class' => 'fp-filename-icon'));
-            $result .= html_writer::tag('li', $filename. $this->htmllize_tree($tree, $subdir));
-        }
-        foreach ($dir['files'] as $file) {
-            $filename = $file->get_filename();
-            $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-                    $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $filename, false);
-            if (file_extension_in_typegroup($filename, 'web_image')) {
-                $image = $url->out(false, array('preview' => 'tinyicon', 'oid' => $file->get_timemodified()));
-                $image = html_writer::empty_tag('img', array('src' => $image));
-            } else {
-                $image = $this->output->pix_icon(file_file_icon($file, 24), $filename, 'moodle');
-            }
-            $filename = html_writer::tag('span', $image, array('class' => 'fp-icon')).
-                    html_writer::tag('span', $filename, array('class' => 'fp-filename'));
-            $filename = html_writer::tag('span',
-                    html_writer::link($url->out(false, array('forcedownload' => 1)), $filename),
-                    array('class' => 'fp-filename-icon'));
-            $result .= html_writer::tag('li', $filename);
-        }
-        $result .= '</ul>';
-
-        return $result;
+        $data = $tree->export_for_template($this);
+        return $this->render_from_template('core/filetree', $data);
     }
 }
 
-class folder_tree implements renderable {
+/**
+ * Folder tree rendererable
+ *
+ * @package   mod_folder
+ * @copyright 2009 Petr Skoda  {@link http://skodak.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class folder_tree implements renderable, templatable {
     public $context;
     public $folder;
     public $cm;
@@ -159,5 +112,76 @@ class folder_tree implements renderable {
         $this->context = context_module::instance($cm->id);
         $fs = get_file_storage();
         $this->dir = $fs->get_area_tree($this->context->id, 'mod_folder', 'content', 0);
+    }
+
+    /**
+     * Export the data.
+     *
+     * @param renderer_base $output
+     * @return array data required by template
+     */
+    public function export_for_template(renderer_base $output) {
+        if ($this->folder->display == FOLDER_DISPLAY_INLINE) {
+            // If displayed on course page, embed in a folder.
+            $files = [
+                'title' => $this->cm->get_formatted_name(),
+                'isdir' => true,
+                'files' => $this->prepare_dir_for_template($this->dir, $output)
+            ];
+        } else {
+            $files = $this->prepare_dir_for_template($this->dir, $output);
+        }
+
+        return [
+            'foldersexpanded' => !empty($this->folder->showexpanded),
+            'files' => $files
+        ];
+    }
+
+    /**
+     * Generates the tree structure required by core/filetree template for a dir
+     *
+     * @param array $dir dir tree from $fs->get_area_tree()
+     * @param renderer_base $output
+     * @return array tree structure required by core/filetree template.
+     */
+    protected function prepare_dir_for_template($dir, renderer_base $output) {
+        $files = [];
+        foreach ($dir['subdirs'] as $subdir) {
+            $dirfiles = $this->prepare_dir_for_template($subdir, $output);
+            $files[] = ['title' => $subdir['dirname'], 'isdir' => true, 'files' => $dirfiles];
+        }
+
+        foreach ($dir['files'] as $file) {
+            $files[] = $this->prepare_file_for_template($file, $output);
+        }
+        return $files;
+    }
+
+    /**
+     * Generates the structure required by core/filetree template for a file
+     *
+     * @param array $file from $fs->get_area_tree()
+     * @param renderer_base $output
+     * @return array
+     */
+    protected function prepare_file_for_template($file, renderer_base $output) {
+        $filename = $file->get_filename();
+        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $filename, false);
+        if (file_extension_in_typegroup($filename, 'web_image')) {
+            $image = $url->out(false, array('preview' => 'tinyicon', 'oid' => $file->get_timemodified()));
+            $image = html_writer::empty_tag('img', array('src' => $image));
+        } else {
+            $image = $this->output->pix_icon(file_file_icon($file, 24), $filename, 'moodle');
+        }
+
+        $data = [];
+        $data['url'] = $url->out(false, array('forcedownload' => 1));
+        $data['icon'] = $image;
+        $data['title'] = $filename;
+        $data['isdir'] = false;
+
+        return $data;
     }
 }
