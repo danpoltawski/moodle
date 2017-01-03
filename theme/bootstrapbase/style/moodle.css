@@ -3943,6 +3943,9 @@ span.editinstructions {
   vertical-align: text-bottom;
   padding: 0;
 }
+.dndupload-progressbars progress.progress {
+  display: none;
+}
 .dndupload-progress-outer {
   overflow: hidden;
   height: 20px;
