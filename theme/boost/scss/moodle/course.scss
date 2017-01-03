@@ -537,9 +537,7 @@ span.editinstructions {
 }
 
 .dndupload-progress-inner {
-    .progress {
-        @extend .progress-bar;
-    }
+    @extend .progress-bar;
 }
 
 .dndupload-hidden {
