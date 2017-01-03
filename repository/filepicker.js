@@ -227,72 +227,39 @@ YUI.add('moodle-core_filepicker', function(Y) {
         };
         /** initialize tree view */
         var initialize_tree_view = function() {
-            var parentid = scope.one('.'+classname).get('id');
-            // TODO MDL-32736 use YUI3 gallery TreeView
-            scope.treeview = new Y.YUI2.widget.TreeView(parentid);
-            if (options.dynload) {
-                scope.treeview.setDynamicLoad(Y.bind(options.treeview_dynload, options.callbackcontext), 1);
-            }
-            scope.treeview.singleNodeHighlight = true;
-            if (options.filepath && options.filepath.length) {
-                // we just jumped from icon/details view, we need to show all parents
-                // we extract as much information as possible from filepath and filelist
-                // and send additional requests to retrieve siblings for parent folders
-                var mytree = {};
-                var mytreeel = null;
-                for (var i in options.filepath) {
-                    if (mytreeel == null) {
-                        mytreeel = mytree;
-                    } else {
-                        mytreeel.children = [{}];
-                        mytreeel = mytreeel.children[0];
-                    }
-                    var pathelement = options.filepath[i];
-                    mytreeel.path = pathelement.path;
-                    mytreeel.title = pathelement.name;
-                    mytreeel.icon = pathelement.icon;
-                    mytreeel.dynamicLoadComplete = true; // we will call it manually
-                    mytreeel.expanded = true;
-                }
-                mytreeel.children = fileslist;
-                build_tree(mytree, scope.treeview.getRoot());
-                // manually call dynload for parent elements in the tree so we can load other siblings
-                if (options.dynload) {
-                    var root = scope.treeview.getRoot();
-                    while (root && root.children && root.children.length) {
-                        root = root.children[0];
-                        if (root.path == mytreeel.path) {
-                            root.origpath = options.filepath;
-                            root.origlist = fileslist;
-                        } else if (!root.isLeaf && root.expanded) {
-                            Y.bind(options.treeview_dynload, options.callbackcontext)(root, null);
-                        }
-                    }
-                }
-            } else {
-                // there is no path information, just display all elements as a list, without hierarchy
-                for(k in fileslist) {
-                    build_tree(fileslist[k], scope.treeview.getRoot());
-                }
-            }
-            scope.treeview.subscribe('clickEvent', function(e){
-                e.node.highlight(false);
-                var callback = options.callback;
-                if (options.rightclickcallback && e.event.target &&
-                        Y.Node(e.event.target).ancestor('.fp-treeview .fp-contextmenu', true)) {
-                    callback = options.rightclickcallback;
-                }
-                Y.bind(callback, options.callbackcontext)(e, e.node.fileinfo);
-                Y.YUI2.util.Event.stopEvent(e.event)
-            });
-            // TODO MDL-32736 support right click
-            /*if (options.rightclickcallback) {
-                scope.treeview.subscribe('dblClickEvent', function(e){
-                    e.node.highlight(false);
-                    Y.bind(options.rightclickcallback, options.callbackcontext)(e, e.node.fileinfo);
+            require(['core/templates'], function(templates) {
+   
+                    var filesArray = [];
+                    fileslist.forEach(function(file) {
+                        var img = Y.Node.create('<img/>');
+                        img.setImgSrc(file.icon, file.realicon, lazyloading);
+                        filesArray.push({
+                            'title': file_get_displayname(file),
+                            'isdir': file_is_folder(file),
+                            'url': "#",
+                            'icon': img.get('outerHTML')
+                        });
+                    });
+              
+                    var context = {"files": filesArray, "foldersexpanded": false};
+                    // This will call the function to load and render our template.
+                    var promise = templates.render('core/filetree', context);
+                
+                    // The promise object returned by this function means "I've considered your request and will finish it later - I PROMISE!"
+                
+                    // How we deal with promise objects is by adding callbacks.
+                    promise.then(function(source, javascript) {
+                        scope.one('.'+classname).setHTML(source);
+                        // Here eventually I have my compiled template, and any javascript that it generated.
+                
+                        // I can execute the javascript (probably after adding the HTML to the DOM) like this:
+                        templates.runTemplateJS(javascript);
+                    }).catch(function(exception) {
+                        // Deal with this exception (I recommend core/notify exception function for this).
+                        console.dir(exception);
+                        alert('here');
+                    });
                 });
-            }*/
-            scope.treeview.draw();
         };
         /** formatting function for table view */
         var formatValue = function (o){
@@ -371,15 +338,15 @@ YUI.add('moodle-core_filepicker', function(Y) {
         /** append items in tree view mode */
         var append_files_tree = function() {
             if (options.appendonly) {
-                var parentnode = scope.treeview.getRoot();
-                if (scope.treeview.getHighlightedNode()) {
-                    parentnode = scope.treeview.getHighlightedNode();
-                    if (parentnode.isLeaf) {parentnode = parentnode.parent;}
-                }
-                for (var k in fileslist) {
-                    build_tree(fileslist[k], parentnode);
-                }
-                scope.treeview.draw();
+                // var parentnode = scope.treeview.getRoot();
+                // if (scope.treeview.getHighlightedNode()) {
+                //     parentnode = scope.treeview.getHighlightedNode();
+                //     if (parentnode.isLeaf) {parentnode = parentnode.parent;}
+                // }
+                // for (var k in fileslist) {
+                //     build_tree(fileslist[k], parentnode);
+                // }
+                // scope.treeview.draw();
             } else {
                 // otherwise files were already added in initialize_tree_view()
             }
