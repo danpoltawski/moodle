@@ -291,4 +291,11 @@
     <version>3.0.2</version>
     <licenseversion>2.0</licenseversion>
   </library>
+  <library>
+    <location>dragula</location>
+    <name>dragula</name>
+    <license>MIT</license>
+    <version>3.7.2</version>
+    <licenseversion></licenseversion>
+  </library>
 </libraries>

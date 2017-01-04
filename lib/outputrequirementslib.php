@@ -373,12 +373,73 @@ class page_requirements_manager {
             if (!empty($page->cm->id)) {
                 $params['cmid'] = $page->cm->id;
             }
-            // Strings for drag and drop.
-            $this->strings_for_js(array('movecontent',
-                                        'tocontent',
-                                        'emptydragdropregion'),
-                                  'moodle');
-            $page->requires->yui_module('moodle-core-blocks', 'M.core_blocks.init_dragdrop', array($params), null, true);
+
+            $page->requires->js_amd_inline("
+            require(['jquery', 'dragula'], function ($, dragula) {
+                var regions = [].slice.call(document.querySelectorAll('[data-blockregion]'));
+
+                var regionnames = regions.map(function (region) {
+                    return region.getAttribute('data-blockregion');
+                });
+
+                var options = {
+                    moves: function (el) {
+                        return $(el).hasClass('block') && el.id;
+                    },
+                };
+
+                dragula(regions, options).on('drag', function(el, source){
+                   regionnames.forEach(function (name) {
+                        var hideclass = 'empty-region-' + name;
+                        if ($('body').hasClass(hideclass)) {
+                            $('body').removeClass(hideclass);
+                        }
+                    });
+                }).on('dragend', function(el){
+                    regions.forEach(function (region) {
+                        if ($(region).find('.block').length === 0) {
+                            var name = region.getAttribute('data-blockregion');
+                            $('body').addClass('empty-region-'+name);
+                        }
+                    });
+                }).on('drop', function(el, target, source, sibling){
+                    var blockid = Number(el.id.replace(/inst/i, ''))
+                    var params = {
+                        sesskey: M.cfg.sesskey,
+                        courseid: {$page->course->id},
+                        pagelayout: '{$page->pagelayout}',
+                        pagetype: '{$page->pagetype}',
+                        subpage: '{$page->subpage}',
+                        contextid: {$page->context->id},
+                        action: 'move',
+                        bui_moveid: blockid,
+                        bui_newregion: $(target).data('blockregion'),
+                    };
+                    if (sibling) {
+                        params.bui_beforeid = Number(sibling.id.replace(/inst/i, ''));
+                    }
+
+                    var esc = encodeURIComponent;
+                    var query = Object.keys(params)
+                        .map(k => esc(k) + '=' + esc(params[k]))
+                        .join('&');
+
+                    var url = M.cfg.wwwroot + '/lib/ajax/blocks.php?' + query;
+                    fetch(url, {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    }).then(function (response) {
+                        if (response.length) {
+                            return response.json();
+                        }
+                        return null;
+                    }).then(function(data) {
+                        //TODO.
+                    }).catch(function(error) {
+                        console.log('request failed', error)
+                    })
+                });
+            });");
         }
 
         // Include the YUI CSS Modules.

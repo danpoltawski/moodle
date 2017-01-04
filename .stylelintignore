@@ -57,6 +57,7 @@ lib/amd/src/chartjs-lazy.js
 lib/maxmind/GeoIp2/
 lib/maxmind/MaxMind/
 lib/ltiprovider/
+lib/dragula/
 media/player/videojs/amd/src/
 media/player/videojs/videojs/
 mod/assign/feedback/editpdf/fpdi/
