@@ -403,6 +403,9 @@ class page_requirements_manager {
                         }
                     });
                 }).on('drop', function(el, target, source, sibling){
+
+                    var lightbox = M.util.add_lightbox(Y, Y.one(el));
+                    lightbox.show();
                     var blockid = Number(el.id.replace(/inst/i, ''))
                     var params = {
                         sesskey: M.cfg.sesskey,
@@ -434,10 +437,12 @@ class page_requirements_manager {
                         }
                         return null;
                     }).then(function(data) {
+                        lightbox.hide();
                         //TODO.
                     }).catch(function(error) {
-                        console.log('request failed', error)
-                    })
+                        console.log('request failed', error);
+                        lightbox.hide();
+                    });
                 });
             });");
         }
