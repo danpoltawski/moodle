@@ -183,11 +183,12 @@ define(['jquery',
                 }
 
                 ajax.call(requests)[requests.length - 1].then(function(context) {
-                    return templates.render(pagerender, context).done(function(html, js) {
-                        $('[data-region="' + pageregion + '"]').replaceWith(html);
-                        templates.runTemplateJS(js);
-                    });
-                }, notification.exception);
+                    return templates.render(pagerender, context);
+                }).then(function(html, js) {
+                    $('[data-region="' + pageregion + '"]').replaceWith(html);
+                    templates.runTemplateJS(js);
+                    return;
+                }).catch(notification.exception);
             });
         }
 
