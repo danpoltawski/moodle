@@ -75,9 +75,11 @@ define(['jquery',
 
         // Add listener for framework change.
         if (!self._singlePlan) {
+            alert('Testing instructions from here');
             self._find('[data-action="chooseplan"]').change(function(e) {
                 self._planId = $(e.target).val();
-                self._loadCompetencies().then(self._refresh.bind(self));
+                self._loadCompetencies().then(self._refresh.bind(self))
+                .catch(Notification.exception);
             });
         }
     };
