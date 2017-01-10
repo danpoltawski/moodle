@@ -51,7 +51,7 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                     includes: includes
                 }
             }]);
-
+            alert('Testing instructions for searching cohorts');
             promise[0].then(function(results) {
                 var promises = [],
                     i = 0;
@@ -71,7 +71,7 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                     success(results.cohorts);
                 });
 
-            }, failure);
+            }).catch(failure);
         }
 
     };
