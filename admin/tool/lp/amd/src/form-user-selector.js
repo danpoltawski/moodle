@@ -52,6 +52,7 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                     capability: capability
                 }
             }]);
+            alert ('search testign instructions');
 
             promise[0].then(function(results) {
                 var promises = [],
@@ -81,7 +82,7 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                     success(results.users);
                 });
 
-            }, failure);
+            }).catch(failure);
         }
 
     };
