@@ -98,6 +98,7 @@ define(['core/ajax', 'jquery', 'core/templates'], function(ajax, $, templates) {
                 // Undo the $.when() dance from arguments object into an array..
                 var users = Array.prototype.slice.call(arguments);
                 success(users);
+                return;
             }).catch(failure);
         }
     };
