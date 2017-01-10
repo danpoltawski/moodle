@@ -204,15 +204,16 @@ define(['jquery',
      */
     Picker.prototype.display = function() {
         var self = this;
-        return self._render().then(function(html) {
-            return Str.get_string('competencypicker', 'tool_lp').then(function(title) {
-                self._popup = new Dialogue(
-                    title,
-                    html,
-                    self._afterRender.bind(self)
-                );
-            });
-        }).fail(Notification.exception);
+        alert('add testing instructions for this');
+        return $.when(Str.get_string('competencypicker', 'tool_lp'), self._render())
+        .then(function(title, html) {
+            self._popup = new Dialogue(
+                title,
+                html,
+                self._afterRender.bind(self)
+            );
+            return;
+        }).catch(Notification.exception);
     };
 
     /**
@@ -386,9 +387,11 @@ define(['jquery',
      */
     Picker.prototype._refresh = function() {
         var self = this;
+        alert('we need testing instructions for this refresh');
         return self._render().then(function(html) {
             self._find('[data-region="competencylinktree"]').replaceWith(html);
             self._afterRender();
+            return;
         });
     };
 
