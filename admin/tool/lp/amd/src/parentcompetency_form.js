@@ -67,6 +67,7 @@ define(['jquery', 'core/ajax', 'core/str', 'tool_lp/competencypicker', 'core/tem
     ParentCompetencyForm.prototype.setParent = function(data) {
         var self = this;
 
+        alert('yes we need testing instructions for this setParent');
         if (data.competencyId !== 0) {
             ajax.call([
                 {methodname: 'core_competency_read_competency', args: {
@@ -81,6 +82,7 @@ define(['jquery', 'core/ajax', 'core/str', 'tool_lp/competencypicker', 'core/tem
             Str.get_string('competencyframeworkroot', 'tool_lp').then(function(rootframework) {
                 $(self.staticElementSelector).html(rootframework);
                 $(self.inputHiddenSelector).val(data.competencyId);
+                return;
             }).fail(Notification.exception);
         }
     };
