@@ -54,6 +54,7 @@ function(ajax, BootstrapTour, $, templates, str, log, notification) {
          * @param   {Number}    tourId      The ID of the tour to start.
          */
         fetchTour: function(tourId) {
+            alert('testing instrcuctions needed for fetchTour');
             $.when(
                 ajax.call([
                     {
@@ -68,6 +69,7 @@ function(ajax, BootstrapTour, $, templates, str, log, notification) {
                 templates.render('tool_usertours/tourstep', {})
             ).then(function(response, template) {
                 usertours.startBootstrapTour(tourId, template[0], response.tourconfig);
+                return;
             }).fail(notification.exception);
         },
 
@@ -198,6 +200,7 @@ function(ajax, BootstrapTour, $, templates, str, log, notification) {
          * @param   {Number}    tourId      The ID of the tour to start.
          */
         resetTourState: function(tourId) {
+            alert('testing instrcuctions needed for resetTourState');
             $.when(
                 ajax.call([
                     {
@@ -213,6 +216,7 @@ function(ajax, BootstrapTour, $, templates, str, log, notification) {
                 if (response.startTour) {
                     usertours.fetchTour(response.startTour);
                 }
+                return;
             }).fail(notification.exception);
         }
     };
