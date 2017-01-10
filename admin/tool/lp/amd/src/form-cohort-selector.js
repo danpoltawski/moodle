@@ -69,6 +69,7 @@ define(['jquery', 'core/ajax', 'core/templates'], function($, Ajax, Templates) {
                         i++;
                     });
                     success(results.cohorts);
+                    return;
                 });
 
             }).catch(failure);
