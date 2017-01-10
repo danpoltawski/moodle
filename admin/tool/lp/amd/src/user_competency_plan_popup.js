@@ -58,7 +58,7 @@ define(['jquery', 'core/notification', 'core/str', 'core/ajax', 'core/templates'
             done: this._contextLoaded.bind(this),
             fail: notification.exception
         }]);
-
+        alert('Testing instructions needed here');
         // Log the user competency viewed in plan event.
         requests[0].then(function(result) {
             var eventMethodName = 'core_competency_user_competency_viewed_in_plan';
@@ -68,10 +68,9 @@ define(['jquery', 'core/notification', 'core/str', 'core/ajax', 'core/templates'
             }
             ajax.call([{
                 methodname: eventMethodName,
-                args: {competencyid: competencyId, userid: userId, planid: planId},
-                fail: notification.exception
+                args: {competencyid: competencyId, userid: userId, planid: planId}
             }]);
-        });
+        }).catch(notification.exception);
     };
 
     /**
