@@ -40,6 +40,7 @@ define(['jquery',
         if (typeof selectors[triggerSelector] !== 'undefined') {
             return;
         }
+        alert('we need testing instructions from this, oh yes!');
 
         selectors[triggerSelector] = $('body').delegate(triggerSelector, 'click', function(e) {
             var parent = $(e.currentTarget).parents(containerSelector);
@@ -76,6 +77,7 @@ define(['jquery',
                         }]);
                         promise[0].then(function() {
                             parent.remove();
+                            return;
                         }).fail(Notification.exception);
                     }
                 );
