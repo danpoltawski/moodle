@@ -66,10 +66,10 @@ define(['jquery', 'core/notification', 'core/str', 'core/ajax', 'core/templates'
             if (result.plan.iscompleted) {
                 eventMethodName = 'core_competency_user_competency_plan_viewed';
             }
-            ajax.call([{
+            return ajax.call([{
                 methodname: eventMethodName,
                 args: {competencyid: competencyId, userid: userId, planid: planId}
-            }]);
+            }])[0];
         }).catch(notification.exception);
     };
 
