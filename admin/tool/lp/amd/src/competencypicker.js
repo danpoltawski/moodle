@@ -134,7 +134,8 @@ define(['jquery',
         if (!self._singleFramework) {
             self._find('[data-action="chooseframework"]').change(function(e) {
                 self._frameworkId = $(e.target).val();
-                self._loadCompetencies().then(self._refresh.bind(self));
+                alert('add testing instructions for this');
+                self._loadCompetencies().then(self._refresh.bind(self)).catch(Notification.exception);
             });
         }
 
