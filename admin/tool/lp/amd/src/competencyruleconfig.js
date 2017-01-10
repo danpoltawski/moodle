@@ -518,13 +518,13 @@ define(['jquery',
             self._afterChange();
             return;
         }
-
+        alert('testing instructions for this');
         rule.injectTemplate(container).then(function() {
             container.show();
-        }, function() {
-            container.empty().hide();
         }).always(function() {
             self._afterChange();
+        }).catch(function() {
+            container.empty().hide();
         });
     };
 
