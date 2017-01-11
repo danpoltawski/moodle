@@ -52,7 +52,7 @@ class media_videojs_plugin extends core_media_player_native {
      * @return string
      */
     public function embed($urls, $name, $width, $height, $options) {
-        global $CFG;
+        global $CFG, $PAGE;
         require_once($CFG->libdir . '/filelib.php');
 
         $sources = array();
@@ -334,21 +334,19 @@ class media_videojs_plugin extends core_media_player_native {
      */
     public function setup($page) {
 
-        // Load core video JS.
+        // Load dynamic loader. It will scan page for videojs media and load necessary modules.
+        // Loader will be loaded on absolutely every page, however the videojs will only be loaded
+        // when video is present on the page or added later to it in AJAX.
         $path = new moodle_url('/media/player/videojs/videojs/video-js.swf');
         $contents = 'videojs.options.flash.swf = "' . $path . '";' . "\n";
         $contents .= $this->find_language(current_language());
         $page->requires->js_amd_inline(<<<EOT
-require(["media_videojs/video"], function(videojs) {
-$contents
+require(["media_videojs/loader"], function(loader) {
+    loader.setUp(function(videojs) {
+        $contents
+    });
 });
 EOT
         );
-
-        // Load Youtube JS.
-        $page->requires->js_amd_inline('require(["media_videojs/Youtube"])');
-
-        // Load dynamic loader.
-        $page->requires->js_call_amd('media_videojs/loader', 'setUp');
     }
 }
