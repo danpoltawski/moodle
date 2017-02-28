@@ -2729,12 +2729,5 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2017032400.24);
     }
 
-    if ($oldversion < 2017032400.25) {
-
-        \core\oauth2\api::install_default_issuers();
-        // Main savepoint reached.
-        upgrade_main_savepoint(true, 2017032400.25);
-    }
-
     return true;
 }
