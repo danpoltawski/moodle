@@ -25,7 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 $definitions = array(
-    'foldername' => array(
-        'mode' => cache_store::MODE_SESSION,
-    )
+    // Used to store file ids for folders.
+    // The keys used are full path to the folder, the values are the id in office 365.
+    // The static acceleration size has been based upon the depths of a single path.
+    'folder' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => false,
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 10,
+        'canuselocalstore' => true
+    ),
 );
