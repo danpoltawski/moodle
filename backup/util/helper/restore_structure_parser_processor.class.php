@@ -62,7 +62,15 @@ class restore_structure_parser_processor extends grouped_parser_processor {
         }
         // Decode file.php calls
         $search = array ("$@FILEPHP@$");
-        $replace = array(moodle_url::make_legacyfile_url($this->courseid, null));
+
+        // We should strip the trailing slash from the file url. See MDL-58811.
+        if ($CFG->slasharguments) {
+            $url = rtrim(moodle_url::make_legacyfile_url($this->courseid, null)->out(true), '/');
+        } else {
+            $url = rtrim( moodle_url::make_legacyfile_url($this->courseid, null)->out(true), '%2F');
+        }
+
+        $replace = array($url);
         $result = str_replace($search, $replace, $cdata);
         // Now $@SLASH@$ and $@FORCEDOWNLOAD@$ MDL-18799
         $search = array('$@SLASH@$', '$@FORCEDOWNLOAD@$');
