@@ -85,26 +85,6 @@ function css_store_css(theme_config $theme, $csspath, $csscontent, $chunk = fals
 }
 
 /**
- * Save the given LTR and RTL CSS in the provided directory. The main purpose of this
- * function is to name the files appropriately so that we have some consistency.
- *
- * @param theme_config $themeconfig    A theme_config instance
- * @param string       $directory      The directory in which to save the file (no including file name)
- * @param string       $ltrcss         The generated LTR CSS
- * @param string       $rtlcss         The generated RTL CSS
- * @param string       $filenamesuffix A suffix to add to the name of the file (optional)
- */
-function css_store_css_in_directory($themeconfig, $directory, $ltrcss = null, $rtlcss = null, $filenamesuffix = '') {
-    if (!is_null($ltrcss)) {
-        css_store_css($themeconfig, "{$directory}/all{$filenamesuffix}.css", $ltrcss);
-    }
-
-    if (!is_null($rtlcss)) {
-        css_store_css($themeconfig, "{$directory}/all-rtl{$filenamesuffix}.css", $rtlcss);
-    }
-}
-
-/**
  * Writes a CSS file.
  *
  * @param string $filename

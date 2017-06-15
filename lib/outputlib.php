@@ -157,57 +157,12 @@ function theme_get_config_file_path($themename) {
     }
 }
 
-/**
- * Removes the local cache version of the theme for the given sub revision (the revision applicable
- * to only this theme, rather than the global theme revision).
- *
- * @param theme_config $themeconfig The theme config for the theme to be purged
- * @param int          $revision    The theme specific revision (not the global theme revision)
- * @param bool         $skipltr     Skip purging the LTR CSS (optional)
- * @param bool         $skiprtl     Skip purging the RTL CSS (optional)
- */
-function theme_purge_css_in_local_cache($themeconfig, $revision, $skipltr = false, $skiprtl = false) {
+function theme_get_css_filename($themename, $globalrevision, $themerevision, $direction) {
     global $CFG;
 
-    $globalrevision = theme_get_revision();
-    $cachedirectory = "{$CFG->localcachedir}/theme/{$globalrevision}/{$themeconfig->name}/css/";
-    $filenamesuffix = "_{$revision}";
-    $ltrfile = "{$cachedirectory}/all{$filenamesuffix}.css";
-    $rtlfile = "{$cachedirectory}/all-rtl{$filenamesuffix}.css";
-
-    // Remove the old cached LTR file.
-    if (!$skipltr && file_exists($ltrfile)) {
-        unlink($ltrfile);
-    }
-
-    // Remove the old cached RTL file.
-    if (!$skiprtl && file_exists($rtlfile)) {
-        unlink($rtlfile);
-    }
-}
-
-/**
- * Store the generated CSS for the given theme in the appropriate local cache directory.
- *
- * The purpose of this function is to abstract away the local cache path from the calling
- * code so that we can have some consistency and don't have hardcoded paths all over the place.
- *
- * @param theme_config $themeconfig The theme_config for the theme to be saved
- * @param int          $newrevision The new theme specific revision (not the global theme revision)
- * @param string       $ltrcss The generated LTR CSS for the theme
- * @param string       $rtlcss The generated RTL CSS for the theme
- */
-function theme_store_css_in_local_cache($themeconfig, $newrevision, $ltrcss = null, $rtlcss = null) {
-    global $CFG;
-
-    $globalrevision = theme_get_revision();
-    $cachedirectory = "{$CFG->localcachedir}/theme/{$globalrevision}/{$themeconfig->name}/css/";
-    $filenamesuffix = "_{$newrevision}";
-
-    // Make sure the local cache directory exists.
-    make_localcache_directory('theme');
-
-    css_store_css_in_directory($themeconfig, $cachedirectory, $ltrcss, $rtlcss, $filenamesuffix);
+    $path = "{$CFG->localcachedir}/theme/{$globalrevision}/{$themename}/css";
+    $filename = $direction == 'rtl' ? "all-rtl{$themerevision}" : "all{$themerevision}";
+    return "$path/$filename.css";
 }
 
 /**
@@ -218,7 +173,7 @@ function theme_store_css_in_local_cache($themeconfig, $newrevision, $ltrcss = nu
  * @param bool           $skiprtl      Flag to skip generating the RTL CSS files.
  * @param bool           $cache        Should the generated files be stored in local cache.
  */
-function theme_build_css_for_themes($themeconfigs = [], $skipltr = false, $skiprtl = false, $cache = true) {
+function theme_build_css_for_themes($themeconfigs = [], $directions = ['rtl', 'ltr'], $cache = true) {
     global $CFG;
 
     if (empty($themeconfigs)) {
@@ -226,45 +181,45 @@ function theme_build_css_for_themes($themeconfigs = [], $skipltr = false, $skipr
     }
 
     $themescss = [];
+    $themerev = theme_get_revision();
+    // Make sure the local cache directory exists.
+    make_localcache_directory('theme');
 
     foreach ($themeconfigs as $themeconfig) {
-        $themecss = [
-            'ltr' => null,
-            'rtl' => null
-        ];
+        $themecss = [];
+        $oldrevision = theme_get_revision_for_theme($themeconfig->name);
+        $newrevision = theme_get_next_revision_for_theme($themeconfig->name);
 
-        // Build the LTR CSS unless asked to skip.
-        if (!$skipltr) {
-            $themecss['ltr'] = $themeconfig->get_css_content();
+        // First generate all the new css.
+        foreach ($directions as $direction) {
+            $themeconfig->set_rtl_mode(($direction === 'rtl'));
+
+            $themecss[$direction] = $themeconfig->get_css_content();
+            if ($cache) {
+                $filename = theme_get_css_filename($themeconfig->name, $themerev, $newrevision, $direction);
+                css_store_css($themeconfig, $filename, $themecss[$direction]);
+            }
         }
-
-        // Build the RTL CSS unless asked to skip.
-        if (!$skiprtl) {
-            $themeconfig->set_rtl_mode(true);
-            $themecss['rtl'] = $themeconfig->get_css_content();
-        }
-
         $themescss[] = $themecss;
 
         if ($cache) {
-            $oldrevision = theme_get_revision_for_theme($themeconfig->name);
-            $newrevision = theme_get_next_revision_for_theme($themeconfig->name);
-            // Save the generated CSS files in the local cache storage.
-            theme_store_css_in_local_cache($themeconfig, $newrevision, $themecss['ltr'], $themecss['rtl']);
-
             // Only update the theme revision after we've successfully created the
             // new CSS cache.
             theme_set_revision_for_theme($themeconfig->name, $newrevision);
 
-            // Remove the old CSS files from local storage now that we've generated
-            // new ones and updated the theme revision.
-            theme_purge_css_in_local_cache($themeconfig, $oldrevision);
+            // Now purge old files.
+            foreach ($directions as $direction) {
+                $oldcss = theme_get_css_filename($themeconfig->name, $themerev, $newrevision, $direction);
+                if (file_exists($oldcss)) {
+                    unlink($oldcss);
+                }
+            }
         }
+
     }
 
     return $themescss;
 }
-
 
 /**
  * Invalidate all server and client side caches.
